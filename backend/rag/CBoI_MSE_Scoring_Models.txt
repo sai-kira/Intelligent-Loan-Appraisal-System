@@ -1,0 +1,158 @@
+CENTRAL BANK OF INDIA - MANUAL SCORING MODEL FOR MICRO AND SMALL ENTERPRISES (MSME)
+APPROVED BY IBA - COMMON LOAN APPLICATION AND APPRAISAL GUIDELINES FOR CREDIT EXPOSURE UP TO RS 2 CRORE
+
+================================================================================
+PART A: FORM MSE 1 - SCORING MODEL FOR EXISTING UNITS / BORROWERS (UP TO RS 2 CRORE)
+================================================================================
+
+Weightage Calculation Rule:
+Add 5 marks to score item 11 if borrower does not enjoy any LC/BG facility.
+If any parameter is not applicable, then Weightage to be obtained as:
+(Marks obtained * 100) / (Total marks assigned to applicable parameters).
+Maximum Score: 100 Marks.
+
+Scoring Benchmark Parameters:
+
+Parameter 1: Compliance of all terms and conditions of sanction
+- Fully compliant with terms and conditions: 5 Marks
+- Non-compliance due to non-cooperation by the borrower: -5 Marks
+
+Parameter 2: Current Ratio (Liquidity Measure)
+- Current Ratio 1.33 and above: 5 Marks (Benchmark Standard)
+- Current Ratio between 1.20 to 1.32: 4 Marks
+- Current Ratio between 1.10 to 1.19: 3 Marks
+- Current Ratio between 1.00 to 1.09: 1 Mark
+- Current Ratio less than 1.00: 0 Marks
+
+Parameter 3: Debt Equity Ratio (DER) consistently for the past 2 years (Solvency Measure)
+- DER up to 2.00 consistently for past 2 years: 10 Marks (Benchmark Standard)
+- DER above 2.00 and up to 3.00 for past 2 years: 8 Marks
+- DER above 3.00 and up to 4.00 for past 2 years: 5 Marks
+- DER above 4.00 and up to 5.00 for past 2 years: 3 Marks
+- DER above 5.00 for past 2 years: 0 Marks
+
+Parameter 4: Net Sales Growth Rate for Past 3 Years (Operational Trajectory)
+- Net Sales Growth rate over 20% for past 3 years: 10 Marks
+- Net Sales Growth rate over 15% up to 20% for past 3 years: 8 Marks
+- Net Sales Growth rate over 10% up to 15% for past 3 years: 5 Marks
+- Net Sales Growth rate positive for past 3 years: 3 Marks
+- Net Sales Growth rate negative during past year: 0 Marks
+
+Parameter 5: Profit After Tax (PAT) / Net Sales Margin (Profitability)
+- PAT / Net Sales over 15%: 10 Marks
+- PAT / Net Sales over 10% up to 15%: 8 Marks
+- PAT / Net Sales over 5% up to 10%: 5 Marks
+- PAT / Net Sales positive: 3 Marks
+- PAT / Net Sales negative: -5 Marks
+
+Parameter 6: QIS / Stock Statement / Renewal Data Submission
+- Timely Submission: 10 Marks
+- Delayed / Irregular Submission: 5 Marks
+- Non Submission: -5 Marks
+
+Parameter 7: Prompt Service of Interest / Installments and Asset Classification
+- Interest / Installment serviced within 1 month after application (Standard Asset): 10 Marks
+- Serviced within 2 months: 8 Marks
+- Serviced within 3 months (SMA Category): 5 Marks
+- Serviced after 3 months (NPA risk): 0 Marks
+
+Parameter 8: Inventory Norms Compliance
+- Fair Compliance (Deviation up to 15%): 5 Marks
+- Compliance with deviation over 15% up to 30%: 3 Marks
+
+Parameter 9: Compliance to Bills Culture
+- Standard compliance to bills culture and discounting: 5 Marks
+
+Parameter 10: Payment of Bills on Due Dates
+- Prompt payment on due dates: 10 Marks
+- Delay up to 15 days: 5 Marks
+- Instances of overdues for more than 3 months: -5 Marks
+
+Parameter 11: Timely submission of review documents (within 3 months of due date): 5 Marks
+
+Parameter 12: Prompt fulfillment of LC / BG commitments on due dates
+- Prompt fulfillment: 5 Marks (or +5 if no facility)
+- Devolvement of LCs / Invocation of BGs: -5 to -10 Marks
+
+Parameter 13: Ancillary Business / Deposits / Overall Association with Central Bank of India: 10 Marks
+
+Total Score: 100 Marks.
+
+================================================================================
+PART B: FORM MSE II - SCORING MODEL FOR NEW UNITS / GREENFIELD ENTERPRISES (UP TO RS 2 CRORE)
+================================================================================
+
+Maximum Score: 100 Marks.
+
+Parameter 1: Projected Average Net Sales Growth for First Three Years
+- Projected Average Net Sales Growth over 15%: 15 Marks
+- Projected Average Net Sales Growth over 10% up to 15%: 10 Marks
+- Projected Average Net Sales Growth over 5% up to 10%: 5 Marks
+- Projected Average Net Sales Growth below 5%: 0 Marks
+
+Parameter 2: Profit After Tax (PAT) / Net Sales Average for First Three Years
+- PAT / Net Sales over 15% Average: 15 Marks
+- PAT / Net Sales over 10% Average: 10 Marks
+- PAT / Net Sales over 5% Average: 5 Marks
+- PAT / Net Sales positive: 3 Marks
+
+Parameter 3: Projected Debt Equity Ratio (DER) for First Three Years
+- Projected DER up to 2.00: 10 Marks
+- Projected DER above 2.00 and up to 3.00: 8 Marks
+- Projected DER above 3.00 and up to 4.00: 5 Marks
+
+Parameter 4: Access to Inputs (Labor / Raw Materials / Power / Utilities)
+- Locally available / tied up: 10 Marks
+- Not locally available but source identified: 5 Marks
+- Not available locally nor source identified: 0 Marks
+
+Parameter 5: Access to Market for Products & Distribution
+- Locally available / tied up contracts: 10 Marks
+- Market identified: 5 Marks
+- Market neither available nor identified: 0 Marks
+
+Parameter 6: Experience & Qualification of Promoters
+- Qualified and experienced in relevant industry: 10 Marks
+- Qualified or trained but not experienced: 5 Marks
+- No qualification, training, or industry experience: 0 Marks
+
+Parameter 7: Relationship with Bank
+- Existing Central Bank of India customer with satisfactory track record: 10 Marks
+- Introduced by Government Department / DIC / Other agencies: 5 Marks
+
+Parameter 8: Factory / Business Unit Premises
+- Unit / factory premises owned by borrower: 5 Marks
+- Unit / factory premises taken on lease or rented: 3 Marks
+
+Parameter 9: Collateral Security / Guarantees & CGTMSE Coverage
+- Collateral / Guarantees available over 100% of bank loan: 15 Marks
+- Collateral / Guarantees up to 100% or fully covered under CGTMSE Scheme: 10 Marks
+- Collateral / Guarantees available up to 50%: 5 Marks
+- Collateral / Guarantees below 50%: 3 Marks
+- No collaterals / No guarantors / Unsecured without CGTMSE: 0 Marks
+
+Total Score: 100 Marks.
+
+================================================================================
+OFFICIAL CENTRAL BANK OF INDIA MSE RISK GRADES MATRIX (CBI 1 to CBI 10)
+================================================================================
+Reference: Risk_Grades_Table.docx & Central Bank of India Credit Underwriting Manual
+
+RISK GRADES | RISK SCORES RANGE | UNDERWRITING & SANCTION NORMS
+CBI 1       | Above 90 marks    | Highest Safety / Exceptional Prime Borrower. Eligible for Fast-track processing & Prime RBLR spread.
+CBI 2       | 81 - 90 marks     | High Safety / Very Low Credit Risk. Standard Prime sanction terms.
+CBI 3       | 71 - 80 marks     | High Safety / Low Credit Risk. Standard sanction terms.
+CBI 4       | 61 - 70 marks     | Adequate Safety / Moderate Risk. Standard sanction terms.
+CBI 5       | 56 - 60 marks     | Moderate Safety / Standard Risk. Sanction permitted subject to special covenants: Min Current Ratio >= 1.20, Debt-Equity Ratio <= 3.0, Monthly QIS/Stock statement by 15th, and >= 80% sales turnover routing.
+CBI 6       | 51 - 55 marks     | Minimum Hurdle Rate Met / Elevated Risk. Sanction permitted with enhanced covenants and quarterly stock audit monitoring.
+--------------------------------------------------------------------------------
+STATUTORY HURDLE RATE BENCHMARK: Above 50 marks (> 50 Marks)
+--------------------------------------------------------------------------------
+CBI 7       | 46 - 50 marks     | Inadequate Safety / Sub-Hurdle Rate (High Risk). Ineligible for standard sanction. Requires 100%+ tangible collateral / CGTMSE guarantee or Zonal Committee exception.
+CBI 8       | 41 - 45 marks     | High Risk / Weak Capacity (Sub-Hurdle Rate). Ineligible under branch delegation; requires executive escalation.
+CBI 9       | 36 - 40 marks     | Very High Risk / Vulnerable (Sub-Hurdle Rate). Ineligible under branch delegation; high default probability.
+CBI 10      | 35 marks & below  | Substantial Risk / Default Imminent / Bank Defaulter. Ineligible / Automatic Rejection.
+
+SPECIAL MANDATORY OVERRIDE RULES:
+1. Defaulter Rule: If the marks in Existing Borrowing Arrangements is '0' (i.e. if the borrower is a defaulter to any Bank / overdue > 3 months), the Total Score of the borrower for this scheme automatically becomes '0' (Risk Grade: CBI 10).
+2. Hurdle Rate Rule: The Hurdle Rate for this scheme is above 50 marks. Any score <= 50 marks constitutes a breach of Hurdle Rate.

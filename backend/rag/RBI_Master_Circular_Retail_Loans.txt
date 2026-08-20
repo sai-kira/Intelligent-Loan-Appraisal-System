@@ -1,0 +1,20 @@
+The Reserve Bank of India (RBI) regulates housing finance through its master circulars, setting specific parameters for Loan-to-Value (LTV) ratios to manage lender risk and ensure affordability. While the RBI mandates LTV limits, Fixed Obligation to Income Ratio (FOIR) is generally determined by individual banks based on their internal credit policies.
+
+### 1. Loan-to-Value (LTV) Ratio Guidelines
+The LTV ratio represents the maximum percentage of a property's value that a lender can finance. The remaining amount must be covered by the borrower as a down payment.
+
+The RBI prescribes the following maximum LTV caps for housing loans:
+- Up to ₹30 lakh: 90%
+- Above ₹30 lakh and up to ₹75 lakh: 80%
+- Above ₹75 lakh: 75%
+
+**Important Considerations for LTV:**
+* Exclusions: Generally, stamp duty, registration charges, and other documentation costs are not included in the property value when calculating the LTV ratio. These costs must typically be borne by the borrower.
+* Exceptions: For very small loans (e.g., properties costing less than ₹10 lakh), some lenders may include government costs in the LTV calculation, though you should verify this with your specific bank.
+* Risk Weights: The LTV ratio also influences the risk weight assigned to the loan, which affects the capital banks must set aside.
+
+### 2. Fixed Obligation to Income Ratio (FOIR)
+The RBI does not prescribe a universal, mandatory percentage for FOIR. Instead, it mandates that banks must assess a borrower's repayment capacity.
+
+* How Banks Determine FOIR: Banks calculate FOIR based on monthly disposable or surplus income. This involves subtracting existing monthly liabilities (such as other loan EMIs) and essential living expenses from total monthly income.
+* Lender Policy: Because this is an internal risk management tool, the acceptable FOIR threshold varies between banks. Typically, most banks prefer to keep the total EMI burden (including the new home loan) within 40% to 60% of net monthly income, depending on income level and credit profile.

@@ -1,0 +1,12 @@
+The Central Bank of India follows a structured approach to retail loan appraisal, guided by its internal lending policies and the Fair Practice Code for Lenders, which aligns with Reserve Bank of India (RBI) directives to ensure transparency and fairness.
+
+### Key Principles of Loan Appraisal
+* Comprehensive Assessment: The bank conducts a rigorous appraisal of all credit applications. This involves assessing the applicant's creditworthiness, financial standing, and the purpose of the loan.
+* Time-Bound Processing: The bank strives to process and appraise loan proposals in a time-bound manner and communicates decisions to applicants within a reasonable timeframe.
+* Fair Practices: All loan application forms are comprehensive and include clear disclosures regarding fees, charges, interest rates, and terms. Applicants receive an acknowledgement upon submitting a complete application, which includes an indication of the expected decision timeframe.
+* Risk Evaluation: Appraisal includes examining financial, commercial, and, where applicable, technical aspects to ensure the viability of the loan and the borrower's ability to repay. The bank also utilizes CIBIL/Credit Bureau data to assess repayment history.
+
+### General Requirements
+* Application Process: Borrowers are required to submit a completed common loan application form along with necessary KYC documents. Non-submission of required documents renders an application incomplete.
+* Eligibility: Eligibility criteria vary by product (e.g., Housing, Personal, Education, or Mudra loans). For instance, personal loans generally require specific employment status (salaried) and a minimum length of service.
+* Fees and Charges: Information regarding processing fees, documentation charges, and other "all-in" costs is disclosed to customers to ensure transparency. These fees are subject to GST where applicable.
