@@ -7,7 +7,7 @@ Supports:
 - Microsoft Word Financial Memorandums (.docx) via python-docx
 - Excel / CSV Spreadsheets (.csv, .xlsx, .xls) via pandas / openpyxl
 - JSON / Tally ERP 9 / Tally Prime exports
-- Plain dictionary structures
+- Plain dictionary structures & messy OCR raw text
 """
 
 import json
@@ -28,11 +28,29 @@ except ImportError:
 
 
 class FinancialDocumentParser:
-    """Parses and maps diverse corporate financial inputs (PDF, DOCX, CSV, Excel, JSON) into standardized financial spreads."""
+    """Parses and maps diverse corporate financial inputs (PDF, DOCX, CSV, Excel, JSON, and unstructured OCR text) into standardized financial spreads."""
+
+    # Synonyms and alias patterns for fuzzy matching messy documents
+    METRIC_ALIASES = {
+        "revenue": ["revenue", "sales", "turnover", "gross receipt", "income from operation", "topline", "gross turnover", "net sales"],
+        "cogs": ["cogs", "cost of goods", "cost of sales", "material consumed", "raw material", "direct expenses", "purchase of stock"],
+        "operating_expenses": ["opex", "operating expense", "admin expense", "selling expense", "employee cost", "staff expense", "other expenses"],
+        "depreciation": ["depreciation", "amortisation", "amortization", "depr", "dep & amort"],
+        "interest_expense": ["interest", "finance charge", "finance cost", "borrowing cost", "bank charges"],
+        "cash_and_bank": ["cash", "bank balance", "cash and cash equivalent", "liquid funds", "current account", "fixed deposit"],
+        "sundry_debtors": ["debtor", "receivable", "trade receivable", "accounts receivable", "book debts"],
+        "inventory": ["inventory", "stock", "raw materials", "work-in-progress", "finished goods", "wip"],
+        "net_fixed_assets": ["fixed asset", "ppe", "property plant", "plant & machinery", "equipment", "tangible assets", "net block"],
+        "sundry_creditors": ["creditor", "payable", "trade payable", "accounts payable", "sundry creditor"],
+        "short_term_borrowings": ["short term", "working capital loan", "cash credit", "overdraft", "cc limit", "od limit", "short-term debt", "bank borrowing"],
+        "long_term_debt": ["long term", "term loan", "secured loan", "unsecured loan", "debenture", "mortgage loan", "non-current liabilities"],
+        "paid_up_capital": ["capital", "equity share capital", "shareholders fund", "share capital", "promoter capital"],
+        "reserves_and_surplus": ["reserve", "surplus", "retained earnings", "general reserve", "p&l balance", "accumulated profit"]
+    }
 
     @staticmethod
     def parse_json_or_dict(content: Union[str, bytes, dict]) -> Dict[str, Any]:
-        """Parses JSON or raw dict into standardized structure."""
+        """Parses JSON or raw dict into standardized structure with intelligent fallback values."""
         if isinstance(content, (str, bytes)):
             data = json.loads(content)
         else:
@@ -89,7 +107,6 @@ class FinancialDocumentParser:
         lookup = {}
         for _, row in df.iterrows():
             metric_raw = str(row.iloc[0]).lower().strip()
-            # Clean string numbers if needed
             clean_vals = []
             for y in years:
                 val_str = str(row[y]).replace(',', '').replace('₹', '').replace('$', '').strip()
@@ -155,7 +172,6 @@ class FinancialDocumentParser:
                     table_rows.append(cells)
 
         if table_rows and len(table_rows) > 3:
-            # First row might be header / years
             header = table_rows[0]
             years = header[1:] if len(header) > 1 else ["FY24", "FY25", "FY26"]
             lookup = {}
@@ -181,15 +197,29 @@ class FinancialDocumentParser:
 
     @staticmethod
     def _extract_financials_from_text(text: str) -> Dict[str, Any]:
-        """Extracts financial metrics, company name, and figures from raw OCR or document text."""
+        """Extracts financial metrics, company name, and figures from raw OCR or messy document text."""
         lookup = {}
         
         # Company name detection
-        comp_match = re.search(r'(?:Company|Enterprise|Borrower|Name|Entity)\s*(?:Name)?\s*[:=-]\s*([A-Za-z0-9\s.,&()\-]+)', text, re.IGNORECASE)
+        comp_match = re.search(r'(?:Company|Enterprise|Borrower|Name|Entity|Firm|M/s)\s*(?:Name)?\s*[:=-]\s*([A-Za-z0-9\s.,&()\-]+)', text, re.IGNORECASE)
         if comp_match:
             comp_name = comp_match.group(1).split('\n')[0].strip()
             if len(comp_name) > 3:
                 lookup["company_name"] = comp_name
+
+        # Loan Amount requested detection
+        loan_amt_match = re.search(r'(?:Loan\s*Amount|Credit\s*Facility|Limit\s*Requested|Proposed\s*Loan)\s*[:=-]?\s*(?:₹|Rs\.?|INR)?\s*([\d,]+(?:\.\d+)?)\s*(?:Cr|Crore|Crores|Lakh|Lakhs|L|K)?', text, re.IGNORECASE)
+        if loan_amt_match:
+            try:
+                l_val = float(loan_amt_match.group(1).replace(',', ''))
+                lookup["requested_loan_amount"] = l_val
+            except ValueError:
+                pass
+
+        # Credit Score / CIBIL detection
+        cibil_match = re.search(r'(?:CIBIL|Credit\s*Score|Bureau\s*Score)\s*[:=-]?\s*(\d{3})', text, re.IGNORECASE)
+        if cibil_match:
+            lookup["credit_score"] = int(cibil_match.group(1))
 
         lines = text.splitlines()
         for line in lines:
@@ -198,7 +228,6 @@ class FinancialDocumentParser:
                 continue
 
             # Look for line items followed by 1 to 4 numeric values
-            # e.g., "Gross Revenue : 12,000,000  15,000,000  18,500,000" or "Turnover | 1.2 Cr | 1.5 Cr | 1.85 Cr"
             nums = re.findall(r'[-+]?\s*₹?\s*\d+(?:,\d+)*(?:\.\d+)?(?:\s*(?:Cr|Crore|Crores|Lakh|Lakhs|L|K))?', line_clean, re.IGNORECASE)
             
             clean_nums = []
@@ -228,40 +257,20 @@ class FinancialDocumentParser:
 
     @staticmethod
     def _map_line_item(metric_raw: str, values: List[float], lookup: Dict[str, Any]):
-        """Helper to assign multiple numerical years to standard financial spread keys."""
+        """Helper to assign multiple numerical years to standard financial spread keys using fuzzy synonym matching."""
+        if not values or not metric_raw:
+            return
+
         # Pad values to 3 years if only 1 or 2 are present
         if len(values) == 1:
             values = [values[0] * 0.80, values[0] * 0.90, values[0]]
         elif len(values) == 2:
             values = [values[0], values[1], values[1] * 1.15]
         else:
-            values = values[-3:]  # take the latest 3 years
+            values = values[-3:]  # take latest 3 years
 
-        if "revenue" in metric_raw or "sales" in metric_raw or "turnover" in metric_raw:
-            lookup["revenue"] = values
-        elif "cogs" in metric_raw or "material" in metric_raw or "cost of sales" in metric_raw:
-            lookup["cogs"] = values
-        elif "opex" in metric_raw or "operating expense" in metric_raw or "admin" in metric_raw:
-            lookup["operating_expenses"] = values
-        elif "depreciation" in metric_raw:
-            lookup["depreciation"] = values
-        elif "interest" in metric_raw or "finance" in metric_raw:
-            lookup["interest_expense"] = values
-        elif "cash" in metric_raw or "bank" in metric_raw:
-            lookup["cash_and_bank"] = values
-        elif "debtor" in metric_raw or "receivable" in metric_raw:
-            lookup["sundry_debtors"] = values
-        elif "inventory" in metric_raw or "stock" in metric_raw:
-            lookup["inventory"] = values
-        elif "fixed asset" in metric_raw or "ppe" in metric_raw or "plant" in metric_raw:
-            lookup["net_fixed_assets"] = values
-        elif "creditor" in metric_raw or "payable" in metric_raw:
-            lookup["sundry_creditors"] = values
-        elif "short term" in metric_raw or "working capital loan" in metric_raw or "overdraft" in metric_raw:
-            lookup["short_term_borrowings"] = values
-        elif "long term debt" in metric_raw or "term loan" in metric_raw:
-            lookup["long_term_debt"] = values
-        elif "capital" in metric_raw or "equity share" in metric_raw:
-            lookup["paid_up_capital"] = values
-        elif "reserve" in metric_raw or "surplus" in metric_raw:
-            lookup["reserves_and_surplus"] = values
+        metric_lower = metric_raw.lower()
+        for standard_key, aliases in FinancialDocumentParser.METRIC_ALIASES.items():
+            if any(alias in metric_lower for alias in aliases):
+                lookup[standard_key] = values
+                break
