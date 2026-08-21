@@ -251,27 +251,27 @@ with tab1:
             occ_opts = ["Salaried", "Self_Employed", "Business", "Professional", "Retired"]
             occ_idx = occ_opts.index(occ_default) if occ_default in occ_opts else 2
             occupation = col1.selectbox("Occupation / Entity Type", occ_opts, index=occ_idx)
-            gross_income = col2.number_input("Gross Monthly Income / Revenue (₹)", min_value=0, value=int(float(st.session_state.ocr_data.get('gross_monthly_income', 150000))), step=10000)
+            gross_income = col2.number_input("Gross Monthly Income / Revenue (₹)", min_value=0, value=max(0, int(float(st.session_state.ocr_data.get('gross_monthly_income', 150000)))), step=10000)
             
             col3, col4 = st.columns(2)
-            net_income = col3.number_input("Net Monthly Income / Profit (₹)", min_value=0, value=int(float(st.session_state.ocr_data.get('net_monthly_income', 120000))), step=10000)
-            total_assets = col4.number_input("Total Assets Value (₹)", min_value=0, value=int(float(st.session_state.ocr_data.get('total_assets', 15000000))), step=500000)
+            net_income = col3.number_input("Net Monthly Income / Profit (₹)", value=int(float(st.session_state.ocr_data.get('net_monthly_income', 120000))), step=10000)
+            total_assets = col4.number_input("Total Assets Value (₹)", min_value=0, value=max(0, int(float(st.session_state.ocr_data.get('total_assets', 15000000)))), step=500000)
 
         with st.expander("3. Credit & Bureau History", expanded=True):
             st.info("CIBIL Score is highly weighted in the risk assessment.")
             col1, col2 = st.columns(2)
             credit_score = col1.number_input("Credit Score (CIBIL)", min_value=300, max_value=900, value=int(st.session_state.ocr_data.get('credit_score', 750)), step=10)
-            avg_credit_balance_6m = col2.number_input("Avg Bank Balance (Last 6M) (₹)", min_value=0, value=int(float(st.session_state.ocr_data.get('avg_credit_balance_6m', 500000))), step=10000)
+            avg_credit_balance_6m = col2.number_input("Avg Bank Balance (Last 6M) (₹)", value=int(float(st.session_state.ocr_data.get('avg_credit_balance_6m', 500000))), step=10000)
             
             col3, col4, col5 = st.columns(3)
-            existing_emi = col3.number_input("Existing Monthly EMI (₹)", min_value=0, value=int(float(st.session_state.ocr_data.get('existing_emi', 25000))), step=5000)
-            active_lines = col4.number_input("Active Credit Lines", min_value=0, value=int(st.session_state.ocr_data.get('active_lines', 2)), step=1)
-            inquiries_6m = col5.number_input("Hard Inquiries (Last 6M)", min_value=0, value=int(st.session_state.ocr_data.get('inquiries_6m', 0)), step=1)
+            existing_emi = col3.number_input("Existing Monthly EMI (₹)", min_value=0, value=max(0, int(float(st.session_state.ocr_data.get('existing_emi', 25000)))), step=5000)
+            active_lines = col4.number_input("Active Credit Lines", min_value=0, value=max(0, int(st.session_state.ocr_data.get('active_lines', 2))), step=1)
+            inquiries_6m = col5.number_input("Hard Inquiries (Last 6M)", min_value=0, value=max(0, int(st.session_state.ocr_data.get('inquiries_6m', 0))), step=1)
 
         with st.expander("4. Loan Request & Facility Details", expanded=True):
             col1, col2 = st.columns(2)
-            loan_amount = col1.number_input("Requested Loan Amount (₹)", min_value=100000, value=int(float(st.session_state.ocr_data.get('loan_amount', 5000000))), step=100000)
-            tenure_months = col2.number_input("Tenure (Months)", min_value=12, value=int(st.session_state.ocr_data.get('tenure_months', 240)), step=12)
+            loan_amount = col1.number_input("Requested Loan Amount (₹)", min_value=100000, value=max(100000, int(float(st.session_state.ocr_data.get('loan_amount', 5000000)))), step=100000)
+            tenure_months = col2.number_input("Tenure (Months)", min_value=12, value=max(12, int(st.session_state.ocr_data.get('tenure_months', 240))), step=12)
             
             col3, col4 = st.columns(2)
             col3.info("Interest Rate: 🏦 Auto-Assigned by Central Bank of India Policy")
@@ -281,7 +281,7 @@ with tab1:
             loan_type = col4.selectbox("Loan Type", ltype_opts, index=ltype_idx, key="loan_type_select")
             
             col5, col6 = st.columns(2)
-            property_value = col5.number_input("Property / Primary Collateral Value (₹)", min_value=0, value=int(float(st.session_state.ocr_data.get('property_value', 7000000))), step=100000)
+            property_value = col5.number_input("Property / Primary Collateral Value (₹)", min_value=0, value=max(0, int(float(st.session_state.ocr_data.get('property_value', 7000000)))), step=100000)
             sec_default = st.session_state.ocr_data.get('security_type', 'Property')
             sec_opts = ["Property", "Vehicle", "Liquid_Assets", "CGTMSE / Plant & Machinery", "None"]
             sec_idx = sec_opts.index(sec_default) if sec_default in sec_opts else 0
@@ -311,7 +311,7 @@ with tab1:
                 with st.expander("🏢 Central Bank of India MSME Scoring Parameters (Form MSE 1 - Existing Units)", expanded=True):
                     st.caption("Scoring under **Form MSE 1 (Existing Units)** - All 13 Regulatory Parameters Evaluated")
                     m_col1, m_col2, m_col3, m_col4 = st.columns(4)
-                    msme_data["current_ratio"] = m_col1.number_input("2. Current Ratio (CR)", value=float(st.session_state.ocr_data.get('current_ratio', 1.35)), step=0.05)
+                    msme_data["current_ratio"] = m_col1.number_input("2. Current Ratio (CR)", value=max(0.0, float(st.session_state.ocr_data.get('current_ratio', 1.35))), step=0.05)
                     msme_data["debt_equity_ratio"] = m_col2.number_input("3. Debt-Equity Ratio (DER)", value=float(st.session_state.ocr_data.get('debt_equity_ratio', 1.9)), step=0.1)
                     msme_data["sales_growth_rate"] = m_col3.number_input("4. 3-Yr Net Sales Growth (%)", value=float(st.session_state.ocr_data.get('sales_growth_rate', 18.0)), step=1.0)
                     msme_data["pat_margin"] = m_col4.number_input("5. PAT Margin (%)", value=float(st.session_state.ocr_data.get('pat_margin', 11.0)), step=0.5)
