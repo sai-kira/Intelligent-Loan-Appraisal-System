@@ -18,6 +18,7 @@ import requests
 import json
 import time
 import re
+import base64
 
 try:
     import utils
@@ -50,7 +51,7 @@ st.set_page_config(
 )
 
 # =============================================================================
-# INSTITUTIONAL DESIGN SYSTEM (CUSTOM CSS)
+# INSTITUTIONAL DESIGN SYSTEM (CUSTOM CSS - DARK & LIGHT ADAPTIVE)
 # =============================================================================
 CUSTOM_CSS = """
 <style>
@@ -58,7 +59,6 @@ CUSTOM_CSS = """
 
 html, body, [class*="css"] {
     font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
-    color: #1E293B;
 }
 
 /* Institutional Header Bar */
@@ -66,12 +66,12 @@ html, body, [class*="css"] {
     background: linear-gradient(135deg, #002B49 0%, #004080 50%, #002B49 100%);
     padding: 20px 28px;
     border-radius: 14px;
-    color: #FFFFFF;
+    color: #FFFFFF !important;
     display: flex;
     align-items: center;
     justify-content: space-between;
     margin-bottom: 20px;
-    box-shadow: 0 8px 24px -4px rgba(0, 43, 73, 0.25);
+    box-shadow: 0 8px 24px -4px rgba(0, 43, 73, 0.35);
     border-bottom: 4px solid #C59B27;
 }
 
@@ -79,25 +79,25 @@ html, body, [class*="css"] {
     font-size: 1.55rem;
     font-weight: 800;
     letter-spacing: -0.02em;
-    color: #FFFFFF;
+    color: #FFFFFF !important;
     margin: 0;
 }
 
 .cboi-brand-subtitle {
     font-size: 0.85rem;
-    color: #E2E8F0;
+    color: #E2E8F0 !important;
     margin-top: 3px;
     font-weight: 500;
 }
 
 /* Live Telemetry Card */
 .telemetry-card {
-    background: #FFFFFF;
-    border: 1px solid #E2E8F0;
+    background: var(--background-color, rgba(255, 255, 255, 0.05));
+    border: 1px solid rgba(128, 128, 128, 0.25);
     border-top: 4px solid #002B49;
     border-radius: 14px;
     padding: 20px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
     position: sticky;
     top: 20px;
 }
@@ -105,11 +105,11 @@ html, body, [class*="css"] {
 .telemetry-header {
     font-size: 0.95rem;
     font-weight: 700;
-    color: #002B49;
+    color: #38BDF8;
     text-transform: uppercase;
     letter-spacing: 0.04em;
     margin-bottom: 14px;
-    border-bottom: 1px solid #E2E8F0;
+    border-bottom: 1px solid rgba(128, 128, 128, 0.2);
     padding-bottom: 8px;
 }
 
@@ -118,105 +118,58 @@ html, body, [class*="css"] {
     justify-content: space-between;
     align-items: center;
     padding: 8px 0;
-    border-bottom: 1px dashed #F1F5F9;
+    border-bottom: 1px dashed rgba(128, 128, 128, 0.2);
     font-size: 0.86rem;
 }
 
 .telemetry-label {
-    color: #64748B;
     font-weight: 500;
+    opacity: 0.85;
 }
 
 .telemetry-value {
-    color: #0F172A;
     font-weight: 700;
     font-family: 'JetBrains Mono', monospace;
 }
 
-/* Glassmorphism KPI Tile */
-.kpi-tile {
-    background: #FFFFFF;
-    border: 1px solid #E2E8F0;
-    border-radius: 12px;
-    padding: 16px 18px;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
-    margin-bottom: 12px;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-.kpi-tile:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(0, 43, 73, 0.08);
-    border-color: #CBD5E1;
-}
-.kpi-title {
-    font-size: 0.75rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: #64748B;
-    margin-bottom: 4px;
-}
-.kpi-val {
-    font-size: 1.45rem;
-    font-weight: 800;
-    color: #002B49;
-    line-height: 1.2;
-}
-.kpi-sub {
-    font-size: 0.74rem;
-    margin-top: 4px;
-    font-weight: 600;
-}
-
 /* Status Chips */
 .chip-safe {
-    background: #ECFDF5;
-    color: #059669;
+    background: rgba(16, 185, 129, 0.15);
+    color: #10B981;
     padding: 3px 8px;
     border-radius: 12px;
-    border: 1px solid #A7F3D0;
+    border: 1px solid #10B981;
     font-size: 0.72rem;
     font-weight: 700;
 }
 .chip-warn {
-    background: #FFFBEB;
-    color: #D97706;
+    background: rgba(245, 158, 11, 0.15);
+    color: #F59E0B;
     padding: 3px 8px;
     border-radius: 12px;
-    border: 1px solid #FDE68A;
+    border: 1px solid #F59E0B;
     font-size: 0.72rem;
     font-weight: 700;
 }
 .chip-danger {
-    background: #FEF2F2;
-    color: #DC2626;
+    background: rgba(239, 68, 68, 0.15);
+    color: #EF4444;
     padding: 3px 8px;
     border-radius: 12px;
-    border: 1px solid #FECACA;
+    border: 1px solid #EF4444;
     font-size: 0.72rem;
     font-weight: 700;
 }
 
 /* Step Header Badge */
 .step-header {
-    background: #F8FAFC;
+    background: rgba(0, 43, 73, 0.1);
     border-left: 4px solid #002B49;
     padding: 8px 14px;
     font-size: 0.92rem;
     font-weight: 700;
-    color: #002B49;
     border-radius: 0 8px 8px 0;
     margin: 14px 0 10px 0;
-}
-
-/* Document Memo Canvas */
-.memo-canvas {
-    background: #FFFFFF;
-    border: 1px solid #CBD5E1;
-    border-radius: 12px;
-    padding: 28px 32px;
-    box-shadow: 0 6px 25px rgba(0, 0, 0, 0.05);
-    line-height: 1.6;
 }
 
 /* Clean tabs underline */
@@ -249,8 +202,6 @@ if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
 if "polling" not in st.session_state:
     st.session_state.polling = False
-
-import base64
 
 # Sidebar Auth
 with st.sidebar:
@@ -647,7 +598,7 @@ with tab1:
             st.markdown(f"""
             <div class="telemetry-row">
                 <span class="telemetry-label">Official Bank ROI:</span>
-                <span class="telemetry-value" style="color: #003366; font-size: 1.05rem;">{live_roi:.2f}% p.a.</span>
+                <span class="telemetry-value" style="color: #38BDF8; font-size: 1.05rem;">{live_roi:.2f}% p.a.</span>
             </div>
             <div class="telemetry-row">
                 <span class="telemetry-label">Monthly EMI:</span>
@@ -675,7 +626,7 @@ with tab1:
                 st.markdown('<div style="margin-top: 10px;"><span class="chip-safe">✅ 25 bps CGTMSE Guarantee Concession Applied</span></div>', unsafe_allow_html=True)
                 
             st.markdown("""
-            <div style="margin-top: 16px; font-size: 0.78rem; color: #64748B;">
+            <div style="margin-top: 16px; font-size: 0.78rem; opacity: 0.75;">
                 📌 <em>All values automatically re-calculated from Central Bank of India RBLR lending grid as you type.</em>
             </div>
             </div>
@@ -766,13 +717,13 @@ with tab1:
 # =============================================================================
 if tab_corp:
     with tab_corp:
-        st.markdown("### 🏢 Corporate Financial Intelligence, Forensic Audit & Valuation Hub")
-        st.caption("3-Year Multi-Year CMA Spreading, 5-Pillar Diagnostics, Forensic Accounting (Altman Z'' & Beneish M-Score), Macro Stress Testing & DCF Enterprise Valuation")
+        st.header("🏢 Corporate Financial Intelligence & Valuation Hub")
+        st.caption("Autonomous Multi-Year CMA Spreading, 5-Pillar Diagnostics, Forensic Accounting (Altman Z'' & Beneish M-Score), Macro Stress Simulator & DCF Valuation")
 
         col_sel1, col_sel2 = st.columns([3, 2])
         with col_sel1:
             corp_choice = st.selectbox(
-                "Select Corporate Entity or Ingest Statements:",
+                "Select Corporate Profile or Upload Financials:",
                 [
                     "Apex Precision Engineering Pvt Ltd (Prime MSME Manufacturing - CBI 1)",
                     "Surat Silk Mills Pvt Ltd (Moderate Textile Manufacturing - CBI 5)",
@@ -783,7 +734,7 @@ if tab_corp:
                 key="corp_profile_selector"
             )
         with col_sel2:
-            proposed_corp_loan = st.number_input("Requested Credit Limit (₹):", min_value=100000.0, max_value=500000000.0, value=5000000.0, step=500000.0)
+            proposed_corp_loan = st.number_input("Proposed Credit Facility (₹):", min_value=100000.0, max_value=500000000.0, value=5000000.0, step=500000.0)
 
         # Ingestion Resolution
         raw_corp_data = None
@@ -803,17 +754,17 @@ if tab_corp:
                         raw_corp_data = FinancialDocumentParser.parse_csv_file(uploaded_file.getvalue())
                     else:
                         raw_corp_data = FinancialDocumentParser.parse_json_or_dict(uploaded_file.getvalue())
-                    st.success("Custom financials parsed successfully!")
+                    st.success("Custom financial statements parsed successfully!")
                 except Exception as e:
                     st.error(f"Error parsing uploaded file: {e}")
                     raw_corp_data = CORPORATE_PROFILES["Apex Precision Engineering Pvt Ltd"]
             else:
-                st.info("Ingest custom financials or select a benchmark corporate profile.")
+                st.info("Upload a financial file or select a benchmark corporate profile from above.")
                 raw_corp_data = CORPORATE_PROFILES["Apex Precision Engineering Pvt Ltd"]
 
         raw_corp_data["requested_loan_amount"] = proposed_corp_loan
 
-        # Core Mathematical Computations
+        # --- EXECUTE CORE FINANCIAL INTELLIGENCE MATH ---
         spread = FinancialStatementSpreader.spread_financials(raw_corp_data)
         ratios = RatioDiagnosticsEngine.calculate_ratios(spread)
         altman_z = ForensicAuditor.calculate_altman_z_double_prime(spread)
@@ -827,377 +778,845 @@ if tab_corp:
         is_cgtmse = raw_corp_data.get("cgtmse_covered", True)
         official_roi = get_applicable_roi("MSME Loan - Existing Unit", credit_score, mse_grade=mse_scorecard["grade"], cgtmse_covered=is_cgtmse)
 
+        # --- TOP EXECUTIVE KPI BANNER (NATIVE STREAMLIT METRICS) ---
         latest_rev = spread["pnl"]["revenue"][-1]
         latest_pat = spread["pnl"]["pat"][-1]
         latest_tnw = spread["balance_sheet"]["tangible_net_worth"][-1]
         
-        # 6 Modern Glassmorphic KPI Cards
-        st.markdown("<br>", unsafe_allow_html=True)
         k1, k2, k3, k4, k5, k6 = st.columns(6)
-        with k1:
-            st.markdown(f'''
-            <div class="kpi-tile">
-                <div class="kpi-title">Audited Revenue</div>
-                <div class="kpi-val">₹{latest_rev/1e7:.2f} Cr</div>
-                <div class="kpi-sub"><span class="chip-safe">▲ {ratios['efficiency']['sales_growth_rate_pct'][-1]:.1f}% YoY</span></div>
-            </div>
-            ''', unsafe_allow_html=True)
-        with k2:
-            st.markdown(f'''
-            <div class="kpi-tile">
-                <div class="kpi-title">Tangible Net Worth</div>
-                <div class="kpi-val">₹{latest_tnw/1e7:.2f} Cr</div>
-                <div class="kpi-sub" style="color: #64748B;">Equity & Reserves</div>
-            </div>
-            ''', unsafe_allow_html=True)
-        with k3:
-            st.markdown(f'''
-            <div class="kpi-tile">
-                <div class="kpi-title">PAT Margin</div>
-                <div class="kpi-val">{ratios['profitability']['pat_margin_pct'][-1]:.1f}%</div>
-                <div class="kpi-sub"><span class="{'chip-safe' if ratios['profitability']['pat_margin_pct'][-1] >= 10 else 'chip-warn'}">ROCE: {ratios['profitability']['return_on_capital_employed_pct'][-1]:.1f}%</span></div>
-            </div>
-            ''', unsafe_allow_html=True)
-        with k4:
-            st.markdown(f'''
-            <div class="kpi-tile">
-                <div class="kpi-title">Altman Z''-Score</div>
-                <div class="kpi-val">{altman_z['z_score']:.2f}</div>
-                <div class="kpi-sub"><span class="{'chip-safe' if 'Safe' in altman_z['zone'] else ('chip-warn' if 'Grey' in altman_z['zone'] else 'chip-danger')}">{altman_z['zone']}</span></div>
-            </div>
-            ''', unsafe_allow_html=True)
-        with k5:
-            st.markdown(f'''
-            <div class="kpi-tile">
-                <div class="kpi-title">Enterprise Value</div>
-                <div class="kpi-val">₹{dcf['enterprise_value']/1e7:.2f} Cr</div>
-                <div class="kpi-sub" style="color: #64748B;">LTV_EV: {dcf['loan_to_enterprise_value_pct']:.1f}%</div>
-            </div>
-            ''', unsafe_allow_html=True)
-        with k6:
-            st.markdown(f'''
-            <div class="kpi-tile">
-                <div class="kpi-title">MSE Risk Grade</div>
-                <div class="kpi-val">{mse_scorecard['grade']}</div>
-                <div class="kpi-sub"><span class="chip-safe">{mse_scorecard['total_score']}/100 Marks</span></div>
-            </div>
-            ''', unsafe_allow_html=True)
+        k1.metric("Audited Revenue (FY26)", f"₹{latest_rev/1e7:.2f} Cr", delta=f"{ratios['efficiency']['sales_growth_rate_pct'][-1]:.1f}% YoY", help="Latest annual turnover")
+        k2.metric("Tangible Net Worth", f"₹{latest_tnw/1e7:.2f} Cr", help="Net Worth = Equity + Reserves")
+        k3.metric("PAT Margin", f"{ratios['profitability']['pat_margin_pct'][-1]:.1f}%", delta=f"ROCE: {ratios['profitability']['return_on_capital_employed_pct'][-1]:.1f}%", help="Net profit margin")
+        k4.metric("Altman Z''-Score", f"{altman_z['z_score']:.2f}", delta=altman_z['zone'], delta_color="normal" if "Safe" in altman_z['zone'] else "inverse")
+        k5.metric("Enterprise Value", f"₹{dcf['enterprise_value']/1e7:.2f} Cr", help="Discounted Cash Flow intrinsic value")
+        k6.metric("Auto-Scored Risk Grade", f"{mse_scorecard['grade']}", delta=f"{mse_scorecard['total_score']}/100 Marks")
 
-        st.markdown("<br>", unsafe_allow_html=True)
+        st.markdown("---")
 
-        # Diagnostic Sub-Tabs
+        # --- 6 INTERACTIVE SUB-TABS ---
         c_tab1, c_tab2, c_tab3, c_tab4, c_tab5, c_tab6 = st.tabs([
-            "📁 3-Year CMA Statements",
-            "📊 5-Pillar Diagnostics & MPBF",
-            "🔍 Forensic Distress Audit",
-            "🧪 3-Year Stress Simulator",
-            "💎 DCF Valuation & Sizing",
-            "🏛️ Form MSE 1 Scorecard"
+            "📁 3-Year Audited Financials (CMA)",
+            "📊 5-Pillar Ratio Diagnostics & MPBF",
+            "🔍 Forensic Early Warning Audit",
+            "🧪 3-Year Forecasting & Stress Simulator",
+            "💎 DCF Valuation & Debt Sizing",
+            "🏛️ Auto-Populated Form MSE 1 Scorecard"
         ])
 
+        # 1. 3-YEAR AUDITED FINANCIALS
         with c_tab1:
+            st.subheader("📑 3-Year Credit Monitoring Arrangement (CMA) Financial Spreading")
+            years = spread["years"]
+            
             col_pnl, col_bs = st.columns(2)
             with col_pnl:
                 st.markdown("##### 📈 Profit & Loss Statement (₹ Lakhs)")
                 pnl_df = pd.DataFrame({
-                    "Line Item": ["Turnover", "COGS", "Gross Profit", "Operating Expenses", "EBITDA", "Depreciation", "EBIT", "Interest", "EBT", "Tax", "PAT", "Cash Accruals"],
-                    "FY24": [spread["pnl"]["revenue"][0]/1e5, spread["pnl"]["cogs"][0]/1e5, spread["pnl"]["gross_profit"][0]/1e5, spread["pnl"]["operating_expenses"][0]/1e5, spread["pnl"]["ebitda"][0]/1e5, spread["pnl"]["depreciation"][0]/1e5, spread["pnl"]["ebit"][0]/1e5, spread["pnl"]["interest_expense"][0]/1e5, spread["pnl"]["ebt"][0]/1e5, spread["pnl"]["tax"][0]/1e5, spread["pnl"]["pat"][0]/1e5, spread["pnl"]["cash_accruals"][0]/1e5],
-                    "FY25": [spread["pnl"]["revenue"][1]/1e5, spread["pnl"]["cogs"][1]/1e5, spread["pnl"]["gross_profit"][1]/1e5, spread["pnl"]["operating_expenses"][1]/1e5, spread["pnl"]["ebitda"][1]/1e5, spread["pnl"]["depreciation"][1]/1e5, spread["pnl"]["ebit"][1]/1e5, spread["pnl"]["interest_expense"][1]/1e5, spread["pnl"]["ebt"][1]/1e5, spread["pnl"]["tax"][1]/1e5, spread["pnl"]["pat"][1]/1e5, spread["pnl"]["cash_accruals"][1]/1e5],
-                    "FY26": [spread["pnl"]["revenue"][2]/1e5, spread["pnl"]["cogs"][2]/1e5, spread["pnl"]["gross_profit"][2]/1e5, spread["pnl"]["operating_expenses"][2]/1e5, spread["pnl"]["ebitda"][2]/1e5, spread["pnl"]["depreciation"][2]/1e5, spread["pnl"]["ebit"][2]/1e5, spread["pnl"]["interest_expense"][2]/1e5, spread["pnl"]["ebt"][2]/1e5, spread["pnl"]["tax"][2]/1e5, spread["pnl"]["pat"][2]/1e5, spread["pnl"]["cash_accruals"][2]/1e5]
+                    "Line Item": ["Gross Turnover / Sales", "Cost of Goods Sold (COGS)", "Gross Profit", "Operating Expenses (Opex)", "EBITDA (Operating Profit)", "Depreciation & Amortization", "EBIT (Operating Income)", "Interest / Finance Charges", "Profit After Tax (PAT)", "Cash Accruals (PAT + Dep)"],
+                    years[0]: [spread["pnl"]["revenue"][0]/1e5, spread["pnl"]["cogs"][0]/1e5, spread["pnl"]["gross_profit"][0]/1e5, spread["pnl"]["operating_expenses"][0]/1e5, spread["pnl"]["ebitda"][0]/1e5, spread["pnl"]["depreciation"][0]/1e5, spread["pnl"]["ebit"][0]/1e5, spread["pnl"]["interest_expense"][0]/1e5, spread["pnl"]["pat"][0]/1e5, spread["pnl"]["cash_accruals"][0]/1e5],
+                    years[1]: [spread["pnl"]["revenue"][1]/1e5, spread["pnl"]["cogs"][1]/1e5, spread["pnl"]["gross_profit"][1]/1e5, spread["pnl"]["operating_expenses"][1]/1e5, spread["pnl"]["ebitda"][1]/1e5, spread["pnl"]["depreciation"][1]/1e5, spread["pnl"]["ebit"][1]/1e5, spread["pnl"]["interest_expense"][1]/1e5, spread["pnl"]["pat"][1]/1e5, spread["pnl"]["cash_accruals"][1]/1e5],
+                    years[2]: [spread["pnl"]["revenue"][2]/1e5, spread["pnl"]["cogs"][2]/1e5, spread["pnl"]["gross_profit"][2]/1e5, spread["pnl"]["operating_expenses"][2]/1e5, spread["pnl"]["ebitda"][2]/1e5, spread["pnl"]["depreciation"][2]/1e5, spread["pnl"]["ebit"][2]/1e5, spread["pnl"]["interest_expense"][2]/1e5, spread["pnl"]["pat"][2]/1e5, spread["pnl"]["cash_accruals"][2]/1e5]
                 })
-                st.dataframe(pnl_df, use_container_width=True, hide_index=True)
+                st.dataframe(pnl_df.style.format({years[0]: "{:,.2f}", years[1]: "{:,.2f}", years[2]: "{:,.2f}"}), use_container_width=True, hide_index=True)
 
             with col_bs:
                 st.markdown("##### 🏛️ Balance Sheet (₹ Lakhs)")
                 bs_df = pd.DataFrame({
-                    "Component": ["Cash & Bank", "Sundry Debtors", "Inventory", "Current Assets", "Net Fixed Assets", "Total Assets", "Sundry Creditors", "Short Term Debt", "Current Liabilities", "Long Term Debt", "Paid-Up Capital", "Tangible Net Worth"],
-                    "FY24": [spread["balance_sheet"]["cash_and_bank"][0]/1e5, spread["balance_sheet"]["sundry_debtors"][0]/1e5, spread["balance_sheet"]["inventory"][0]/1e5, spread["balance_sheet"]["current_assets"][0]/1e5, spread["balance_sheet"]["net_fixed_assets"][0]/1e5, spread["balance_sheet"]["total_assets"][0]/1e5, spread["balance_sheet"]["sundry_creditors"][0]/1e5, spread["balance_sheet"]["short_term_borrowings"][0]/1e5, spread["balance_sheet"]["current_liabilities"][0]/1e5, spread["balance_sheet"]["long_term_debt"][0]/1e5, spread["balance_sheet"]["paid_up_capital"][0]/1e5, spread["balance_sheet"]["tangible_net_worth"][0]/1e5],
-                    "FY25": [spread["balance_sheet"]["cash_and_bank"][1]/1e5, spread["balance_sheet"]["sundry_debtors"][1]/1e5, spread["balance_sheet"]["inventory"][1]/1e5, spread["balance_sheet"]["current_assets"][1]/1e5, spread["balance_sheet"]["net_fixed_assets"][1]/1e5, spread["balance_sheet"]["total_assets"][1]/1e5, spread["balance_sheet"]["sundry_creditors"][1]/1e5, spread["balance_sheet"]["short_term_borrowings"][1]/1e5, spread["balance_sheet"]["current_liabilities"][1]/1e5, spread["balance_sheet"]["long_term_debt"][1]/1e5, spread["balance_sheet"]["paid_up_capital"][1]/1e5, spread["balance_sheet"]["tangible_net_worth"][1]/1e5],
-                    "FY26": [spread["balance_sheet"]["cash_and_bank"][2]/1e5, spread["balance_sheet"]["sundry_debtors"][2]/1e5, spread["balance_sheet"]["inventory"][2]/1e5, spread["balance_sheet"]["current_assets"][2]/1e5, spread["balance_sheet"]["net_fixed_assets"][2]/1e5, spread["balance_sheet"]["total_assets"][2]/1e5, spread["balance_sheet"]["sundry_creditors"][2]/1e5, spread["balance_sheet"]["short_term_borrowings"][2]/1e5, spread["balance_sheet"]["current_liabilities"][2]/1e5, spread["balance_sheet"]["long_term_debt"][2]/1e5, spread["balance_sheet"]["paid_up_capital"][2]/1e5, spread["balance_sheet"]["tangible_net_worth"][2]/1e5]
+                    "Line Item": ["Cash & Bank Balances", "Sundry Debtors (Receivables)", "Inventory (Raw, WIP, FG)", "Total Current Assets", "Net Fixed Assets (PPE)", "Total Assets", "Sundry Creditors (Payables)", "Short-Term Bank Borrowings", "Total Current Liabilities", "Long-Term Term Debt", "Tangible Net Worth (TNW)"],
+                    years[0]: [spread["balance_sheet"]["cash_and_bank"][0]/1e5, spread["balance_sheet"]["sundry_debtors"][0]/1e5, spread["balance_sheet"]["inventory"][0]/1e5, spread["balance_sheet"]["current_assets"][0]/1e5, spread["balance_sheet"]["net_fixed_assets"][0]/1e5, spread["balance_sheet"]["total_assets"][0]/1e5, spread["balance_sheet"]["sundry_creditors"][0]/1e5, spread["balance_sheet"]["short_term_borrowings"][0]/1e5, spread["balance_sheet"]["current_liabilities"][0]/1e5, spread["balance_sheet"]["long_term_debt"][0]/1e5, spread["balance_sheet"]["tangible_net_worth"][0]/1e5],
+                    years[1]: [spread["balance_sheet"]["cash_and_bank"][1]/1e5, spread["balance_sheet"]["sundry_debtors"][1]/1e5, spread["balance_sheet"]["inventory"][1]/1e5, spread["balance_sheet"]["current_assets"][1]/1e5, spread["balance_sheet"]["net_fixed_assets"][1]/1e5, spread["balance_sheet"]["total_assets"][1]/1e5, spread["balance_sheet"]["sundry_creditors"][1]/1e5, spread["balance_sheet"]["short_term_borrowings"][1]/1e5, spread["balance_sheet"]["current_liabilities"][1]/1e5, spread["balance_sheet"]["long_term_debt"][1]/1e5, spread["balance_sheet"]["tangible_net_worth"][1]/1e5],
+                    years[2]: [spread["balance_sheet"]["cash_and_bank"][2]/1e5, spread["balance_sheet"]["sundry_debtors"][2]/1e5, spread["balance_sheet"]["inventory"][2]/1e5, spread["balance_sheet"]["current_assets"][2]/1e5, spread["balance_sheet"]["net_fixed_assets"][2]/1e5, spread["balance_sheet"]["total_assets"][2]/1e5, spread["balance_sheet"]["sundry_creditors"][2]/1e5, spread["balance_sheet"]["short_term_borrowings"][2]/1e5, spread["balance_sheet"]["current_liabilities"][2]/1e5, spread["balance_sheet"]["long_term_debt"][2]/1e5, spread["balance_sheet"]["tangible_net_worth"][2]/1e5]
                 })
-                st.dataframe(bs_df, use_container_width=True, hide_index=True)
+                st.dataframe(bs_df.style.format({years[0]: "{:,.2f}", years[1]: "{:,.2f}", years[2]: "{:,.2f}"}), use_container_width=True, hide_index=True)
 
+            # Plotly Historical Performance Trend
+            trend_df = pd.DataFrame({
+                "Financial Year": years,
+                "Turnover (₹ Cr)": [r / 1e7 for r in spread["pnl"]["revenue"]],
+                "EBITDA (₹ Cr)": [e / 1e7 for e in spread["pnl"]["ebitda"]],
+                "PAT (₹ Cr)": [p / 1e7 for p in spread["pnl"]["pat"]]
+            })
+            fig_trend = px.bar(trend_df, x="Financial Year", y=["Turnover (₹ Cr)", "EBITDA (₹ Cr)", "PAT (₹ Cr)"], barmode="group", title="3-Year Financial Trajectory (Turnover vs EBITDA vs PAT)")
+            fig_trend.update_layout(height=350, margin=dict(l=20, r=20, t=40, b=20), plot_bgcolor="rgba(0,0,0,0)")
+            st.plotly_chart(fig_trend, use_container_width=True)
+
+        # 2. 5-PILLAR RATIOS & MPBF
         with c_tab2:
-            st.markdown("##### 📊 5-Pillar Ratio Analysis & Working Capital Sizing (MPBF)")
-            r_col1, r_col2 = st.columns(2)
-            with r_col1:
-                ratio_summary_df = pd.DataFrame({
-                    "Pillar": ["Liquidity", "Liquidity", "Solvency", "Solvency", "Solvency", "Profitability", "Profitability", "Efficiency"],
-                    "Metric": ["Current Ratio (CR)", "Quick Ratio (QR)", "Debt-to-Equity (DER)", "TOL / TNW", "DSCR", "EBITDA Margin %", "PAT Margin %", "Cash Conversion Cycle"],
-                    "FY24": [f"{ratios['liquidity']['current_ratio'][0]:.2f}", f"{ratios['liquidity']['quick_ratio'][0]:.2f}", f"{ratios['solvency']['debt_to_equity'][0]:.2f}", f"{ratios['solvency']['tol_to_tnw'][0]:.2f}", f"{ratios['solvency']['debt_service_coverage_ratio'][0]:.2f}x", f"{ratios['profitability']['ebitda_margin_pct'][0]:.1f}%", f"{ratios['profitability']['pat_margin_pct'][0]:.1f}%", f"{ratios['efficiency']['cash_conversion_cycle_days'][0]:.0f}d"],
-                    "FY25": [f"{ratios['liquidity']['current_ratio'][1]:.2f}", f"{ratios['liquidity']['quick_ratio'][1]:.2f}", f"{ratios['solvency']['debt_to_equity'][1]:.2f}", f"{ratios['solvency']['tol_to_tnw'][1]:.2f}", f"{ratios['solvency']['debt_service_coverage_ratio'][1]:.2f}x", f"{ratios['profitability']['ebitda_margin_pct'][1]:.1f}%", f"{ratios['profitability']['pat_margin_pct'][1]:.1f}%", f"{ratios['efficiency']['cash_conversion_cycle_days'][1]:.0f}d"],
-                    "FY26": [f"{ratios['liquidity']['current_ratio'][2]:.2f}", f"{ratios['liquidity']['quick_ratio'][2]:.2f}", f"{ratios['solvency']['debt_to_equity'][2]:.2f}", f"{ratios['solvency']['tol_to_tnw'][2]:.2f}", f"{ratios['solvency']['debt_service_coverage_ratio'][2]:.2f}x", f"{ratios['profitability']['ebitda_margin_pct'][2]:.1f}%", f"{ratios['profitability']['pat_margin_pct'][2]:.1f}%", f"{ratios['efficiency']['cash_conversion_cycle_days'][2]:.0f}d"],
-                    "Benchmark": [">= 1.33", ">= 1.00", "<= 2.00", "<= 3.00", ">= 1.20x", ">= 12.0%", ">= 8.0%", "<= 90 Days"]
-                })
-                st.dataframe(ratio_summary_df, use_container_width=True, hide_index=True)
+            st.subheader("📊 5-Pillar Institutional Ratio Diagnostics")
+            
+            r_col1, r_col2, r_col3, r_col4 = st.columns(4)
+            r_col1.metric("Current Ratio", f"{ratios['liquidity']['current_ratio'][-1]:.2f}", help="Standard Benchmark >= 1.33")
+            r_col2.metric("Debt-Equity (DER)", f"{ratios['solvency']['debt_to_equity'][-1]:.2f}", help="Prudent Cap <= 2.00")
+            r_col3.metric("DSCR Coverage", f"{ratios['solvency']['debt_service_coverage_ratio'][-1]:.2f}x", help="Minimum Bank Hurdle >= 1.20x")
+            r_col4.metric("Cash Conversion Cycle", f"{ratios['efficiency']['cash_conversion_cycle_days'][-1]:.0f} Days", help="Debtor Days + Inventory Days - Creditor Days")
 
-            with r_col2:
-                st.markdown("##### 💼 Working Capital Sizing (MPBF)")
-                mpbf = ratios["mpbf_working_capital"]
-                st.info(f"• **Tandon Method I:** ₹{mpbf['tandon_method_1']/1e5:,.2f} Lakhs\n• **Tandon Method II:** ₹{mpbf['tandon_method_2']/1e5:,.2f} Lakhs\n• **Nayak Turnover Model (20%):** ₹{mpbf['nayak_turnover_method']/1e5:,.2f} Lakhs\n• 🏦 **Recommended Limit:** **₹{mpbf['recommended_limit']/1e5:,.2f} Lakhs**")
+            st.markdown("---")
+            
+            # Working Capital Sizing Table
+            st.markdown("##### 💼 Working Capital Sizing (Tandon & Nayak Committee MPBF)")
+            mpbf = ratios["mpbf_working_capital"]
+            mpbf_df = pd.DataFrame({
+                "Regulatory Assessment Model": [
+                    "Tandon Committee Method I (75% of Working Capital Gap)",
+                    "Tandon Committee Method II (75% Current Assets - Other CL)",
+                    "Nayak Committee Model (20% of Projected Turnover for MSEs)",
+                    "🏦 Recommended Maximum Bank Working Capital Limit"
+                ],
+                "Assessed Limit (₹ Lakhs)": [
+                    f"₹{mpbf['tandon_method_1']/1e5:,.2f}",
+                    f"₹{mpbf['tandon_method_2']/1e5:,.2f}",
+                    f"₹{mpbf['nayak_turnover_method']/1e5:,.2f}",
+                    f"₹{mpbf['recommended_limit']/1e5:,.2f}"
+                ],
+                "Compliance Rule / Banking Norm": [
+                    "Borrower finances min 25% of Working Capital Gap from Long-term Net Working Capital",
+                    "Borrower finances min 25% of Total Current Assets from Long-term Net Working Capital",
+                    "Mandatory formula for MSE borrowers with credit facilities up to ₹5 Crores",
+                    "Sanctionable working capital limit within statutory solvency ceiling"
+                ]
+            })
+            st.dataframe(mpbf_df, use_container_width=True, hide_index=True)
 
+        # 3. FORENSIC AUDIT (ALTMAN Z & BENEISH M)
         with c_tab3:
-            st.markdown("##### 🔍 Forensic Accounting & Early Warning Distress Indicators")
+            st.subheader("🔍 Forensic Accounting & Distress Early Warning Models")
+            
             f_col1, f_col2 = st.columns(2)
             with f_col1:
-                st.markdown(f"**Altman Z''-Score:** `{altman_z['z_score']:.2f}` — Status: **{altman_z['zone'].upper()}**")
-                st.caption(f"{altman_z['risk_level']}")
+                st.markdown("##### ⚠️ Altman Z''-Score (Bankruptcy & Default Risk)")
+                
+                fig_z = go.Figure(go.Indicator(
+                    mode="gauge+number",
+                    value=altman_z["z_score"],
+                    domain={'x': [0, 1], 'y': [0, 1]},
+                    title={'text': f"Altman Z''-Score: {altman_z['zone']}"},
+                    gauge={
+                        'axis': {'range': [0, 5]},
+                        'bar': {'color': altman_z["badge_color"]},
+                        'steps': [
+                            {'range': [0, 1.10], 'color': '#FCA5A5'},   # Red Distress
+                            {'range': [1.10, 2.60], 'color': '#FDE68A'}, # Amber Grey
+                            {'range': [2.60, 5.0], 'color': '#A7F3D0'}   # Green Safe
+                        ],
+                        'threshold': {
+                            'line': {'color': "black", 'width': 3},
+                            'thickness': 0.75,
+                            'value': 2.60
+                        }
+                    }
+                ))
+                fig_z.update_layout(height=280, margin=dict(l=20, r=20, t=40, b=20))
+                st.plotly_chart(fig_z, use_container_width=True)
+                st.caption(f"**Diagnostic Status:** {altman_z['risk_level']}")
+
             with f_col2:
-                st.markdown(f"**Beneish M-Score:** `{beneish_m['m_score']:.2f}` — Threshold: `-1.78`")
-                st.caption(f"{beneish_m['risk_assessment']}")
+                st.markdown("##### 🕵️ Beneish M-Score (Earnings Manipulation Detection)")
+                st.markdown(f"**M-Score:** `{beneish_m['m_score']}` *(Threshold: `-1.78`)*")
+                if beneish_m["manipulation_flag"]:
+                    st.error(f"🚨 **Alert:** {beneish_m['risk_assessment']}")
+                else:
+                    st.success(f"✅ **Clean Audit:** {beneish_m['risk_assessment']}")
 
+                # Indices table
+                m_df = pd.DataFrame([
+                    {"Forensic Index": "DSRI (Days Sales in Receivables)", "Value": beneish_m["indices"]["DSRI_receivables_growth"], "Benchmark": "< 1.20", "Status": "Normal" if beneish_m["indices"]["DSRI_receivables_growth"] < 1.20 else "High"},
+                    {"Forensic Index": "GMI (Gross Margin Index)", "Value": beneish_m["indices"]["GMI_margin_deterioration"], "Benchmark": "< 1.10", "Status": "Normal" if beneish_m["indices"]["GMI_margin_deterioration"] < 1.10 else "High"},
+                    {"Forensic Index": "AQI (Asset Quality Index)", "Value": beneish_m["indices"]["AQI_asset_quality"], "Benchmark": "< 1.20", "Status": "Normal" if beneish_m["indices"]["AQI_asset_quality"] < 1.20 else "High"},
+                    {"Forensic Index": "SGI (Sales Growth Index)", "Value": beneish_m["indices"]["SGI_sales_growth"], "Benchmark": "< 1.30", "Status": "Normal" if beneish_m["indices"]["SGI_sales_growth"] < 1.30 else "High"},
+                    {"Forensic Index": "TATA (Total Accruals to Assets)", "Value": beneish_m["indices"]["TATA_accruals_to_assets"], "Benchmark": "< 0.05", "Status": "Normal" if beneish_m["indices"]["TATA_accruals_to_assets"] < 0.05 else "High"}
+                ])
+                st.dataframe(m_df, use_container_width=True, hide_index=True)
+
+        # 4. 3-YEAR FORECASTING & STRESS SIMULATOR
         with c_tab4:
-            st.markdown("##### 🧪 Macro Stress Testing Simulator")
-            shock_rev = st.slider("Revenue Shock (%):", -40, 10, -20, 5)
-            shock_cogs = st.slider("COGS Inflation (%):", 0, 30, 15, 5)
-            shock_rate = st.slider("Interest Rate Spike (bps):", 0, 400, 200, 50)
-            
-            stress_res = FinancialForecaster.simulate_stress_scenario(spread, shock_rev/100.0, shock_cogs/100.0, shock_rate)
-            st.markdown(f"• **Stressed DSCR:** `{stress_res['stressed_dscr']:.2f}x` | **Solvency Verdict:** **{stress_res['solvency_status']}**")
+            st.subheader("🧪 3-Year Financial Forecasting & Macro Stress Testing Simulator")
+            st.caption("Simulate real-time economic shocks on the borrower's audited balance sheet to test DSCR solvency buffers:")
 
+            col_s1, col_s2, col_s3 = st.columns(3)
+            with col_s1:
+                rev_shock = st.slider("📉 Demand Shock (Revenue Decline %):", min_value=-40, max_value=20, value=0, step=5)
+            with col_s2:
+                cost_shock = st.slider("📈 Cost Inflation (COGS Increase %):", min_value=0, max_value=30, value=0, step=5)
+            with col_s3:
+                rate_shock = st.slider("🏦 Interest Rate Hike (+bps on RBLR):", min_value=0, max_value=400, value=0, step=50)
+
+            stress_res = FinancialForecaster.simulate_stress_scenario(
+                spread,
+                revenue_shock_pct=rev_shock / 100.0,
+                cogs_increase_pct=cost_shock / 100.0,
+                interest_rate_shock_bps=rate_shock
+            )
+
+            sc1, sc2, sc3, sc4 = st.columns(4)
+            sc1.metric("Stressed Turnover", f"₹{stress_res['stressed_revenue']/1e7:.2f} Cr", delta=f"{rev_shock}%")
+            sc2.metric("Stressed EBITDA", f"₹{stress_res['stressed_ebitda']/1e5:.2f} L")
+            sc3.metric("Stressed DSCR", f"{stress_res['stressed_dscr']:.2f}x", delta=">= 1.20x Solvency", delta_color="normal" if stress_res["stressed_dscr"] >= 1.20 else "inverse")
+            sc4.metric("Stressed ICR", f"{stress_res['stressed_icr']:.2f}x", delta=">= 1.50x Interest", delta_color="normal" if stress_res["stressed_icr"] >= 1.50 else "inverse")
+
+            if stress_res["is_solvent"]:
+                st.success(f"🛡️ **Solvency Assessment:** {stress_res['solvency_status']}")
+            else:
+                st.error(f"🚨 **Solvency Warning:** {stress_res['solvency_status']}")
+
+            # 3-Year Forward Projections Table
+            st.markdown("##### 🔮 3-Year Baseline Projections (15% Organic Growth)")
+            proj_df = pd.DataFrame({
+                "Metric": ["Projected Turnover (₹ Lakhs)", "Projected EBITDA (₹ Lakhs)", "Projected Net Profit / PAT (₹ Lakhs)", "Projected DSCR"],
+                projections["projection_years"][0]: [f"₹{projections['projected_revenue'][0]/1e5:,.2f}", f"₹{projections['projected_ebitda'][0]/1e5:,.2f}", f"₹{projections['projected_pat'][0]/1e5:,.2f}", f"{projections['projected_dscr'][0]:.2f}x"],
+                projections["projection_years"][1]: [f"₹{projections['projected_revenue'][1]/1e5:,.2f}", f"₹{projections['projected_ebitda'][1]/1e5:,.2f}", f"₹{projections['projected_pat'][1]/1e5:,.2f}", f"{projections['projected_dscr'][1]:.2f}x"],
+                projections["projection_years"][2]: [f"₹{projections['projected_revenue'][2]/1e5:,.2f}", f"₹{projections['projected_ebitda'][2]/1e5:,.2f}", f"₹{projections['projected_pat'][2]/1e5:,.2f}", f"{projections['projected_dscr'][2]:.2f}x"]
+            })
+            st.dataframe(proj_df, use_container_width=True, hide_index=True)
+
+        # 5. DCF VALUATION & DEBT SIZING
         with c_tab5:
-            st.markdown("##### 💎 Discounted Cash Flow (DCF) Valuation & Debt Capacity")
-            st.markdown(f"• **Enterprise Value:** ₹{dcf['enterprise_value']/1e7:,.2f} Cr\n• **Equity Value:** ₹{dcf['equity_value']/1e7:,.2f} Cr\n• **Loan-to-Enterprise Value (LTV_EV):** `{dcf['loan_to_enterprise_value_pct']:.1f}%` ({dcf['leverage_assessment']})")
+            st.subheader("💎 Discounted Cash Flow (DCF) Enterprise Valuation & Debt Sizing")
+            
+            v_col1, v_col2, v_col3 = st.columns(3)
+            v_col1.metric("Implied Enterprise Value (EV)", f"₹{dcf['enterprise_value']/1e7:.2f} Cr", help="Intrinsic Enterprise Value based on FCFF DCF model")
+            v_col2.metric("Implied Equity Value", f"₹{dcf['equity_value']/1e7:.2f} Cr", help="Equity Value = Enterprise Value - Net Debt")
+            v_col3.metric("Loan-to-Enterprise Value (LTV on EV)", f"{dcf['loan_to_enterprise_value_pct']:.1f}%", delta="Prudent < 35%", delta_color="normal" if dcf["loan_to_enterprise_value_pct"] <= 35.0 else "inverse")
 
+            st.info(f"📊 **Leverage Assessment:** {dcf['leverage_assessment']} | **Assumed WACC:** `{dcf['wacc_pct']}%` | **Terminal Growth:** `{dcf['terminal_growth_pct']}%`")
+
+            # 5-Year FCFF Cash Flow Waterfall
+            fcff_df = pd.DataFrame({
+                "Projection Year": [f"Year {t}" for t in range(1, 6)],
+                "Projected FCFF (₹ Lakhs)": [f / 1e5 for f in dcf["fcff_projections"]]
+            })
+            fig_fcff = px.bar(fcff_df, x="Projection Year", y="Projected FCFF (₹ Lakhs)", text="Projected FCFF (₹ Lakhs)", title="5-Year Free Cash Flow to Firm (FCFF) Waterfall")
+            fig_fcff.update_traces(marker_color="#3B82F6", texttemplate='%{text:.1f} L', textposition='outside')
+            fig_fcff.update_layout(height=320, margin=dict(l=20, r=20, t=40, b=20), plot_bgcolor="rgba(0,0,0,0)")
+            st.plotly_chart(fig_fcff, use_container_width=True)
+
+        # 6. AUTO-POPULATED FORM MSE 1 SCORECARD
         with c_tab6:
-            st.markdown(f"##### 🏛️ Central Bank Form MSE 1 Auto-Populated Scorecard (Grade: {mse_scorecard['grade']})")
-            rows = []
-            scorecard_items = mse_scorecard.get("parameter_scores") or mse_scorecard.get("breakdown") or []
-            for item in scorecard_items:
-                param_name = item.get("param") or item.get("parameter") or "Parameter"
-                score_val = item.get("score", 0)
-                max_score_val = item.get("max") or item.get("max_score") or 10
-                diag_val = item.get("value") or item.get("description") or ""
-                rows.append({"Parameter": param_name, "Score Awarded": score_val, "Max Marks": max_score_val, "Diagnostic Benchmark / Metric": diag_val})
-            st.dataframe(pd.DataFrame(rows), use_container_width=True, hide_index=True)
+            st.subheader("🏛️ Auto-Populated Central Bank Form MSE 1 Scorecard")
+            st.markdown(f"**Total Score:** **`{mse_scorecard['total_score']}/100`** | **Central Bank Risk Grade:** **`{mse_scorecard['grade']}`** ({mse_scorecard['risk_profile']})")
+            
+            if mse_scorecard["hurdle_rate_met"]:
+                st.success(f"✅ **HURDLE RATE MET (> 50 Marks)** — Assigned Official RBLR ROI of **`{official_roi:.2f}% p.a.`**")
+            else:
+                st.error(f"🛑 **SUB-HURDLE RATE BREACH (Score <= 50 Marks)** — Ineligible for Standard Sanction under Central Bank Guidelines.")
 
-        st.markdown("<br>", unsafe_allow_html=True)
-        if st.button("🚀 Push This Corporate Profile to Loan Application Form", type="primary", use_container_width=True):
-            st.session_state.ocr_data = {
-                "name": raw_corp_data["company_name"],
-                "age": 45, "gender": "Male", "marital_status": "Married", "category": "GEN", "occupation": "Business",
-                "gross_monthly_income": int(latest_rev / 12),
-                "net_monthly_income": int(latest_pat / 12),
-                "total_assets": int(spread["balance_sheet"]["total_assets"][-1]),
-                "credit_score": int(credit_score),
-                "avg_credit_balance_6m": int(spread["balance_sheet"]["cash_and_bank"][-1]),
-                "existing_emi": int(spread["pnl"]["interest_expense"][-1] / 12),
-                "active_lines": 3, "inquiries_6m": 0,
-                "loan_amount": int(proposed_corp_loan),
-                "tenure_months": int(raw_corp_data.get("tenure_months", 60)),
-                "loan_type": raw_corp_data.get("loan_type", "MSME Loan - Existing Unit"),
-                "property_value": int(spread["balance_sheet"]["net_fixed_assets"][-1] * 1.25),
-                "security_type": "Property",
-                "current_ratio": float(ratios["liquidity"]["current_ratio"][-1]),
-                "debt_equity_ratio": float(ratios["solvency"]["debt_to_equity"][-1]),
-                "sales_growth_rate": float(ratios["efficiency"]["sales_growth_rate_pct"][-1] if len(ratios["efficiency"]["sales_growth_rate_pct"]) > 1 else 15.0),
-                "pat_margin": float(ratios["profitability"]["pat_margin_pct"][-1]),
-                "sanction_compliance": flags.get("sanction_compliance", "Compliant"),
-                "stock_statement_status": flags.get("stock_statement_status", "Timely"),
-                "debt_servicing_history": flags.get("debt_servicing_history", "Within 1 month"),
-                "inventory_compliance": flags.get("inventory_compliance", "Fair compliance"),
-                "bills_culture": flags.get("bills_culture", True),
-                "bill_payment_record": flags.get("bill_payment_record", "Prompt"),
-                "review_documents_timely": flags.get("review_documents_timely", True),
-                "lc_bg_status": flags.get("lc_bg_status", "Prompt / No Facility"),
-                "ancillary_relationship": flags.get("ancillary_relationship", "Substantial"),
-                "collateral_coverage": "Covered under CGTMSE Scheme" if is_cgtmse else "Over 100% Tangible Collateral",
-                "cgtmse_covered": is_cgtmse
-            }
-            st.session_state.ocr_done = True
-            st.success("✅ Profile pushed to Loan Application Form! Switch to Tab 1 to submit.")
-            st.rerun()
+            # Full 13-parameter breakdown table
+            scorecard_items = mse_scorecard.get("parameter_scores") or mse_scorecard.get("breakdown") or []
+            param_rows = []
+            for p in scorecard_items:
+                param_rows.append({
+                    "Parameter Name": p.get("param") or p.get("parameter") or "Parameter",
+                    "Assessed Value / Ratio": p.get("value") or p.get("description") or "",
+                    "Score Awarded": p.get("score", 0),
+                    "Max Marks": p.get("max") or p.get("max_score") or 10
+                })
+            st.dataframe(pd.DataFrame(param_rows), use_container_width=True, hide_index=True)
+
+            st.markdown("---")
+            if st.button("🚀 Push This Corporate Profile to Loan Application Queue", type="primary", use_container_width=True):
+                st.session_state.ocr_data = {
+                    "name": raw_corp_data["company_name"],
+                    "age": 45,
+                    "gender": "Male",
+                    "marital_status": "Married",
+                    "category": "GEN",
+                    "occupation": "Business",
+                    "gross_monthly_income": int(latest_rev / 12),
+                    "net_monthly_income": int(latest_pat / 12),
+                    "total_assets": int(spread["balance_sheet"]["total_assets"][-1]),
+                    "credit_score": int(credit_score),
+                    "avg_credit_balance_6m": int(spread["balance_sheet"]["cash_and_bank"][-1]),
+                    "existing_emi": int(spread["pnl"]["interest_expense"][-1] / 12),
+                    "active_lines": 3,
+                    "inquiries_6m": 0,
+                    "loan_amount": int(proposed_corp_loan),
+                    "tenure_months": int(raw_corp_data.get("tenure_months", 60)),
+                    "loan_type": raw_corp_data.get("loan_type", "MSME Loan - Existing Unit"),
+                    "property_value": int(spread["balance_sheet"]["net_fixed_assets"][-1] * 1.25),
+                    "security_type": "Property",
+                    "current_ratio": float(ratios["liquidity"]["current_ratio"][-1]),
+                    "debt_equity_ratio": float(ratios["solvency"]["debt_to_equity"][-1]),
+                    "sales_growth_rate": float(ratios["efficiency"]["sales_growth_rate_pct"][-1] if len(ratios["efficiency"]["sales_growth_rate_pct"]) > 1 else 15.0),
+                    "pat_margin": float(ratios["profitability"]["pat_margin_pct"][-1]),
+                    "sanction_compliance": flags.get("sanction_compliance", "Compliant"),
+                    "stock_statement_status": flags.get("stock_statement_status", "Timely"),
+                    "debt_servicing_history": flags.get("debt_servicing_history", "Within 1 month"),
+                    "inventory_compliance": flags.get("inventory_compliance", "Fair compliance"),
+                    "bills_culture": flags.get("bills_culture", True),
+                    "bill_payment_record": flags.get("bill_payment_record", "Prompt"),
+                    "review_documents_timely": flags.get("review_documents_timely", True),
+                    "lc_bg_status": flags.get("lc_bg_status", "Prompt / No Facility"),
+                    "ancillary_relationship": flags.get("ancillary_relationship", "Substantial"),
+                    "collateral_coverage": "Covered under CGTMSE Scheme" if is_cgtmse else "Over 100% Tangible Collateral",
+                    "cgtmse_covered": is_cgtmse
+                }
+                st.session_state.ocr_done = True
+                st.success("✅ Profile pushed to Loan Application Form! Switch to Tab 1 to submit.")
+                st.rerun()
 
 # =============================================================================
 # TAB 3: CREDIT MANAGER DASHBOARD
 # =============================================================================
 if tab2:
     with tab2:
-        st.markdown("### 🛡️ Credit Underwriting Management & Portfolio Control")
-        
-        manager_tab1, manager_tab2, manager_tab3 = st.tabs([
-            "🔴 Active Underwriting Pipeline", 
-            "📊 Executive Portfolio Analytics & Risk Intelligence", 
-            "📂 Complete Application History & Overrides"
-        ])
-        
-        # MANAGER TAB 1: PIPELINE
-        with manager_tab1:
-            st.markdown("##### ⚡ Human-In-The-Loop (HITL) Review Queue")
-            try:
-                pending_res = requests.get(f"{API_BASE_URL}/pending").json()
-                if pending_res and len(pending_res) > 0:
-                    st.info(f"You have **{len(pending_res)} application(s)** awaiting credit manager review.")
-                    pending_df = pd.DataFrame(pending_res)
-                    pending_df['loan_amount'] = pending_df['loan_amount'].apply(lambda x: f"₹{x:,.2f}")
-                    st.dataframe(pending_df, use_container_width=True, hide_index=True)
-                    
-                    selected_pending = st.selectbox("Select Application ID to Review:", pending_df['thread_id'])
-                    if st.button("Load Selected Application"):
-                        st.session_state.thread_id = selected_pending
-                        res = requests.get(f"{API_BASE_URL}/status/{selected_pending}").json()
-                        st.session_state.latest_result = res
-                        st.rerun()
-                else:
-                    st.success("No applications are currently awaiting manager approval.")
-            except Exception as e:
-                st.error(f"Failed to load pipeline: {e}")
-
-            if st.session_state.latest_result:
-                result = st.session_state.latest_result
-                st.markdown("---")
-                st.markdown(f"#### 📄 Application Review: `{st.session_state.thread_id}`")
+        st.header("Credit Manager Dashboard")
+    
+        if not (st.session_state.role == "Credit Manager" and st.session_state.logged_in):
+            st.error("🚫 Access Denied. Please login as a Credit Manager from the sidebar using your passcode.")
+        else:
+            manager_tab1, manager_tab2, manager_tab3 = st.tabs([
+                "🔴 Active Underwriting Pipeline", 
+                "📊 Executive Portfolio Analytics & Risk Intelligence", 
+                "📂 Complete Application History & Overrides"
+            ])
+            
+            # =========================================================================
+            # MANAGER TAB 1: ACTIVE UNDERWRITING PIPELINE (HITL QUEUE)
+            # =========================================================================
+            with manager_tab1:
+                st.markdown("Human-In-The-Loop (HITL) Review & Automated Assessment")
                 
-                # Top Status Badge
-                dec = result.get('decision_outcome', 'PENDING')
-                st.markdown(f'''
-                <div style="background: {'#ECFDF5' if 'APPROV' in str(dec).upper() else '#FEF2F2'}; border: 1px solid {'#A7F3D0' if 'APPROV' in str(dec).upper() else '#FECACA'}; padding: 12px 16px; border-radius: 8px; margin-bottom: 14px;">
-                    <strong>System Recommendation:</strong> <span style="font-weight: 800; color: {'#059669' if 'APPROV' in str(dec).upper() else '#DC2626'};">{dec}</span>
-                </div>
-                ''', unsafe_allow_html=True)
-                
-                # Detailed Report Viewer inside Executive Canvas
-                detailed_rep = result.get("detailed_report", "")
-                if detailed_rep:
-                    with st.expander("📑 View Full Credit Appraisal Memorandum (Chapter 1 to 7)", expanded=True):
-                        st.markdown(f'<div class="memo-canvas">{detailed_rep}</div>', unsafe_allow_html=True)
-                        docx_bytes = utils.generate_docx(detailed_rep)
-                        st.download_button("📄 Download Official Word (.docx) Memorandum", docx_bytes, "Appraisal_Memorandum.docx", type="primary")
-
-                if result.get("status") == "WAITING_FOR_MANAGER":
-                    st.markdown("---")
-                    st.markdown("##### ✍️ Final Manager Decision & Action")
-                    col_a, col_b = st.columns(2)
-                    with col_a:
-                        if st.button("✅ APPROVE Application", type="primary", use_container_width=True):
-                            resp = requests.post(f"{API_BASE_URL}/approve/{st.session_state.thread_id}", json={"decision": "APPROVED"})
-                            if resp.status_code == 200:
-                                st.session_state.latest_result["status"] = "COMPLETED"
-                                st.session_state.latest_result["final_decision"] = "APPROVED (Manager)"
-                                st.rerun()
-                    with col_b:
-                        if st.button("❌ REJECT Application", use_container_width=True):
-                            resp = requests.post(f"{API_BASE_URL}/approve/{st.session_state.thread_id}", json={"decision": "REJECTED"})
-                            if resp.status_code == 200:
-                                st.session_state.latest_result["status"] = "COMPLETED"
-                                st.session_state.latest_result["final_decision"] = "REJECTED (Manager)"
-                                st.rerun()
-
-        # MANAGER TAB 2: PORTFOLIO ANALYTICS
-        with manager_tab2:
-            st.markdown("##### 📊 Executive Portfolio Analytics & Risk Concentration")
-            try:
-                hist_res = requests.get(f"{API_BASE_URL}/history").json()
-                if hist_res and isinstance(hist_res, list) and len(hist_res) > 0:
-                    records = []
-                    for h in hist_res:
-                        app = h.get("application_data") or {}
-                        dec = h.get("decision", "PENDING")
-                        l_type = app.get("loan_type", "Home Loan")
-                        amt = float(h.get("loan_amount", 0.0))
-                        cibil = int(app.get("credit_score", 700))
-                        risk_cat = h.get("risk_category", "Moderate Risk")
+                # --- PENDING APPLICATIONS LIST ---
+                try:
+                    pending_res = requests.get(f"{API_BASE_URL}/pending").json()
+                    if pending_res and len(pending_res) > 0:
+                        st.info(f"You have {len(pending_res)} application(s) awaiting your review.")
+                        pending_df = pd.DataFrame(pending_res)
+                        pending_df['loan_amount'] = pending_df['loan_amount'].apply(lambda x: f"₹{x:,.2f}")
+                        st.dataframe(pending_df, use_container_width=True, hide_index=True)
                         
-                        cbi_grade = "N/A"
-                        cbi_score = None
-                        hurdle_met = True
-                        if "MSME" in l_type:
-                            if "New" in l_type:
-                                msme_sc = calculate_mse_new_score(app)
-                            else:
-                                msme_sc = calculate_mse_existing_score(app)
-                            cbi_grade = msme_sc["grade"]
-                            cbi_score = msme_sc["total_score"]
-                            hurdle_met = msme_sc["hurdle_rate_met"]
-                            
-                        roi_val = get_applicable_roi(l_type, cibil, mse_grade=cbi_grade, cgtmse_covered=app.get("cgtmse_covered", False))
-                        p_val = float(app.get("property_value", 0))
-                        ltv_val = round((amt / p_val * 100), 2) if p_val > 0 else 0.0
-                        
-                        records.append({
-                            "thread_id": h.get("thread_id"),
-                            "applicant_name": h.get("applicant_name"),
-                            "loan_type": l_type,
-                            "loan_amount": amt,
-                            "credit_score": cibil,
-                            "decision": dec,
-                            "is_approved": "APPROVED" in dec.upper(),
-                            "risk_category": risk_cat,
-                            "cbi_grade": cbi_grade,
-                            "cbi_score": cbi_score,
-                            "hurdle_met": hurdle_met,
-                            "official_roi": roi_val,
-                            "ltv": ltv_val,
-                            "created_at": h.get("created_at")
-                        })
-                    
-                    df_p = pd.DataFrame(records)
-                    
-                    col_scope1, col_scope2 = st.columns([3, 1])
-                    with col_scope1:
-                        analytics_scope = st.radio(
-                            "Select Portfolio Scope:",
-                            ["🟢 Sanctioned Book (Approved Only)", "🌐 Full Pipeline (All Applications)"],
-                            horizontal=True
-                        )
-                    with col_scope2:
-                        if st.button("🔄 Refresh", use_container_width=True):
+                        selected_pending = st.selectbox("Select Application to Review:", pending_df['thread_id'])
+                        if st.button("Load Application"):
+                            st.session_state.thread_id = selected_pending
+                            # Fetch latest status
+                            res = requests.get(f"{API_BASE_URL}/status/{selected_pending}").json()
+                            st.session_state.latest_result = res
                             st.rerun()
-
-                    df_view = df_p[df_p["is_approved"]] if "Sanctioned Book" in analytics_scope else df_p
-                    scope_lbl = "Sanctioned Advances" if "Sanctioned Book" in analytics_scope else "Underwriting Pipeline"
-
-                    # KPI Counters
-                    tot_exp = df_view["loan_amount"].sum() if not df_view.empty else 0.0
-                    avg_cibil = df_view["credit_score"].mean() if not df_view.empty else 0.0
-                    avg_roi = df_view["official_roi"].mean() if not df_view.empty else 0.0
+                    else:
+                        st.success("No applications are currently waiting for manager approval.")
+                except Exception as e:
+                    st.error(f"Failed to fetch pending applications: {e}")
                     
-                    pk1, pk2, pk3, pk4 = st.columns(4)
-                    pk1.metric("Active Book Volume", f"₹{tot_exp/1e7:.2f} Cr", help="Total exposure")
-                    pk2.metric("Portfolio Facilities", f"{len(df_view)}", help="Active advances count")
-                    pk3.metric("Weighted Avg CIBIL", f"{avg_cibil:.0f}", help="Average bureau standing")
-                    pk4.metric("Weighted Avg Lending Rate", f"{avg_roi:.2f}%", help="Pegged to RBLR")
+                st.markdown("---")
+                
+                # --- DISPLAY SELECTED APPLICATION APPRAISAL MEMO ---
+                if st.session_state.latest_result:
+                    result = st.session_state.latest_result
+                    st.header(f"Credit Appraisal Review: {st.session_state.thread_id}")
+                    
+                    # Top Status Banner
+                    st.success(f"**System Recommendation:** {result.get('decision_outcome')} (App ID: {st.session_state.thread_id})")
+                    
+                    col1, col2 = st.columns([2, 1])
+                    
+                    with col1:
+                        st.subheader("⚙️ Verification Timeline")
+                        agent_logs = result.get("agent_logs", [])
+                        for log in agent_logs:
+                            st.markdown(f"**{log['agent']}**: ✅ {log['summary']}")
+                            
+                    with col2:
+                        st.subheader("📊 Financial Snapshot")
+                        metrics = result.get("financial_metrics", {})
+                        msme_sc = metrics.get("msme_scorecard") or result.get("msme_scorecard")
+                        
+                        if msme_sc:
+                            st.metric("Central Bank MSE Score", f"{msme_sc.get('total_score')}/100", delta=f"{msme_sc.get('grade')}")
+                            hurdle_txt = "✅ Hurdle Met (> 50)" if msme_sc.get('hurdle_rate_met', True) else "❌ Sub-Hurdle Rate (<= 50)"
+                            st.caption(f"**Hurdle Status:** {hurdle_txt} | **Risk Grade:** {msme_sc.get('grade')} ({msme_sc.get('risk_profile')})")
+                        
+                        if "official_roi" in metrics:
+                            st.metric("Bank Assigned ROI", f"{metrics.get('official_roi'):.2f}%")
+                            
+                        st.metric("Calculated FOIR", f"{metrics.get('calculated_foir', 0):.2f}%")
+                        
+                        ltv = metrics.get('ltv_compliance', {})
+                        st.metric("LTV Ratio", f"{ltv.get('ltv', 0):.2f}%", 
+                                  delta="Compliant" if ltv.get('compliant') else "Violation",
+                                  delta_color="normal" if ltv.get('compliant') else "inverse")
+                        
+                    st.markdown("---")
+                    
+                    # --- MIDDLE SECTION: ML Risk ---
+                    st.subheader("🧠 Predictive Risk Assessment")
+                    risk = result.get("risk_score", {})
+                    try:
+                        pd_val = float(risk.get('pd_percentage', 0.0))
+                    except (ValueError, TypeError):
+                        pd_val = 0.0
+                    
+                    st.markdown(f"**Probability of Default (PD):** `{pd_val:.2f}%`")
+                    
+                    # Visual Progress bar for 5-Tier PD Distribution
+                    if pd_val < 15.0:
+                        bar_color = "#2e7d32" # Very Low (Dark Green)
+                    elif pd_val < 25.0:
+                        bar_color = "#4caf50" # Low (Green)
+                    elif pd_val < 40.0:
+                        bar_color = "#ff9800" # Moderate (Amber)
+                    elif pd_val < 55.0:
+                        bar_color = "#f4511e" # Elevated (Deep Orange)
+                    else:
+                        bar_color = "#d32f2f" # High / Critical Default (Red)
 
-                    st.markdown("<br>", unsafe_allow_html=True)
-                    c_chart1, c_chart2 = st.columns(2)
-                    with c_chart1:
-                        msme_df = df_view[df_view["cbi_grade"] != "N/A"]
-                        if not msme_df.empty:
-                            fig_bar = px.bar(msme_df["cbi_grade"].value_counts().reset_index(), x="cbi_grade", y="count", title=f"Risk Grade Distribution ({scope_lbl})", color="cbi_grade", color_discrete_sequence=px.colors.qualitative.Bold)
-                            fig_bar.update_layout(height=340, margin=dict(l=10, r=10, t=35, b=10))
-                            st.plotly_chart(fig_bar, use_container_width=True)
-                    with c_chart2:
-                        if not df_view.empty:
-                            fig_pie = px.pie(df_view, values="loan_amount", names="loan_type", hole=0.45, title=f"Exposure Allocation by Product ({scope_lbl})")
-                            fig_pie.update_layout(height=340, margin=dict(l=10, r=10, t=35, b=10))
-                            st.plotly_chart(fig_pie, use_container_width=True)
-                else:
-                    st.info("No applications in database yet.")
-            except Exception as e:
-                st.error(f"Error loading analytics: {e}")
-
-        # MANAGER TAB 3: HISTORY & OVERRIDES
-        with manager_tab3:
-            st.markdown("##### 📂 Application Database & Audit Override Log")
-            try:
-                hist_res = requests.get(f"{API_BASE_URL}/history").json()
-                if hist_res and isinstance(hist_res, list) and len(hist_res) > 0:
-                    h_df = pd.DataFrame(hist_res)
-                    h_df['created_at'] = pd.to_datetime(h_df['created_at'])
-                    h_df['loan_amount'] = h_df['loan_amount'].apply(lambda x: f"₹{x:,.2f}")
-                    st.dataframe(h_df[['created_at', 'thread_id', 'applicant_name', 'loan_amount', 'risk_category', 'decision']], use_container_width=True, hide_index=True)
+                    st.markdown(f'''
+                        <div style="background-color: rgba(128,128,128,0.2); border-radius: 5px; width: 100%; height: 25px;">
+                            <div style="background-color: {bar_color}; width: {min(pd_val, 100.0)}%; height: 100%; border-radius: 5px;"></div>
+                        </div>
+                    ''', unsafe_allow_html=True)
+                    
+                    st.caption(f"Risk Category: **{risk.get('risk_category', 'Unknown')}** | Explanation: {risk.get('explanation', '')}")
+                    
+                    # --- CRITICAL RISK DRIVERS ---
+                    st.markdown("##### 🔍 Key Risk Drivers (Top 3 Impacting Factors):")
+                    drivers = risk.get('drivers') or risk.get('top_factors') or []
+                    if drivers:
+                        for d in drivers:
+                            feat_name = d.get('feature', 'Unknown')
+                            shap_val = d.get('shap_value') or d.get('impact') or 0.0
+                            val = d.get('value', 0.0)
+                            
+                            if shap_val > 0:
+                                st.markdown(f"- 🔴 **{feat_name}** (`{val}`): Contributed positively to default risk.")
+                            else:
+                                st.markdown(f"- 🟢 **{feat_name}** (`{val}`): Reduced default risk.")
+                    else:
+                        st.write("No strong risk drivers identified.")
+                        
+                    st.markdown("---")
+                    
+                    # --- POLICY ADHERENCE ---
+                    st.subheader("📜 Regulatory & Underwriting Policy Adherence")
+                    policies = result.get("applicable_policies", [])
+                    if policies:
+                        app_cibil = metrics.get('credit_score', 0)
+                        if app_cibil >= 750:
+                            st.markdown(f"- 🟢 **Credit Bureau Standing**: Applicant holds a **Prime CIBIL Score of `{app_cibil}`**, qualifying for prime pricing under Central Bank of India RBLR lending framework.")
+                        elif app_cibil >= 700:
+                            st.markdown(f"- 🟡 **Credit Bureau Standing**: Applicant holds a **Standard CIBIL Score of `{app_cibil}`**, within acceptable lending parameters.")
+                        else:
+                            st.markdown(f"- 🔴 **Credit Bureau Standing**: Applicant holds a **Sub-Prime CIBIL Score of `{app_cibil}`**, representing elevated credit default risk.")
+                            
+                        app_foir = metrics.get('calculated_foir', 0)
+                        if app_foir <= 50:
+                            st.markdown(f"- 🟢 **Debt Serviceability (FOIR)**: Current FOIR is **`{app_foir:.1f}%`**, well below the bank's maximum allowable cap of 50.0%.")
+                        else:
+                            st.markdown(f"- 🔴 **Debt Serviceability (FOIR)**: Current FOIR is **`{app_foir:.1f}%`**, exceeding the standard prudential threshold of 50.0%.")
+                            
+                        ltv_comp = metrics.get('ltv_compliance', {})
+                        if not ltv_comp.get('compliant'):
+                            st.markdown(f"- 🛑 **Collateral Adequacy (LTV)**: The requested loan amount exceeds the maximum permissible Loan-to-Value limits for this property class (Currently `{ltv_comp.get('ltv', 0):.1f}%`).")
+                        else:
+                            st.markdown(f"- 🏦 **Collateral Adequacy (LTV)**: The requested loan is well within the acceptable Loan-to-Value regulatory limits (`{ltv_comp.get('ltv', 0):.1f}%`).")
+                        
+                        st.markdown("<br>", unsafe_allow_html=True)
+                        
+                        with st.expander("🔍 View Referenced Regulatory Clauses"):
+                            for pol in policies:
+                                clean_pol = re.sub(r'【.*?】|\[.*?\]', '', pol)
+                                clean_pol = re.sub(r'\s+', ' ', clean_pol).strip()
+                                st.info(f"> {clean_pol}")
+                    else:
+                        st.write("Awaiting system processing.")
+                        
+                    st.markdown("---")
+                    
+                    # --- PUBLISHABLE REPORTS ---
+                    st.subheader("📑 Formal Appraisal Reports")
+                    
+                    detailed_report = result.get("detailed_report", "")
+                    short_report = result.get("short_report", "")
+                    
+                    if short_report or detailed_report:
+                        report_tab1, report_tab2 = st.tabs(["Short Report (One-Pager)", "Detailed Report (Memo)"])
+                        
+                        with report_tab1:
+                            st.markdown(short_report, unsafe_allow_html=True)
+                            if short_report:
+                                docx_bytes = utils.generate_docx(short_report)
+                                st.download_button(
+                                    label="📄 Download Short Report (Docx)",
+                                    data=docx_bytes,
+                                    file_name="Short_Appraisal_Report.docx",
+                                    mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                                )
+                        with report_tab2:
+                            st.markdown(detailed_report, unsafe_allow_html=True)
+                            if detailed_report:
+                                docx_bytes = utils.generate_docx(detailed_report)
+                                st.download_button(
+                                    label="📄 Download Detailed Memo (Docx)",
+                                    data=docx_bytes,
+                                    file_name="Detailed_Appraisal_Memo.docx",
+                                    mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                                )
                     
                     st.markdown("---")
-                    selected_thread = st.selectbox("Select Application ID to Inspect:", h_df['thread_id'])
-                    if selected_thread:
-                        row = h_df[h_df['thread_id'] == selected_thread].iloc[0]
-                        rep_show = row.get('detailed_report')
-                        if rep_show:
-                            with st.expander(f"📑 View Complete Memorandum ({row['applicant_name']})", expanded=True):
-                                st.markdown(f'<div class="memo-canvas">{rep_show}</div>', unsafe_allow_html=True)
-                                docx_b = utils.generate_docx(rep_show)
-                                st.download_button("📄 Download Official Memorandum (.docx)", docx_b, f"Memo_{selected_thread}.docx")
+                    
+                    # --- APPROVAL BUTTONS ---
+                    if result.get("status") == "WAITING_FOR_MANAGER":
+                        st.subheader("Final Manager Decision")
+                        col_a, col_b, col_c = st.columns(3)
+                        with col_a:
+                            if st.button("✅ APPROVE Application", type="primary", use_container_width=True):
+                                resp = requests.post(f"{API_BASE_URL}/approve/{st.session_state.thread_id}", json={"decision": "APPROVED"})
+                                if resp.status_code == 200:
+                                    st.session_state.latest_result["status"] = "COMPLETED"
+                                    st.session_state.latest_result["final_decision"] = "APPROVED (Manager)"
+                                    st.rerun()
+                        with col_b:
+                            if st.button("❌ REJECT Application", use_container_width=True):
+                                resp = requests.post(f"{API_BASE_URL}/approve/{st.session_state.thread_id}", json={"decision": "REJECTED"})
+                                if resp.status_code == 200:
+                                    st.session_state.latest_result["status"] = "COMPLETED"
+                                    st.session_state.latest_result["final_decision"] = "REJECTED (Manager)"
+                                    st.rerun()
+                    else:
+                        st.success(f"**Final Decision:** {result.get('final_decision')}")
+                        
                 else:
-                    st.info("No applications found in database.")
-            except Exception as e:
-                st.error(f"Failed to fetch history: {e}")
+                    st.write("Select an application from the pending list above to review.")
+
+            # =========================================================================
+            # MANAGER TAB 2: EXECUTIVE PORTFOLIO ANALYTICS & RISK INTELLIGENCE
+            # =========================================================================
+            with manager_tab2:
+                st.subheader("📊 Executive Portfolio Analytics & Risk Intelligence")
+                st.caption("Real-Time Credit Portfolio Distribution, Hurdle Rate Clearance, and Asset Quality Monitoring")
+
+                try:
+                    hist_res = requests.get(f"{API_BASE_URL}/history").json()
+                    if hist_res and isinstance(hist_res, list) and len(hist_res) > 0:
+                        records = []
+                        for h in hist_res:
+                            app = h.get("application_data") or {}
+                            dec = h.get("decision", "PENDING")
+                            l_type = app.get("loan_type", "Home Loan")
+                            amt = float(h.get("loan_amount", 0.0))
+                            cibil = int(app.get("credit_score", 700))
+                            risk_cat = h.get("risk_category", "Moderate Risk")
+                            
+                            # Calculate MSME scorecard & ROI
+                            msme_sc = None
+                            cbi_grade = "N/A"
+                            cbi_score = None
+                            hurdle_met = True
+                            
+                            if "MSME" in l_type:
+                                if "New" in l_type:
+                                    msme_sc = calculate_mse_new_score(app)
+                                else:
+                                    msme_sc = calculate_mse_existing_score(app)
+                                cbi_grade = msme_sc["grade"]
+                                cbi_score = msme_sc["total_score"]
+                                hurdle_met = msme_sc["hurdle_rate_met"]
+                                
+                            roi_val = get_applicable_roi(l_type, cibil, mse_grade=cbi_grade, cgtmse_covered=app.get("cgtmse_covered", False))
+                            
+                            # LTV and FOIR
+                            gross_inc = float(app.get("gross_monthly_income", 100000))
+                            p_val = float(app.get("property_value", 0))
+                            ltv_val = round((amt / p_val * 100), 2) if p_val > 0 else 0.0
+                            
+                            records.append({
+                                "thread_id": h.get("thread_id"),
+                                "applicant_name": h.get("applicant_name"),
+                                "loan_type": l_type,
+                                "loan_amount": amt,
+                                "credit_score": cibil,
+                                "decision": dec,
+                                "is_approved": "APPROVED" in dec.upper(),
+                                "risk_category": risk_cat,
+                                "cbi_grade": cbi_grade,
+                                "cbi_score": cbi_score,
+                                "hurdle_met": hurdle_met,
+                                "official_roi": roi_val,
+                                "ltv": ltv_val,
+                                "created_at": h.get("created_at")
+                            })
+                        
+                        df_p = pd.DataFrame(records)
+                        
+                        # --- ANALYTICS SCOPE SELECTOR ---
+                        col_scope1, col_scope2 = st.columns([3, 1])
+                        with col_scope1:
+                            analytics_scope = st.radio(
+                                "📊 Select Analytics Portfolio Scope:",
+                                [
+                                    "🟢 Sanctioned Credit Book (Approved Advances Only - Institutional Standard)",
+                                    "🌐 Full Underwriting Pipeline (All Applications Including Rejected & Pending)"
+                                ],
+                                horizontal=True,
+                                key="analytics_scope_selector"
+                            )
+                        with col_scope2:
+                            st.write("") # spacer
+                            if st.button("🔄 Refresh Analytics", use_container_width=True):
+                                st.rerun()
+
+                        # Determine active dataset based on scope
+                        if "Approved Advances Only" in analytics_scope:
+                            df_view = df_p[df_p["is_approved"]]
+                            scope_label = "Sanctioned Credit Book"
+                        else:
+                            df_view = df_p
+                            scope_label = "Full Underwriting Pipeline"
+                        
+                        # --- TOP KPI METRIC CARDS ---
+                        total_apps = len(df_p)
+                        approved_df = df_p[df_p["is_approved"]]
+                        total_exposure = df_p["loan_amount"].sum()
+                        total_sanctioned = approved_df["loan_amount"].sum()
+                        sanction_rate = (len(approved_df) / total_apps * 100) if total_apps > 0 else 0.0
+                        
+                        view_count = len(df_view)
+                        view_exposure = df_view["loan_amount"].sum() if not df_view.empty else 0.0
+                        avg_cibil = df_view["credit_score"].mean() if not df_view.empty else 0.0
+                        avg_roi = df_view["official_roi"].mean() if not df_view.empty else 0.0
+                        
+                        msme_view_df = df_view[df_view["cbi_grade"] != "N/A"]
+                        msme_hurdle_pass = (msme_view_df["hurdle_met"].sum() / len(msme_view_df) * 100) if len(msme_view_df) > 0 else 0.0
+                        
+                        kpi1, kpi2, kpi3, kpi4, kpi5, kpi6 = st.columns(6)
+                        kpi1.metric(f"Active Facilities ({scope_label.split()[0]})", f"{view_count}", help=f"Total facilities in {scope_label}")
+                        kpi2.metric("Active Capital Exposure", f"₹{view_exposure/1e7:.2f} Cr", help="Total loan volume in selected scope")
+                        kpi3.metric("Total Sanctioned Capital", f"₹{total_sanctioned/1e7:.2f} Cr", help="Total credit volume approved by bank")
+                        kpi4.metric("Pipeline Sanction Rate", f"{sanction_rate:.1f}%", help="Percentage of approved applications")
+                        kpi5.metric("Weighted Avg ROI", f"{avg_roi:.2f}%", help="Average lending rate pegged to RBLR")
+                        kpi6.metric("MSME Hurdle Pass", f"{msme_hurdle_pass:.1f}%", help="Enterprises meeting > 50 marks")
+                        
+                        st.markdown("---")
+                        
+                        # --- ROW 1 CHARTS: CBI RISK GRADES & PRODUCT EXPOSURE ---
+                        c_col1, c_col2 = st.columns([3, 2])
+                        
+                        with c_col1:
+                            st.subheader(f"🏛️ MSE Risk Grade Distribution ({scope_label})")
+                            if not msme_view_df.empty:
+                                all_cbi_grades = [f"CBI {i}" for i in range(1, 11)]
+                                grade_counts = msme_view_df["cbi_grade"].value_counts().reindex(all_cbi_grades, fill_value=0).reset_index()
+                                grade_counts.columns = ["Risk Grade", "Count"]
+                                
+                                # Assign colors: CBI 1-4 green, CBI 5-6 blue, CBI 7-10 red
+                                colors = []
+                                for g in grade_counts["Risk Grade"]:
+                                    num = int(g.split()[1])
+                                    if num <= 4:
+                                        colors.append("#10B981") # Emerald Green (Prime)
+                                    elif num <= 6:
+                                        colors.append("#2563EB") # Royal Blue (Covenants)
+                                    else:
+                                        colors.append("#EF4444") # Crimson Red (Sub-Hurdle)
+                                        
+                                fig_grades = px.bar(
+                                    grade_counts, x="Risk Grade", y="Count",
+                                    text="Count",
+                                    title=f"Central Bank MSE Risk Grades in {scope_label} (Hurdle Rate > 50 Marks)",
+                                    labels={"Count": "Number of Enterprises", "Risk Grade": "Central Bank Risk Grade"}
+                                )
+                                fig_grades.update_traces(marker_color=colors, textposition="outside")
+                                fig_grades.add_vline(x=5.5, line_width=2, line_dash="dash", line_color="#DC2626", annotation_text="HURDLE BENCHMARK (> 50 Marks)", annotation_position="top right")
+                                fig_grades.update_layout(height=380, margin=dict(l=20, r=20, t=40, b=20), plot_bgcolor="rgba(0,0,0,0)")
+                                st.plotly_chart(fig_grades, use_container_width=True)
+                            else:
+                                st.info("No MSME facilities available in this scope.")
+                                
+                        with c_col2:
+                            st.subheader(f"🥧 Exposure Allocation by Product ({scope_label})")
+                            if not df_view.empty:
+                                prod_exp = df_view.groupby("loan_type")["loan_amount"].sum().reset_index()
+                                prod_exp["loan_amount_cr"] = prod_exp["loan_amount"] / 1e7
+                                fig_pie = px.pie(
+                                    prod_exp, values="loan_amount_cr", names="loan_type",
+                                    hole=0.45,
+                                    title="Active Capital Exposure (₹ Crores)"
+                                )
+                                fig_pie.update_traces(textinfo="percent+label", pull=[0.05]*len(prod_exp))
+                                fig_pie.update_layout(height=380, margin=dict(l=20, r=20, t=40, b=20), showlegend=False)
+                                st.plotly_chart(fig_pie, use_container_width=True)
+                            else:
+                                st.info("No active advances to display.")
+                            
+                        st.markdown("---")
+                        
+                        # --- ROW 2 CHARTS: RISK FRONTIER & DECISION FUNNEL ---
+                        c_col3, c_col4 = st.columns([3, 2])
+                        
+                        with c_col3:
+                            st.subheader(f"🎯 Credit Risk Frontier ({scope_label})")
+                            if not df_view.empty:
+                                df_view_copy = df_view.copy()
+                                df_view_copy["decision_badge"] = df_view_copy["decision"].apply(lambda x: "APPROVED" if "APPROV" in str(x).upper() else "REJECTED")
+                                fig_scatter = px.scatter(
+                                    df_view_copy, x="credit_score", y="ltv",
+                                    size="loan_amount",
+                                    color="decision_badge",
+                                    hover_name="applicant_name",
+                                    hover_data={"loan_type": True, "credit_score": True, "ltv": ":.2f", "official_roi": ":.2f", "cbi_grade": True},
+                                    color_discrete_map={"APPROVED": "#10B981", "REJECTED": "#EF4444"},
+                                    title="Borrower Bureau Score (CIBIL) vs Collateral LTV Ratio (%)",
+                                    labels={"credit_score": "CIBIL Bureau Score", "ltv": "Collateral LTV (%)", "decision_badge": "Decision"}
+                                )
+                                fig_scatter.add_hline(y=80.0, line_width=2, line_dash="dash", line_color="#DC2626", annotation_text="RBI 80% Max LTV Ceiling", annotation_position="bottom right")
+                                fig_scatter.add_vline(x=700.0, line_width=2, line_dash="dot", line_color="#F59E0B", annotation_text="Prime CIBIL Cutoff (700)", annotation_position="top left")
+                                fig_scatter.update_layout(height=380, margin=dict(l=20, r=20, t=40, b=20), plot_bgcolor="rgba(0,0,0,0)")
+                                st.plotly_chart(fig_scatter, use_container_width=True)
+                            else:
+                                st.info("No active advances to plot.")
+                            
+                        with c_col4:
+                            st.subheader("⚖️ Full Underwriting Conversion Funnel")
+                            funnel_data = {
+                                "Stage": ["Total Received", "LTV Compliant", "Hurdle Met (>50)", "Sanctioned"],
+                                "Count": [
+                                    len(df_p),
+                                    len(df_p[df_p["ltv"] <= 80.0]),
+                                    len(df_p[df_p["hurdle_met"] == True]),
+                                    len(approved_df)
+                                ]
+                            }
+                            df_funnel = pd.DataFrame(funnel_data)
+                            fig_funnel = px.funnel(df_funnel, x="Count", y="Stage", title="Underwriting Policy Conversion Funnel")
+                            fig_funnel.update_traces(marker_color=["#6366F1", "#3B82F6", "#10B981", "#059669"])
+                            fig_funnel.update_layout(height=380, margin=dict(l=20, r=20, t=40, b=20))
+                            st.plotly_chart(fig_funnel, use_container_width=True)
+                            
+                        st.markdown("---")
+                        
+                        # --- PORTFOLIO DATASET DOWNLOAD ---
+                        st.subheader("📥 Export Regulatory & ALCO Portfolio Dataset")
+                        st.caption(f"Download the active dataset ({scope_label}) for Asset-Liability Committee (ALCO) review and internal risk audits.")
+                        
+                        csv_export = df_view[['thread_id', 'applicant_name', 'loan_type', 'loan_amount', 'credit_score', 'cbi_grade', 'cbi_score', 'hurdle_met', 'official_roi', 'ltv', 'risk_category', 'decision', 'created_at']].to_csv(index=False).encode('utf-8')
+                        st.download_button(
+                            label=f"📊 Download {scope_label} Dataset (CSV)",
+                            data=csv_export,
+                            file_name=f"CBoI_{scope_label.replace(' ', '_')}.csv",
+                            mime="text/csv"
+                        )
+                        
+                    else:
+                        st.info("No application history available to generate portfolio analytics. Submit new applications to view real-time charts.")
+                except Exception as e:
+                    st.error(f"Failed to generate analytics: {e}")
+
+            # =========================================================================
+            # MANAGER TAB 3: APPLICATION DATABASE HISTORY & OVERRIDES
+            # =========================================================================
+            with manager_tab3:
+                st.subheader("Application Database History & Override Log")
+                st.markdown("View all processed applications stored in the central database.")
+                
+                search_query = st.text_input("🔍 Search by Applicant Name", "")
+                
+                if st.button("Refresh History"):
+                    st.rerun()
+                    
+                try:
+                    hist_res = requests.get(f"{API_BASE_URL}/history").json()
+                    if hist_res and isinstance(hist_res, list) and len(hist_res) > 0:
+                        df = pd.DataFrame(hist_res)
+                        # Filter by search query
+                        if search_query:
+                            df = df[df['applicant_name'].str.contains(search_query, case=False, na=False)]
+                            
+                        if not df.empty:
+                            # Convert created_at to proper datetime format
+                            df['created_at'] = pd.to_datetime(df['created_at'])
+                            # Format loan amount
+                            df['loan_amount'] = df['loan_amount'].apply(lambda x: f"₹{x:,.2f}")
+                            # Reorder and rename columns for display
+                            display_df = df[['created_at', 'thread_id', 'applicant_name', 'loan_amount', 'risk_category', 'decision']]
+                            st.dataframe(display_df, use_container_width=True, hide_index=True)
+                            
+                            st.markdown("---")
+                            st.subheader("View Full Appraisal Report")
+                            selected_thread = st.selectbox("Select Application ID to View:", df['thread_id'])
+                            if selected_thread:
+                                selected_row = df[df['thread_id'] == selected_thread].iloc[0]
+                                
+                                st.write(f"**Applicant:** {selected_row['applicant_name']} | **Decision:** {selected_row['decision']}")
+                                
+                                report_to_show = selected_row.get('detailed_report')
+                                app_data = selected_row.get('application_data', {})
+                                justification = selected_row.get('manager_justification')
+                                
+                                # --- TIMELINE SECTION ---
+                                st.subheader("⏱️ Application Timeline")
+                                
+                                st.info(f"🟢 **Application Submitted** — *{selected_row['created_at'].strftime('%Y-%m-%d %H:%M:%S')}*")
+                                st.info("🤖 **AI Verification & Appraisal Completed** — *System Analysis Generated*")
+                                if justification:
+                                    st.warning("🏦 **Initial Recommendation** — *System Recommended Decision*")
+                                    st.error(f"🔴 **Manager Override** — *Decision Manually Changed to {selected_row['decision']}*")
+                                else:
+                                    st.success(f"✅ **Final Decision** — *{selected_row['decision']}*")
+                                
+                                st.markdown("---")
+                                st.subheader("Applicant Profile & Data")
+                                
+                                p_col1, p_col2, p_col3 = st.columns(3)
+                                with p_col1:
+                                    st.markdown(f"**Name:** {app_data.get('name', 'N/A')}")
+                                    st.markdown(f"**Age & Gender:** {app_data.get('age', 'N/A')} ({app_data.get('gender', 'N/A')})")
+                                    st.markdown(f"**Marital Status:** {app_data.get('marital_status', 'N/A')}")
+                                with p_col2:
+                                    st.markdown(f"**Occupation:** {app_data.get('occupation', 'N/A')}")
+                                    st.markdown(f"**Gross Income:** ₹{app_data.get('gross_monthly_income', 0):,.2f}")
+                                    st.markdown(f"**Net Income:** ₹{app_data.get('net_monthly_income', 0):,.2f}")
+                                    st.markdown(f"**Credit Score:** {app_data.get('credit_score', 'N/A')}")
+                                with p_col3:
+                                    st.markdown(f"**Loan Type:** {app_data.get('loan_type', 'N/A')}")
+                                    st.markdown(f"**Loan Amount:** ₹{app_data.get('loan_amount', 0):,.2f}")
+                                    st.markdown(f"**Interest Rate:** {app_data.get('interest_rate', 'N/A')}%")
+                                    st.markdown(f"**Tenure:** {app_data.get('tenure_months', 'N/A')} months")
+                                
+                                if justification:
+                                    st.error(f"**Override Justification:** {justification}")
+                                    
+                                if report_to_show:
+                                    with st.expander("Expand Detailed Report Memo", expanded=True):
+                                        st.markdown(report_to_show, unsafe_allow_html=True)
+                                        
+                                    # Create Downloadable Docx with Justification included
+                                    full_report_text = report_to_show
+                                    if justification:
+                                        full_report_text += f"\n\n========================================\nMANAGER OVERRIDE JUSTIFICATION\n========================================\n{justification}\n"
+                                    
+                                    docx_bytes = utils.generate_docx(full_report_text)
+                                    st.download_button(
+                                        label="📄 Download Detailed Memo & Justifications (Docx)",
+                                        data=docx_bytes,
+                                        file_name=f"Appraisal_Report_{selected_thread}.docx",
+                                        mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                                    )
+                                else:
+                                    st.info("No detailed report available for this application.")
+                                    
+                                st.markdown("---")
+                                st.subheader("Override System Decision")
+                                st.warning("Use this to forcefully modify the decision for accountability and audits.")
+                                new_decision = st.radio("New Decision", ["APPROVED", "REJECTED"], horizontal=True, key=f"rad_{selected_thread}")
+                                override_justification = st.text_area("Justification for Override", key=f"txt_{selected_thread}")
+                                
+                                if st.button("Submit Override", key=f"btn_{selected_thread}"):
+                                    if not override_justification.strip():
+                                        st.error("You must provide a manual justification letter to override this decision.")
+                                    else:
+                                        payload = {"decision": new_decision, "justification": override_justification}
+                                        try:
+                                            res = requests.post(f"{API_BASE_URL}/override/{selected_thread}", json=payload)
+                                            if res.status_code == 200:
+                                                st.success("Decision overridden successfully!")
+                                                time.sleep(1)
+                                                st.rerun()
+                                            else:
+                                                st.error(f"Failed to override: {res.text}")
+                                        except Exception as e:
+                                            st.error(f"Failed to override: {e}")
+                        else:
+                            st.info(f"No application history found matching '{search_query}'.")
+                                
+                    else:
+                        st.info("No application history found in the database.")
+                except Exception as e:
+                    st.error(f"Failed to fetch history: {e}")
