@@ -95,7 +95,7 @@ def clean_section_title(raw_text: str) -> str:
     # Remove emoji symbols
     text = re.sub(r'[\U00010000-\U0010ffff]', '', text)
     text = re.sub(r'[\u2600-\u27ff]', '', text)
-    text = text.replace('📊', '').replace('👤', '').replace('💰', '').replace('🏢', '').replace('🧠', '').replace('📜', '').replace('📚', '').replace('🏛️', '').replace('📑', '').replace('⚖️', '').replace('📈', '').replace('✍️', '')
+    text = text.replace('📊', '').replace('👤', '').replace('💰', '').replace('🏢', '').replace('🧠', '').replace('📜', '').replace('📚', '').replace('🏛️', '').replace('📑', '').replace('⚖️', '').replace('📈', '').replace('✍️', '').replace('🔍', '').replace('🧪', '').replace('💎', '')
     text = re.sub(r'\s+', ' ', text).strip()
     
     # Capitalize section titles formally
@@ -107,12 +107,24 @@ def clean_section_title(raw_text: str) -> str:
         return text.upper() if text.startswith("3.1") else "3.1 CENTRAL BANK OF INDIA MSE SCORING MODEL"
     elif text.startswith("3.") or "Financial Capacity" in text:
         return "3. FINANCIAL CAPACITY & OBLIGATION ASSESSMENT"
-    elif text.startswith("4.") or "Predictive Risk" in text:
-        return "4. PREDICTIVE RISK & DEFAULT PROBABILITY ASSESSMENT"
-    elif text.startswith("5.") or "Policy Adherence" in text:
-        return "5. STATUTORY POLICY ADHERENCE & FINAL JUSTIFICATION"
-    elif text.startswith("6.") or "References" in text:
-        return "6. REGULATORY REFERENCES & POLICY BIBLIOGRAPHY"
+    elif text.startswith("4.1") or "3-Year Audited" in text:
+        return "4.1 3-YEAR AUDITED FINANCIAL STATEMENT SPREADING (CMA FORMAT)"
+    elif text.startswith("4.2") or "5-Pillar" in text:
+        return "4.2 5-PILLAR INSTITUTIONAL RATIO DIAGNOSTICS & WORKING CAPITAL (MPBF)"
+    elif text.startswith("4.3") or "Forensic Accounting" in text:
+        return "4.3 FORENSIC ACCOUNTING & EARLY WARNING DISTRESS MODELS"
+    elif text.startswith("4.4") or "Forward Forecasting" in text:
+        return "4.4 3-YEAR FORWARD FORECASTING & MACROECONOMIC STRESS SENSITIVITY"
+    elif text.startswith("4.5") or "Discounted Cash Flow" in text:
+        return "4.5 DISCOUNTED CASH FLOW (DCF) ENTERPRISE VALUATION & DEBT SIZING"
+    elif text.startswith("4.") or "Corporate Financial" in text:
+        return "4. CORPORATE FINANCIAL INTELLIGENCE, FORENSIC AUDIT & VALUATION SUITE"
+    elif text.startswith("5.") or "Predictive Risk" in text:
+        return "5. PREDICTIVE RISK & DEFAULT PROBABILITY ASSESSMENT"
+    elif text.startswith("6.") or "Policy Adherence" in text:
+        return "6. STATUTORY POLICY ADHERENCE & FINAL JUSTIFICATION"
+    elif text.startswith("7.") or "References" in text:
+        return "7. REGULATORY REFERENCES & POLICY BIBLIOGRAPHY"
     return text
 
 def sanitize_text(text: str) -> str:

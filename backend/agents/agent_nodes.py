@@ -494,8 +494,8 @@ Output exactly a valid JSON object (and nothing else) with two keys: "detailed_r
     except Exception as e:
         print(f"LLM Generation Warning (Rate limit or error: {e}). Generating deterministic high-fidelity report...")
         
-    # If LLM failed or response was unparseable, generate deterministic high-fidelity report
-    if not reports or "detailed_report" not in reports or not reports.get("detailed_report"):
+    # Guarantee comprehensive publication-grade report with Chapter 4 for corporate/MSME
+    if "MSME" in applicant.get("loan_type", "") or "current_ratio" in applicant or not reports or "detailed_report" not in reports or not reports.get("detailed_report"):
         from report_generator import generate_deterministic_reports
         reports = generate_deterministic_reports(
             applicant_data=applicant,
