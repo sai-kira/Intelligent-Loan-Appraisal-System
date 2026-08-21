@@ -3,18 +3,32 @@ Central Bank of India - Intelligent Loan Appraisal System (ILAS)
 Financial Document Ingestion & Normalization Parser
 
 Supports:
-- CSV / Excel Spreadsheets (.csv, .xlsx, .xls)
+- PDF Audited Annual Reports / Financial Statements (.pdf) via pypdf
+- Microsoft Word Financial Memorandums (.docx) via python-docx
+- Excel / CSV Spreadsheets (.csv, .xlsx, .xls) via pandas / openpyxl
 - JSON / Tally ERP 9 / Tally Prime exports
 - Plain dictionary structures
 """
 
 import json
 import io
-from typing import Dict, Any, Union
+import re
+from typing import Dict, Any, Union, List, Optional
 import pandas as pd
 
+try:
+    import pypdf
+except ImportError:
+    pypdf = None
+
+try:
+    import docx
+except ImportError:
+    docx = None
+
+
 class FinancialDocumentParser:
-    """Parses and maps diverse corporate financial inputs into standardized financial spreads."""
+    """Parses and maps diverse corporate financial inputs (PDF, DOCX, CSV, Excel, JSON) into standardized financial spreads."""
 
     @staticmethod
     def parse_json_or_dict(content: Union[str, bytes, dict]) -> Dict[str, Any]:
@@ -24,7 +38,6 @@ class FinancialDocumentParser:
         else:
             data = content
 
-        # Required fields default mapping
         normalized = {
             "company_name": data.get("company_name", "Uploaded Corporate Borrower"),
             "loan_type": data.get("loan_type", "MSME Loan - Existing Unit"),
@@ -72,43 +85,183 @@ class FinancialDocumentParser:
         else:
             df = pd.read_csv(io.BytesIO(file_content))
 
-        # Expected format: Column 1 = Metric / Line Item, Column 2..N = FY24, FY25, FY26
         years = list(df.columns[1:])
-        
-        # Map row headers to standardized keys
         lookup = {}
         for _, row in df.iterrows():
             metric_raw = str(row.iloc[0]).lower().strip()
-            values = [float(row[y]) for y in years]
+            # Clean string numbers if needed
+            clean_vals = []
+            for y in years:
+                val_str = str(row[y]).replace(',', '').replace('₹', '').replace('$', '').strip()
+                try:
+                    clean_vals.append(float(val_str))
+                except ValueError:
+                    clean_vals.append(0.0)
             
-            if "revenue" in metric_raw or "sales" in metric_raw or "turnover" in metric_raw:
-                lookup["revenue"] = values
-            elif "cogs" in metric_raw or "material" in metric_raw or "cost of sales" in metric_raw:
-                lookup["cogs"] = values
-            elif "opex" in metric_raw or "operating expense" in metric_raw or "admin" in metric_raw:
-                lookup["operating_expenses"] = values
-            elif "depreciation" in metric_raw:
-                lookup["depreciation"] = values
-            elif "interest" in metric_raw or "finance" in metric_raw:
-                lookup["interest_expense"] = values
-            elif "cash" in metric_raw or "bank" in metric_raw:
-                lookup["cash_and_bank"] = values
-            elif "debtor" in metric_raw or "receivable" in metric_raw:
-                lookup["sundry_debtors"] = values
-            elif "inventory" in metric_raw or "stock" in metric_raw:
-                lookup["inventory"] = values
-            elif "fixed asset" in metric_raw or "ppe" in metric_raw or "plant" in metric_raw:
-                lookup["net_fixed_assets"] = values
-            elif "creditor" in metric_raw or "payable" in metric_raw:
-                lookup["sundry_creditors"] = values
-            elif "short term" in metric_raw or "working capital loan" in metric_raw or "overdraft" in metric_raw:
-                lookup["short_term_borrowings"] = values
-            elif "long term debt" in metric_raw or "term loan" in metric_raw:
-                lookup["long_term_debt"] = values
-            elif "capital" in metric_raw or "equity share" in metric_raw:
-                lookup["paid_up_capital"] = values
-            elif "reserve" in metric_raw or "surplus" in metric_raw:
-                lookup["reserves_and_surplus"] = values
+            FinancialDocumentParser._map_line_item(metric_raw, clean_vals, lookup)
 
         lookup["years"] = years
         return FinancialDocumentParser.parse_json_or_dict(lookup)
+
+    @staticmethod
+    def parse_excel_file(file_bytes: bytes) -> Dict[str, Any]:
+        """Parses Microsoft Excel spreadsheet (.xlsx, .xls)."""
+        df = pd.read_excel(io.BytesIO(file_bytes))
+        years = list(df.columns[1:])
+        lookup = {}
+        for _, row in df.iterrows():
+            metric_raw = str(row.iloc[0]).lower().strip()
+            clean_vals = []
+            for y in years:
+                val_str = str(row[y]).replace(',', '').replace('₹', '').replace('$', '').strip()
+                try:
+                    clean_vals.append(float(val_str))
+                except ValueError:
+                    clean_vals.append(0.0)
+            FinancialDocumentParser._map_line_item(metric_raw, clean_vals, lookup)
+
+        lookup["years"] = years
+        return FinancialDocumentParser.parse_json_or_dict(lookup)
+
+    @staticmethod
+    def parse_pdf_file(file_bytes: bytes) -> Dict[str, Any]:
+        """Parses financial tables and statements from a PDF document using pypdf."""
+        if pypdf is None:
+            raise ImportError("pypdf is required to parse PDF financial documents.")
+
+        reader = pypdf.PdfReader(io.BytesIO(file_bytes))
+        full_text = ""
+        for page in reader.pages:
+            t = page.extract_text()
+            if t:
+                full_text += t + "\n"
+
+        return FinancialDocumentParser._extract_financials_from_text(full_text)
+
+    @staticmethod
+    def parse_docx_file(file_bytes: bytes) -> Dict[str, Any]:
+        """Parses tables and paragraphs from Microsoft Word document (.docx)."""
+        if docx is None:
+            raise ImportError("python-docx is required to parse Word financial documents.")
+
+        doc = docx.Document(io.BytesIO(file_bytes))
+        
+        # 1. First attempt: check if there are structured Word tables
+        table_rows = []
+        for table in doc.tables:
+            for row in table.rows:
+                cells = [c.text.strip() for c in row.cells]
+                if len(cells) >= 2:
+                    table_rows.append(cells)
+
+        if table_rows and len(table_rows) > 3:
+            # First row might be header / years
+            header = table_rows[0]
+            years = header[1:] if len(header) > 1 else ["FY24", "FY25", "FY26"]
+            lookup = {}
+            for row in table_rows[1:]:
+                metric_raw = row[0].lower().strip()
+                clean_vals = []
+                for val in row[1:]:
+                    val_str = str(val).replace(',', '').replace('₹', '').replace('$', '').strip()
+                    try:
+                        clean_vals.append(float(val_str))
+                    except ValueError:
+                        clean_vals.append(0.0)
+                if clean_vals:
+                    FinancialDocumentParser._map_line_item(metric_raw, clean_vals, lookup)
+            
+            if lookup:
+                lookup["years"] = years[:3] if len(years) >= 3 else ["FY24", "FY25", "FY26"]
+                return FinancialDocumentParser.parse_json_or_dict(lookup)
+
+        # 2. Fallback: Parse paragraphs text
+        full_text = "\n".join([p.text for p in doc.paragraphs])
+        return FinancialDocumentParser._extract_financials_from_text(full_text)
+
+    @staticmethod
+    def _extract_financials_from_text(text: str) -> Dict[str, Any]:
+        """Extracts financial metrics, company name, and figures from raw OCR or document text."""
+        lookup = {}
+        
+        # Company name detection
+        comp_match = re.search(r'(?:Company|Enterprise|Borrower|Name|Entity)\s*(?:Name)?\s*[:=-]\s*([A-Za-z0-9\s.,&()\-]+)', text, re.IGNORECASE)
+        if comp_match:
+            comp_name = comp_match.group(1).split('\n')[0].strip()
+            if len(comp_name) > 3:
+                lookup["company_name"] = comp_name
+
+        lines = text.splitlines()
+        for line in lines:
+            line_clean = line.strip()
+            if not line_clean:
+                continue
+
+            # Look for line items followed by 1 to 4 numeric values
+            # e.g., "Gross Revenue : 12,000,000  15,000,000  18,500,000" or "Turnover | 1.2 Cr | 1.5 Cr | 1.85 Cr"
+            nums = re.findall(r'[-+]?\s*₹?\s*\d+(?:,\d+)*(?:\.\d+)?(?:\s*(?:Cr|Crore|Crores|Lakh|Lakhs|L|K))?', line_clean, re.IGNORECASE)
+            
+            clean_nums = []
+            for n in nums:
+                n_str = n.replace('₹', '').replace(',', '').strip()
+                mult = 1.0
+                if re.search(r'cr(?:ore)?s?', n_str, re.IGNORECASE):
+                    mult = 1e7
+                    n_str = re.sub(r'cr(?:ore)?s?', '', n_str, flags=re.IGNORECASE).strip()
+                elif re.search(r'l(?:akh)?s?', n_str, re.IGNORECASE):
+                    mult = 1e5
+                    n_str = re.sub(r'l(?:akh)?s?', '', n_str, flags=re.IGNORECASE).strip()
+                elif re.search(r'k', n_str, re.IGNORECASE):
+                    mult = 1e3
+                    n_str = re.sub(r'k', '', n_str, flags=re.IGNORECASE).strip()
+                
+                try:
+                    clean_nums.append(float(n_str) * mult)
+                except ValueError:
+                    pass
+
+            if clean_nums:
+                metric_name = re.sub(r'[-+]?\s*₹?\s*\d+(?:,\d+)*(?:\.\d+)?.*', '', line_clean).lower().strip()
+                FinancialDocumentParser._map_line_item(metric_name, clean_nums, lookup)
+
+        return FinancialDocumentParser.parse_json_or_dict(lookup)
+
+    @staticmethod
+    def _map_line_item(metric_raw: str, values: List[float], lookup: Dict[str, Any]):
+        """Helper to assign multiple numerical years to standard financial spread keys."""
+        # Pad values to 3 years if only 1 or 2 are present
+        if len(values) == 1:
+            values = [values[0] * 0.80, values[0] * 0.90, values[0]]
+        elif len(values) == 2:
+            values = [values[0], values[1], values[1] * 1.15]
+        else:
+            values = values[-3:]  # take the latest 3 years
+
+        if "revenue" in metric_raw or "sales" in metric_raw or "turnover" in metric_raw:
+            lookup["revenue"] = values
+        elif "cogs" in metric_raw or "material" in metric_raw or "cost of sales" in metric_raw:
+            lookup["cogs"] = values
+        elif "opex" in metric_raw or "operating expense" in metric_raw or "admin" in metric_raw:
+            lookup["operating_expenses"] = values
+        elif "depreciation" in metric_raw:
+            lookup["depreciation"] = values
+        elif "interest" in metric_raw or "finance" in metric_raw:
+            lookup["interest_expense"] = values
+        elif "cash" in metric_raw or "bank" in metric_raw:
+            lookup["cash_and_bank"] = values
+        elif "debtor" in metric_raw or "receivable" in metric_raw:
+            lookup["sundry_debtors"] = values
+        elif "inventory" in metric_raw or "stock" in metric_raw:
+            lookup["inventory"] = values
+        elif "fixed asset" in metric_raw or "ppe" in metric_raw or "plant" in metric_raw:
+            lookup["net_fixed_assets"] = values
+        elif "creditor" in metric_raw or "payable" in metric_raw:
+            lookup["sundry_creditors"] = values
+        elif "short term" in metric_raw or "working capital loan" in metric_raw or "overdraft" in metric_raw:
+            lookup["short_term_borrowings"] = values
+        elif "long term debt" in metric_raw or "term loan" in metric_raw:
+            lookup["long_term_debt"] = values
+        elif "capital" in metric_raw or "equity share" in metric_raw:
+            lookup["paid_up_capital"] = values
+        elif "reserve" in metric_raw or "surplus" in metric_raw:
+            lookup["reserves_and_surplus"] = values

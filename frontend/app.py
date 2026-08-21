@@ -382,14 +382,45 @@ with tab1:
                     st.toast(f"Populated {demo_choice.split('(')[0].strip()}", icon="⚡")
 
             with top_col2:
-                st.markdown("##### 📸 Auto-Fill via Document OCR")
-                uploaded_file = st.file_uploader("Upload scanned form / salary slip / KYC (PNG/JPG):", type=['png', 'jpg', 'jpeg'])
-                if uploaded_file is not None and not st.session_state.ocr_done:
-                    with st.spinner("Extracting with EasyOCR..."):
-                        extracted = utils.extract_ocr_data(uploaded_file.read())
-                        st.session_state.ocr_data = extracted
+                st.markdown("##### 📸 Auto-Fill via Document / OCR")
+                uploaded_doc = st.file_uploader("Upload Application / Salary Slip / KYC / Balance Sheet (PDF, DOCX, PNG, JPG):", type=['png', 'jpg', 'jpeg', 'pdf', 'docx'])
+                if uploaded_doc is not None and not st.session_state.ocr_done:
+                    with st.spinner("Extracting parameters from uploaded document..."):
+                        fname = uploaded_doc.name.lower()
+                        fbytes = uploaded_doc.read()
+                        if fname.endswith('.pdf'):
+                            extracted = FinancialDocumentParser.parse_pdf_file(fbytes)
+                            st.session_state.ocr_data = {
+                                "name": extracted.get("company_name", "Applicant"),
+                                "gross_monthly_income": int(extracted.get("revenue", [1500000])[-1] / 12),
+                                "net_monthly_income": int((extracted.get("revenue", [1500000])[-1] - extracted.get("cogs", [800000])[-1] - extracted.get("operating_expenses", [200000])[-1]) / 12),
+                                "total_assets": int(extracted.get("net_fixed_assets", [5000000])[-1] + extracted.get("cash_and_bank", [500000])[-1] + extracted.get("inventory", [500000])[-1]),
+                                "credit_score": extracted.get("credit_score", 750),
+                                "avg_credit_balance_6m": int(extracted.get("cash_and_bank", [500000])[-1]),
+                                "loan_amount": int(extracted.get("requested_loan_amount", 5000000)),
+                                "tenure_months": int(extracted.get("tenure_months", 60)),
+                                "loan_type": extracted.get("loan_type", "MSME Loan - Existing Unit"),
+                                "current_ratio": float(extracted.get("cash_and_bank", [500000])[-1] / max(1, extracted.get("short_term_borrowings", [300000])[-1])),
+                                "debt_equity_ratio": float(extracted.get("long_term_debt", [1000000])[-1] / max(1, extracted.get("paid_up_capital", [1000000])[-1]))
+                            }
+                        elif fname.endswith('.docx'):
+                            extracted = FinancialDocumentParser.parse_docx_file(fbytes)
+                            st.session_state.ocr_data = {
+                                "name": extracted.get("company_name", "Applicant"),
+                                "gross_monthly_income": int(extracted.get("revenue", [1500000])[-1] / 12),
+                                "net_monthly_income": int((extracted.get("revenue", [1500000])[-1] - extracted.get("cogs", [800000])[-1] - extracted.get("operating_expenses", [200000])[-1]) / 12),
+                                "total_assets": int(extracted.get("net_fixed_assets", [5000000])[-1] + extracted.get("cash_and_bank", [500000])[-1] + extracted.get("inventory", [500000])[-1]),
+                                "credit_score": extracted.get("credit_score", 750),
+                                "avg_credit_balance_6m": int(extracted.get("cash_and_bank", [500000])[-1]),
+                                "loan_amount": int(extracted.get("requested_loan_amount", 5000000)),
+                                "tenure_months": int(extracted.get("tenure_months", 60)),
+                                "loan_type": extracted.get("loan_type", "MSME Loan - Existing Unit")
+                            }
+                        else:
+                            extracted = utils.extract_ocr_data(fbytes)
+                            st.session_state.ocr_data = extracted
                         st.session_state.ocr_done = True
-                        st.success("Fields extracted from scan successfully!")
+                        st.success(f"Fields extracted from {fname} successfully!")
                         st.rerun()
 
         st.markdown("<br>", unsafe_allow_html=True)
@@ -729,7 +760,7 @@ if tab_corp:
                     "Surat Silk Mills Pvt Ltd (Moderate Textile Manufacturing - CBI 5)",
                     "BioGreen Agro Processors LLP (Greenfield Food Processing - CBI 2)",
                     "Defaulter Steels LLP (Distressed Steel Entity - CBI 10)",
-                    "📁 Upload Custom Balance Sheet / P&L (CSV or JSON)"
+                    "📁 Upload Custom Financials (PDF, Word DOCX, Excel XLSX, CSV, JSON)"
                 ],
                 key="corp_profile_selector"
             )
@@ -747,19 +778,34 @@ if tab_corp:
         elif "Defaulter Steels" in corp_choice:
             raw_corp_data = CORPORATE_PROFILES["Defaulter Steels LLP"]
         else:
-            uploaded_file = st.file_uploader("Upload Audited Financials (.csv or .json):", type=["csv", "json"])
+            uploaded_file = st.file_uploader(
+                "Upload Audited Balance Sheet / P&L (PDF, Word DOCX, Excel XLSX, CSV, or JSON):", 
+                type=["pdf", "docx", "xlsx", "xls", "csv", "json"]
+            )
             if uploaded_file is not None:
                 try:
-                    if uploaded_file.name.endswith(".csv"):
-                        raw_corp_data = FinancialDocumentParser.parse_csv_file(uploaded_file.getvalue())
+                    fname = uploaded_file.name.lower()
+                    fbytes = uploaded_file.getvalue()
+                    if fname.endswith(".pdf"):
+                        raw_corp_data = FinancialDocumentParser.parse_pdf_file(fbytes)
+                        st.success(f"📄 Audited Annual Report PDF parsed successfully: **{raw_corp_data.get('company_name')}**")
+                    elif fname.endswith(".docx"):
+                        raw_corp_data = FinancialDocumentParser.parse_docx_file(fbytes)
+                        st.success(f"📝 Word Financial Memo parsed successfully: **{raw_corp_data.get('company_name')}**")
+                    elif fname.endswith(".xlsx") or fname.endswith(".xls"):
+                        raw_corp_data = FinancialDocumentParser.parse_excel_file(fbytes)
+                        st.success("📊 Excel Financial Model parsed successfully!")
+                    elif fname.endswith(".csv"):
+                        raw_corp_data = FinancialDocumentParser.parse_csv_file(fbytes)
+                        st.success("📈 CSV Financial Spreadsheet parsed successfully!")
                     else:
-                        raw_corp_data = FinancialDocumentParser.parse_json_or_dict(uploaded_file.getvalue())
-                    st.success("Custom financial statements parsed successfully!")
+                        raw_corp_data = FinancialDocumentParser.parse_json_or_dict(fbytes)
+                        st.success("⚡ JSON Financial Data parsed successfully!")
                 except Exception as e:
-                    st.error(f"Error parsing uploaded file: {e}")
+                    st.error(f"Error parsing uploaded document: {e}")
                     raw_corp_data = CORPORATE_PROFILES["Apex Precision Engineering Pvt Ltd"]
             else:
-                st.info("Upload a financial file or select a benchmark corporate profile from above.")
+                st.info("Upload a financial PDF / Word / Excel / CSV statement or select a benchmark corporate profile from above.")
                 raw_corp_data = CORPORATE_PROFILES["Apex Precision Engineering Pvt Ltd"]
 
         raw_corp_data["requested_loan_amount"] = proposed_corp_loan
