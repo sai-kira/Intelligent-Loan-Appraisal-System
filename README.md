@@ -15,7 +15,7 @@
 1. [Executive Summary & Problem Statement](#1-executive-summary--problem-statement)
 2. [Key Capabilities & Institutional Value Proposition](#2-key-capabilities--institutional-value-proposition)
 3. [System Architecture & Multi-Agent State Machine](#3-system-architecture--multi-agent-state-machine)
-4. [Deep Dive: The 12 Autonomous Underwriting Agents](#4-deep-dive-the-12-autonomous-underwriting-agents)
+4. [Deep Dive: The 11 Autonomous Underwriting Agents](#4-deep-dive-the-11-autonomous-underwriting-agents)
 5. [Corporate Financial Intelligence, Forensic Audit & Valuation Suite](#5-corporate-financial-intelligence-forensic-audit--valuation-suite)
 6. [PostgreSQL & `pgvector` Architectural Rationale & Implementation](#6-postgresql--pgvector-architectural-rationale--implementation)
 7. [Machine Learning Default Risk Pipeline & Training Data](#7-machine-learning-default-risk-pipeline--training-data)
@@ -54,7 +54,7 @@ The **Central Bank of India Intelligent Loan Appraisal System (ILAS)** is an aut
            ┌──────────────────────────┼──────────────────────────┐
            ▼                          ▼                          ▼
 ┌───────────────────────┐ ┌───────────────────────┐ ┌───────────────────────┐
-│ 🤖 12-Agent LangGraph │ │ ⚖️ Official Scoring   │ │ 📊 Executive Risk &   │
+│ 🤖 11-Agent LangGraph │ │ ⚖️ Official Scoring   │ │ 📊 Executive Risk &   │
 │   Underwriting Engine │ │   & 10-Tier CBI Engine│ │   Portfolio Analytics │
 └───────────────────────┘ └───────────────────────┘ └───────────────────────┘
 ```
@@ -101,7 +101,7 @@ graph TD
 
 ---
 
-## 4. 👥 Deep Dive: The 12 Autonomous Underwriting Agents
+## 4. 👥 Deep Dive: The 11 Autonomous Underwriting Agents
 
 ```
                                   MULTI-AGENT ORCHESTRATION PIPELINE
@@ -112,13 +112,13 @@ graph TD
                   (4. Bank Validation)    ──► (5. Financial Analysis) ──► (6. ML Risk Agent)
                          │                            │                        │
                          ▼                            ▼                        ▼
-                  (7. Policy RAG Agent)   ──► (8. Compliance Agent)   ──► (9. Decision Agent)
+                  (7. Policy RAG Agent)   ──► (8. Corporate Intel)   ──► (9. Compliance Agent)
                                                       │
                                                       ▼
-                                            (10. Report Writing Agent)
+                                            (10. Decision Agent)      ──► (11. Report Writing)
                                                       │
                                                       ▼
-                                            (11. Manager HITL Agent) ──► (12. Audit Agent)
+                                            [Mandatory Credit Manager HITL Review]
 ```
 
 ### Agent 1: 👤 Customer Agent (Privacy & Data Ingestion)
@@ -180,7 +180,15 @@ graph TD
 
 ---
 
-### Agent 8: ⚖️ Sanction & Compliance Agent (AML & Sanctions Screening)
+### Agent 8: 🏢 Corporate Financial Intelligence & Forensic Valuation Agent
+- **Banking Purpose**: Executes multi-year Credit Monitoring Arrangement (CMA) financial spreading, 5-pillar ratio diagnostics, Tandon/Nayak MPBF working capital sizing, forensic early-warning audits, and discounted cash flow enterprise debt sizing.
+- **Mechanism**: Calculates **Altman Z''-Score** (Emerging Market formula) for bankruptcy distress, **Beneish M-Score** (5 manipulation indices: DSRI, GMI, AQI, SGI, TATA) for forensic earnings manipulation detection, 3-Year Macroeconomic Stress simulation, and **DCF Free Cash Flow to Firm (FCFF)** Enterprise Valuation.
+- **State Contribution**: Injects `corporate_financial_intelligence` with complete CMA spreads, working capital assessments, forensic flags, and valuation parameters.
+> 🗣️ **Viva Speaker Note**: *"The Corporate Intelligence Agent performs 3-year CMA spreading, 5-pillar diagnostics, MPBF sizing, Altman Z'' & Beneish M forensic audits, and DCF Enterprise Valuation."*
+
+---
+
+### Agent 9: ⚖️ Sanction & Compliance Agent (AML & Sanctions Screening)
 - **Banking Purpose**: Satisfies statutory Anti-Money Laundering (AML) mandates and negative list screening.
 - **Mechanism**: Validates negative lists, checks for circular transactions, and ensures the entity is not blacklisted by CBoI or IBA.
 - **State Contribution**: Sets `compliance_status: CLEARED`.
@@ -188,7 +196,7 @@ graph TD
 
 ---
 
-### Agent 9: 🎯 Decision Synthesis Agent (Underwriting Arbiter)
+### Agent 10: 🎯 Decision Synthesis Agent (Underwriting Arbiter)
 - **Banking Purpose**: Synthesizes multi-dimensional data points into an actionable sanction recommendation.
 - **Mechanism**:
   - **50-Mark Hurdle Rate Benchmark**: Flags rejection for any MSME scoring $\le 50$ (`CBI 7`–`CBI 10`).
@@ -200,27 +208,11 @@ graph TD
 
 ---
 
-### Agent 10: 📑 Report Writing Agent (CAM Synthesis & Bibliography)
+### Agent 11: 📑 Report Writing Agent (CAM Synthesis & Bibliography)
 - **Banking Purpose**: Produces auditable 7-Chapter Credit Appraisal Memos (CAM) and download-ready Word (`.docx`) dossiers.
-- **Mechanism**: Generates a deterministic bilingual Credit Appraisal Memo containing Executive Summaries, Capacity diagnostics, Scorecard breakdowns, Predictive Risk, and cited policy bibliographies.
+- **Mechanism**: Generates a deterministic bilingual Credit Appraisal Memo containing Executive Summaries, Capacity diagnostics, Scorecard breakdowns, Corporate Intelligence diagnostics, Predictive Risk, and cited policy bibliographies.
 - **State Contribution**: Emits `detailed_report` and `short_report`.
 > 🗣️ **Viva Speaker Note**: *"The Report Writing Agent synthesizes the complete 7-chapter Credit Appraisal Memo with cited regulatory references."*
-
----
-
-### Agent 11: 🛡️ Manager Approval Agent (HITL State Interruption)
-- **Banking Purpose**: Enforces zero auto-sanction policy and guarantees regulatory Human-in-the-Loop governance.
-- **Mechanism**: Suspends the stategraph execution in PostgreSQL (`interrupt()`), awaiting explicit authorization from an authenticated Credit Manager (`CBOI_ADMIN`).
-- **State Contribution**: Emits `decision_outcome: APPROVED (Manager) | REJECTED (Manager)` and records manager override justifications.
-> 🗣️ **Viva Speaker Note**: *"The Manager Approval Agent halts execution in PostgreSQL, ensuring only authorized branch managers can sanction loans."*
-
----
-
-### Agent 12: 🔒 Audit & Governance Agent (Log Chain Security)
-- **Banking Purpose**: Guarantees immutable audit logging for internal vigilance and Reserve Bank of India inspection.
-- **Mechanism**: Secures execution hashes, seals state transitions, and commits complete historical logs into the PostgreSQL audit repository.
-- **State Contribution**: Emits `current_agent: END` and finalizes database persistence.
-> 🗣️ **Viva Speaker Note**: *"The Audit Agent secures the immutable decision log chain for internal vigilance and regulatory audits."*
 
 ---
 

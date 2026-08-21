@@ -7,8 +7,8 @@ from agent_state import LoanApplicationState
 from agents.agent_nodes import (
     customer_agent, document_agent, kyc_agent, validation_agent,
     financial_analysis_agent, ml_risk_agent, policy_retrieval_agent,
-    compliance_agent, decision_agent, report_writing_agent,
-    manager_approval_agent, audit_agent
+    corporate_intelligence_agent, compliance_agent, decision_agent,
+    report_writing_agent, manager_approval_agent, audit_agent
 )
 
 def build_workflow():
@@ -22,6 +22,7 @@ def build_workflow():
     workflow.add_node("financial_analysis_agent", financial_analysis_agent)
     workflow.add_node("ml_risk_agent", ml_risk_agent)
     workflow.add_node("policy_retrieval_agent", policy_retrieval_agent)
+    workflow.add_node("corporate_intelligence_agent", corporate_intelligence_agent)
     workflow.add_node("compliance_agent", compliance_agent)
     workflow.add_node("decision_agent", decision_agent)
     workflow.add_node("report_writing_agent", report_writing_agent)

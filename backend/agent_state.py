@@ -26,3 +26,4 @@ class LoanApplicationState(TypedDict):
     agent_logs: Annotated[List[Dict[str, Any]], operator.add]
     real_name: Optional[str]
     msme_scorecard: Optional[Dict[str, Any]]
+    corporate_financial_intelligence: Optional[Dict[str, Any]]
