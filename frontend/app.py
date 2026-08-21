@@ -1,12 +1,15 @@
 import sys
 import os
 
-# Ensure both the root project directory and frontend directory are in sys.path
+# Ensure root project directory, backend directory, and frontend directory are in sys.path
 ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 FRONTEND_DIR = os.path.abspath(os.path.dirname(__file__))
+BACKEND_DIR = os.path.abspath(os.path.join(ROOT_DIR, "backend"))
 
 if ROOT_DIR not in sys.path:
     sys.path.insert(0, ROOT_DIR)
+if BACKEND_DIR not in sys.path:
+    sys.path.insert(0, BACKEND_DIR)
 if FRONTEND_DIR not in sys.path:
     sys.path.insert(0, FRONTEND_DIR)
 

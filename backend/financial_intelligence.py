@@ -25,6 +25,24 @@ import math
 from typing import Dict, Any, List, Optional
 import numpy as np
 
+try:
+    from msme_scoring_engine import assign_cbi_risk_grade
+except ImportError:
+    try:
+        from backend.msme_scoring_engine import assign_cbi_risk_grade
+    except ImportError:
+        def assign_cbi_risk_grade(score: int) -> Dict[str, Any]:
+            if score >= 90: return {"grade": "CBI 1", "risk_profile": "Minimal Risk (Prime Investment Grade)", "hurdle_rate_met": True}
+            elif score >= 80: return {"grade": "CBI 2", "risk_profile": "Very Low Risk (High Grade)", "hurdle_rate_met": True}
+            elif score >= 70: return {"grade": "CBI 3", "risk_profile": "Low Risk (Upper Medium Grade)", "hurdle_rate_met": True}
+            elif score >= 60: return {"grade": "CBI 4", "risk_profile": "Moderate Risk (Standard Investment Grade)", "hurdle_rate_met": True}
+            elif score >= 55: return {"grade": "CBI 5", "risk_profile": "Acceptable Risk (Lower Medium Grade)", "hurdle_rate_met": True}
+            elif score > 50: return {"grade": "CBI 6", "risk_profile": "Satisfactory Risk (Hurdle Rate Cleared)", "hurdle_rate_met": True}
+            elif score == 50: return {"grade": "CBI 7", "risk_profile": "Watchlist Risk (Exact Hurdle Threshold)", "hurdle_rate_met": True}
+            elif score >= 40: return {"grade": "CBI 8", "risk_profile": "Vulnerable Risk (Sub-Hurdle Rate)", "hurdle_rate_met": False}
+            elif score >= 30: return {"grade": "CBI 9", "risk_profile": "High Vulnerability (Sub-Hurdle Rate)", "hurdle_rate_met": False}
+            else: return {"grade": "CBI 10", "risk_profile": "Substantial Risk / Defaulter", "hurdle_rate_met": False}
+
 # =============================================================================
 # 1. MULTI-YEAR FINANCIAL STATEMENT SPREADER (CMA FORMAT)
 # =============================================================================
@@ -701,10 +719,6 @@ class MSEParameterAutoMapper:
         if is_defaulter:
             total_score = 0
 
-        try:
-            from msme_scoring_engine import assign_cbi_risk_grade
-        except ImportError:
-            from backend.msme_scoring_engine import assign_cbi_risk_grade
         grade_info = assign_cbi_risk_grade(total_score)
 
         return {
