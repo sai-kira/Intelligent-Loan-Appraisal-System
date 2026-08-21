@@ -15,7 +15,7 @@
 1. [Executive Summary & Problem Statement](#1-executive-summary--problem-statement)
 2. [Key Capabilities & Institutional Value Proposition](#2-key-capabilities--institutional-value-proposition)
 3. [System Architecture & Multi-Agent State Machine](#3-system-architecture--multi-agent-state-machine)
-4. [Deep Dive: The 10 Autonomous Underwriting Agents](#4-deep-dive-the-10-autonomous-underwriting-agents)
+4. [Deep Dive: The 12 Autonomous Underwriting Agents](#4-deep-dive-the-12-autonomous-underwriting-agents)
 5. [Corporate Financial Intelligence, Forensic Audit & Valuation Suite](#5-corporate-financial-intelligence-forensic-audit--valuation-suite)
 6. [PostgreSQL & `pgvector` Architectural Rationale & Implementation](#6-postgresql--pgvector-architectural-rationale--implementation)
 7. [Machine Learning Default Risk Pipeline & Training Data](#7-machine-learning-default-risk-pipeline--training-data)
@@ -54,7 +54,7 @@ The **Central Bank of India Intelligent Loan Appraisal System (ILAS)** is an aut
            ┌──────────────────────────┼──────────────────────────┐
            ▼                          ▼                          ▼
 ┌───────────────────────┐ ┌───────────────────────┐ ┌───────────────────────┐
-│ 🤖 10-Agent LangGraph │ │ ⚖️ Official Scoring   │ │ 📊 Executive Risk &   │
+│ 🤖 12-Agent LangGraph │ │ ⚖️ Official Scoring   │ │ 📊 Executive Risk &   │
 │   Underwriting Engine │ │   & 10-Tier CBI Engine│ │   Portfolio Analytics │
 └───────────────────────┘ └───────────────────────┘ └───────────────────────┘
 ```
@@ -101,7 +101,7 @@ graph TD
 
 ---
 
-## 4. 👥 Deep Dive: The 10 Autonomous Underwriting Agents
+## 4. 👥 Deep Dive: The 12 Autonomous Underwriting Agents
 
 ```
                                   MULTI-AGENT ORCHESTRATION PIPELINE
@@ -115,7 +115,10 @@ graph TD
                   (7. Policy RAG Agent)   ──► (8. Compliance Agent)   ──► (9. Decision Agent)
                                                       │
                                                       ▼
-                                           (10. Report & HITL Agent) ──► [Final Sanction Memo]
+                                            (10. Report Writing Agent)
+                                                      │
+                                                      ▼
+                                            (11. Manager HITL Agent) ──► (12. Audit Agent)
 ```
 
 ### Agent 1: 👤 Customer Agent (Privacy & Data Ingestion)
@@ -126,11 +129,11 @@ graph TD
 
 ---
 
-### Agent 2: 📄 Document Extraction Agent (Computer Vision OCR)
-- **Banking Purpose**: Eliminates manual data entry from physical application forms, salary slips, Form 16s, and property title deeds.
-- **Mechanism**: Uses **EasyOCR** computer vision models to scan bounding boxes, extracting gross income, requested limits, and collateral values into structured Pydantic models.
+### Agent 2: 📄 Document Extraction Agent (Computer Vision & Multi-Format OCR)
+- **Banking Purpose**: Eliminates manual data entry from physical forms, salary slips, Form 16s, and PDF/Word/Excel balance sheets.
+- **Mechanism**: Uses **EasyOCR**, `pypdf`, and `python-docx` to scan text and tabular bounding boxes, extracting gross income, requested limits, and balance sheet items into structured Pydantic models.
 - **State Contribution**: Injects structured numerical key-value pairs into `extracted_documents`.
-> 🗣️ **Viva Speaker Note**: *"The Document Agent turns raw scanned paperwork into validated digital financial records using OCR."*
+> 🗣️ **Viva Speaker Note**: *"The Document Agent turns raw scanned paperwork and multi-format files into validated digital financial records."*
 
 ---
 
@@ -151,7 +154,7 @@ graph TD
 ---
 
 ### Agent 5: 📊 Financial Analysis Agent (Scoring & Pricing Engine)
-- **Banking Purpose**: Executes the quantitative underwriting calculations, evaluates cash-flow debt serviceability, and assigns statutory interest rates.
+- **Banking Purpose**: Executes quantitative underwriting calculations, evaluates cash-flow debt serviceability, and assigns statutory interest rates.
 - **Mechanism**:
   1. **Retail Advances**: Calculates monthly **EMI**, **FOIR** (capped at $50\%$), and **LTV** (capped at $75\%-90\%$).
   2. **MSME Advances**: Runs the official **Form MSE 1 (13 parameters)** or **Form MSE II (9 parameters)** scoring algorithm, assigning scores out of $100$ and mapping to **`CBI 1` to `CBI 10`**.
@@ -186,22 +189,38 @@ graph TD
 ---
 
 ### Agent 9: 🎯 Decision Synthesis Agent (Underwriting Arbiter)
-- **Banking Purpose**: Synthesizes multi-dimensional data points into an actionable sanction disposition.
+- **Banking Purpose**: Synthesizes multi-dimensional data points into an actionable sanction recommendation.
 - **Mechanism**:
-  - **50-Mark Hurdle Rate Benchmark**: Automatically rejects any MSME scoring $\le 50$ (`CBI 7`–`CBI 10`).
+  - **50-Mark Hurdle Rate Benchmark**: Flags rejection for any MSME scoring $\le 50$ (`CBI 7`–`CBI 10`).
   - **Defaulter Override Rule**: Overdue $> 3$ months forces score to `0` / `CBI 10` (Rejection).
   - **Special Covenants**: Attaches liquidity and turnover covenants to moderate passing grades (`CBI 5` / `CBI 6`).
   - **Retail Rule**: Validates $\text{FOIR} \le 50\%$, $\text{LTV} \le \text{Ceiling}$, and $\text{CIBIL} \ge 700$.
 - **State Contribution**: Emits `decision_outcome: APPROVED | REJECTED`.
-> 🗣️ **Viva Speaker Note**: *"The Decision Agent enforces the 50-mark Hurdle Rate and synthesizes financial, ML, and policy inputs into a final recommendation."*
+> 🗣️ **Viva Speaker Note**: *"The Decision Agent enforces the 50-mark Hurdle Rate and synthesizes financial, ML, and policy inputs into a final underwriting recommendation."*
 
 ---
 
-### Agent 10: 📑 Report Writing & HITL Agent (Governance & Memos)
-- **Banking Purpose**: Produces auditable Credit Appraisal Memos (CAM) and enforces Human-in-the-Loop manager sign-offs.
-- **Mechanism**: Generates a deterministic 6-section bilingual Credit Appraisal Memo (CAM), saves state checkpoints in PostgreSQL (`PostgresSaver`), and presents files to the Credit Manager for formal approval or override.
-- **State Contribution**: Emits `detailed_report`, `short_report`, and logs manager override justifications directly to database audit tables.
-> 🗣️ **Viva Speaker Note**: *"The Report & HITL Agent generates the formal Credit Appraisal Memo and enables Human-in-the-Loop manager governance."*
+### Agent 10: 📑 Report Writing Agent (CAM Synthesis & Bibliography)
+- **Banking Purpose**: Produces auditable 7-Chapter Credit Appraisal Memos (CAM) and download-ready Word (`.docx`) dossiers.
+- **Mechanism**: Generates a deterministic bilingual Credit Appraisal Memo containing Executive Summaries, Capacity diagnostics, Scorecard breakdowns, Predictive Risk, and cited policy bibliographies.
+- **State Contribution**: Emits `detailed_report` and `short_report`.
+> 🗣️ **Viva Speaker Note**: *"The Report Writing Agent synthesizes the complete 7-chapter Credit Appraisal Memo with cited regulatory references."*
+
+---
+
+### Agent 11: 🛡️ Manager Approval Agent (HITL State Interruption)
+- **Banking Purpose**: Enforces zero auto-sanction policy and guarantees regulatory Human-in-the-Loop governance.
+- **Mechanism**: Suspends the stategraph execution in PostgreSQL (`interrupt()`), awaiting explicit authorization from an authenticated Credit Manager (`CBOI_ADMIN`).
+- **State Contribution**: Emits `decision_outcome: APPROVED (Manager) | REJECTED (Manager)` and records manager override justifications.
+> 🗣️ **Viva Speaker Note**: *"The Manager Approval Agent halts execution in PostgreSQL, ensuring only authorized branch managers can sanction loans."*
+
+---
+
+### Agent 12: 🔒 Audit & Governance Agent (Log Chain Security)
+- **Banking Purpose**: Guarantees immutable audit logging for internal vigilance and Reserve Bank of India inspection.
+- **Mechanism**: Secures execution hashes, seals state transitions, and commits complete historical logs into the PostgreSQL audit repository.
+- **State Contribution**: Emits `current_agent: END` and finalizes database persistence.
+> 🗣️ **Viva Speaker Note**: *"The Audit Agent secures the immutable decision log chain for internal vigilance and regulatory audits."*
 
 ---
 
