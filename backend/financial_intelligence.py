@@ -11,6 +11,16 @@ Contains:
 6. Automated Form MSE 1 & II Parameter Auto-Mapper & CBI Grading
 """
 
+import sys
+import os
+
+BACKEND_DIR = os.path.dirname(os.path.abspath(__file__))
+ROOT_DIR = os.path.abspath(os.path.join(BACKEND_DIR, ".."))
+if BACKEND_DIR not in sys.path:
+    sys.path.insert(0, BACKEND_DIR)
+if ROOT_DIR not in sys.path:
+    sys.path.insert(0, ROOT_DIR)
+
 import math
 from typing import Dict, Any, List, Optional
 import numpy as np
@@ -691,7 +701,10 @@ class MSEParameterAutoMapper:
         if is_defaulter:
             total_score = 0
 
-        from msme_scoring_engine import assign_cbi_risk_grade
+        try:
+            from msme_scoring_engine import assign_cbi_risk_grade
+        except ImportError:
+            from backend.msme_scoring_engine import assign_cbi_risk_grade
         grade_info = assign_cbi_risk_grade(total_score)
 
         return {
