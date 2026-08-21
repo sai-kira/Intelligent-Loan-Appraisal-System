@@ -250,8 +250,13 @@ if "logged_in" not in st.session_state:
 if "polling" not in st.session_state:
     st.session_state.polling = False
 
+import base64
+
 # Sidebar Auth
 with st.sidebar:
+    logo_file = os.path.join(FRONTEND_DIR, "Logo.png")
+    if os.path.exists(logo_file):
+        st.image(logo_file, use_container_width=True)
     st.markdown("### 🔐 Security & Access")
     st.session_state.role = st.radio("Select Portal Role:", ["Applicant", "Credit Manager"])
 
@@ -278,17 +283,22 @@ with st.sidebar:
     st.markdown("---")
     st.caption("🏦 **Central Bank of India**  \nAutomated Credit Appraisal System  \nVersion 2.4 | Base RBLR @ 8.25%")
 
-# Top Institutional Header Bar
+# Top Institutional Header Bar with embedded logo
 logo_path = os.path.join(FRONTEND_DIR, "Logo.png")
-logo_tag = ""
-if os.path.exists(logo_path) or os.path.exists("Logo.png"):
-    active_logo = logo_path if os.path.exists(logo_path) else "Logo.png"
+logo_img_html = ""
+if os.path.exists(logo_path):
+    with open(logo_path, "rb") as img_f:
+        encoded_logo = base64.b64encode(img_f.read()).decode("utf-8")
+        logo_img_html = f'<img src="data:image/png;base64,{encoded_logo}" style="height: 52px; margin-right: 18px; border-radius: 6px; background: white; padding: 4px;" alt="Central Bank of India Logo"/>'
 
-st.markdown("""
+st.markdown(f"""
 <div class="cboi-brand-header">
-    <div>
-        <h1 class="cboi-brand-title">सेन्ट्रल बैंक ऑफ़ इंडिया | Central Bank of India</h1>
-        <div class="cboi-brand-subtitle">Autonomous Intelligent Loan Appraisal & Corporate Financial Underwriting Platform</div>
+    <div style="display: flex; align-items: center;">
+        {logo_img_html}
+        <div>
+            <h1 class="cboi-brand-title">सेन्ट्रल बैंक ऑफ़ इंडिया | Central Bank of India</h1>
+            <div class="cboi-brand-subtitle">Autonomous Intelligent Loan Appraisal & Corporate Financial Underwriting Platform</div>
+        </div>
     </div>
     <div style="text-align: right;">
         <span class="chip-safe" style="font-size: 0.8rem; padding: 5px 12px;">🟢 Core Underwriting Engine Online</span>
@@ -952,8 +962,13 @@ if tab_corp:
         with c_tab6:
             st.markdown(f"##### 🏛️ Central Bank Form MSE 1 Auto-Populated Scorecard (Grade: {mse_scorecard['grade']})")
             rows = []
-            for item in mse_scorecard["breakdown"]:
-                rows.append({"Parameter": item["parameter"], "Score Awarded": item["score"], "Max Marks": item["max_score"], "Diagnostic Benchmark": item["description"]})
+            scorecard_items = mse_scorecard.get("parameter_scores") or mse_scorecard.get("breakdown") or []
+            for item in scorecard_items:
+                param_name = item.get("param") or item.get("parameter") or "Parameter"
+                score_val = item.get("score", 0)
+                max_score_val = item.get("max") or item.get("max_score") or 10
+                diag_val = item.get("value") or item.get("description") or ""
+                rows.append({"Parameter": param_name, "Score Awarded": score_val, "Max Marks": max_score_val, "Diagnostic Benchmark / Metric": diag_val})
             st.dataframe(pd.DataFrame(rows), use_container_width=True, hide_index=True)
 
         st.markdown("<br>", unsafe_allow_html=True)
