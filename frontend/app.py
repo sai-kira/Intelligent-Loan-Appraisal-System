@@ -95,15 +95,21 @@ elif os.path.exists("Logo.png"):
     st.image("Logo.png", width=300)
 
 if st.session_state.role == "Applicant":
-    tabs = st.tabs(["📄 Applicant Portal", "🏢 Corporate Financial Intelligence & Valuation Hub"])
+    tabs = st.tabs(["📄 Applicant Portal"])
     tab1 = tabs[0]
-    tab_corp = tabs[1]
+    tab_corp = None
     tab2 = None
 else:
-    tabs = st.tabs(["📄 Applicant Portal", "🏢 Corporate Financial Intelligence & Valuation Hub", "🛡️ Credit Manager Dashboard"])
-    tab1 = tabs[0]
-    tab_corp = tabs[1]
-    tab2 = tabs[2]
+    if not (st.session_state.role == "Credit Manager" and st.session_state.logged_in):
+        tabs = st.tabs(["📄 Applicant Portal", "🔒 Manager Access Required"])
+        tab1 = tabs[0]
+        tab_corp = None
+        tab2 = tabs[1]
+    else:
+        tabs = st.tabs(["📄 Applicant Portal", "🏢 Corporate Financial Intelligence & Valuation Hub", "🛡️ Credit Manager Dashboard"])
+        tab1 = tabs[0]
+        tab_corp = tabs[1]
+        tab2 = tabs[2]
 
 with tab1:
     tab_apply, tab_track = st.tabs(["📝 Submit New Application", "🔍 Track Application Status"])
@@ -446,11 +452,12 @@ with tab1:
 # =============================================================================
 # TOP-LEVEL TAB: CORPORATE FINANCIAL INTELLIGENCE & VALUATION HUB
 # =============================================================================
-with tab_corp:
-    st.header("🏢 Corporate Financial Intelligence & Valuation Hub")
-    st.caption("Autonomous Multi-Year CMA Spreading, 5-Pillar Diagnostics, Forensic Accounting (Altman Z'' & Beneish M-Score), Macro Stress Simulator & DCF Valuation")
+if tab_corp:
+    with tab_corp:
+        st.header("🏢 Corporate Financial Intelligence & Valuation Hub")
+        st.caption("Autonomous Multi-Year CMA Spreading, 5-Pillar Diagnostics, Forensic Accounting (Altman Z'' & Beneish M-Score), Macro Stress Simulator & DCF Valuation")
 
-    col_sel1, col_sel2 = st.columns([3, 2])
+        col_sel1, col_sel2 = st.columns([3, 2])
     with col_sel1:
         corp_choice = st.selectbox(
             "Select Corporate Profile or Upload Financials:",
