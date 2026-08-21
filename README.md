@@ -16,21 +16,22 @@
 2. [Key Capabilities & Institutional Value Proposition](#2-key-capabilities--institutional-value-proposition)
 3. [System Architecture & Multi-Agent State Machine](#3-system-architecture--multi-agent-state-machine)
 4. [Deep Dive: The 10 Autonomous Underwriting Agents](#4-deep-dive-the-10-autonomous-underwriting-agents)
-5. [PostgreSQL & `pgvector` Architectural Rationale & Implementation](#5-postgresql--pgvector-architectural-rationale--implementation)
-6. [Machine Learning Default Risk Pipeline & Training Data](#6-machine-learning-default-risk-pipeline--training-data)
-7. [Underwriting Formulations & Scoring Models](#7-underwriting-formulations--scoring-models)
-   - [7.1 Retail Underwriting Norms (LTV & FOIR)](#71-retail-underwriting-norms-ltv--foir)
-   - [7.2 MSME Form MSE 1 (Existing Units - 13 Parameters)](#72-msme-form-mse-1-existing-units---13-parameters)
-   - [7.3 MSME Form MSE II (Greenfield Units - 9 Parameters)](#73-msme-form-mse-ii-greenfield-units---9-parameters)
-   - [7.4 Official 10-Tier Central Bank Risk Grades (CBI 1 to CBI 10)](#74-official-10-tier-central-bank-risk-grades-cbi-1-to-cbi-10)
-   - [7.5 Statutory 50-Mark Hurdle Rate & Defaulter Override Rule](#75-statutory-50-mark-hurdle-rate--defaulter-override-rule)
-   - [7.6 Official RBLR Interest Rate Engine (01.07.2026 Master Circular)](#76-official-rblr-interest-rate-engine-01072026-master-circular)
-8. [Executive Risk & Portfolio Analytics Dashboard (Snapshots)](#8-executive-risk--portfolio-analytics-dashboard-snapshots)
-9. [Technology Stack & Comprehensive Dependency Matrix](#9-technology-stack--comprehensive-dependency-matrix)
-10. [Step-by-Step Local Installation & Setup Guide](#10-step-by-step-local-installation--setup-guide)
-11. [REST API Endpoints Reference](#11-rest-api-endpoints-reference)
-12. [Benchmark Evaluation & Verification Matrix](#12-benchmark-evaluation--verification-matrix)
-13. [Repository File Tree](#13-repository-file-tree)
+5. [Corporate Financial Intelligence, Forensic Audit & Valuation Suite](#5-corporate-financial-intelligence-forensic-audit--valuation-suite)
+6. [PostgreSQL & `pgvector` Architectural Rationale & Implementation](#6-postgresql--pgvector-architectural-rationale--implementation)
+7. [Machine Learning Default Risk Pipeline & Training Data](#7-machine-learning-default-risk-pipeline--training-data)
+8. [Underwriting Formulations & Scoring Models](#8-underwriting-formulations--scoring-models)
+   - [8.1 Retail Underwriting Norms (LTV & FOIR)](#81-retail-underwriting-norms-ltv--foir)
+   - [8.2 MSME Form MSE 1 (Existing Units - 13 Parameters)](#82-msme-form-mse-1-existing-units---13-parameters)
+   - [8.3 MSME Form MSE II (Greenfield Units - 9 Parameters)](#83-msme-form-mse-ii-greenfield-units---9-parameters)
+   - [8.4 Official 10-Tier Central Bank Risk Grades (CBI 1 to CBI 10)](#84-official-10-tier-central-bank-risk-grades-cbi-1-to-cbi-10)
+   - [8.5 Statutory 50-Mark Hurdle Rate & Defaulter Override Rule](#85-statutory-50-mark-hurdle-rate--defaulter-override-rule)
+   - [8.6 Official RBLR Interest Rate Engine (01.07.2026 Master Circular)](#86-official-rblr-interest-rate-engine-01072026-master-circular)
+9. [Executive Risk & Portfolio Analytics Dashboard (Snapshots)](#9-executive-risk--portfolio-analytics-dashboard-snapshots)
+10. [Technology Stack & Comprehensive Dependency Matrix](#10-technology-stack--comprehensive-dependency-matrix)
+11. [Step-by-Step Local Installation & Setup Guide](#11-step-by-step-local-installation--setup-guide)
+12. [REST API Endpoints Reference](#12-rest-api-endpoints-reference)
+13. [Benchmark Evaluation & Verification Matrix](#13-benchmark-evaluation--verification-matrix)
+14. [Repository File Tree](#14-repository-file-tree)
 
 ---
 
@@ -207,7 +208,38 @@ graph TD
 
 ---
 
-## 5. 🗄️ PostgreSQL & `pgvector` Architectural Rationale & Implementation
+## 5. 🏢 Corporate Financial Intelligence, Forensic Audit & Valuation Suite
+
+The system incorporates an institutional **Corporate Financial Intelligence & Forensic Underwriting Hub** (`backend/financial_intelligence.py` & `backend/financial_document_parser.py`) for commercial and MSME credit facilities:
+
+### 5.1 Multi-Year CMA Financial Spreading
+- Formats 3-Year balance sheets and profit & loss statements across historical and audited accounting periods (FY24, FY25, FY26).
+- Reconciles Gross Turnover, COGS, EBITDA, EBIT, Finance Charges, PAT, and Cash Accruals ($PAT + \text{Depreciation}$).
+
+### 5.2 5-Pillar Ratio Diagnostics & MPBF Working Capital Sizing
+- **Liquidity & Solvency**: Evaluates Current Ratio ($\ge 1.33$), Quick Ratio, Debt-Equity Ratio ($DER \le 2.0$), TOL/TNW, and DSCR ($\ge 1.20x$).
+- **Statutory Working Capital Sizing**:
+  - **Tandon Committee Method I**: $75\% \times (\text{Total Current Assets} - \text{Other Current Liabilities})$.
+  - **Tandon Committee Method II**: $75\% \times \text{Total Current Assets} - \text{Other Current Liabilities}$.
+  - **Nayak Committee Turnover Model**: $20\% \times \text{Projected Annual Turnover}$ for facilities up to ₹5 Crores.
+
+### 5.3 Forensic Distress Early Warning: Altman Z'' & Beneish M-Score
+1. **Emerging Market Altman Z''-Score**:
+   $$Z'' = 6.56 X_1 + 3.26 X_2 + 6.72 X_3 + 1.05 X_4$$
+   - $Z'' > 2.60$: **Safe Zone (Minimal Distress)**
+   - $1.10 \le Z'' \le 2.60$: **Grey Zone (Vulnerable)**
+   - $Z'' < 1.10$: **Distress Zone (High Default Probability)**
+2. **Beneish M-Score (Earnings Manipulation Detection)**:
+   - Evaluates 5 forensic indices: **DSRI** (Days Sales in Receivables), **GMI** (Gross Margin Index), **AQI** (Asset Quality Index), **SGI** (Sales Growth Index), and **TATA** (Total Accruals to Total Assets).
+   - Threshold: $\text{M-Score} > -1.78$ indicates high probability of accounting manipulation.
+
+### 5.4 3-Year Macro Stress Testing & DCF Enterprise Valuation
+- **Real-Time Macro Stress Testing**: Simulates demand contractions (Revenue $-40\%$ to $+20\%$), supply-chain cost inflation (COGS $+0\%$ to $+30\%$), and RBLR rate spikes ($+0$ to $+400\text{ bps}$) to test forward DSCR solvency.
+- **Discounted Cash Flow (DCF)**: Calculates 5-Year Free Cash Flow to Firm (FCFF), Terminal Value, Enterprise Value (EV), Equity Value, and Loan-to-Enterprise Value ($LTV_{EV} \le 35\%$).
+
+---
+
+## 6. 🗄️ PostgreSQL & `pgvector` Architectural Rationale & Implementation
 
 ### Why PostgreSQL + `pgvector` was Chosen Over Standalone Vector DBs (Pinecone, Chroma, Milvus)
 1. **ACID Transactional Integrity**: Banking systems require strict ACID guarantees. Having relational tables, loan history, LangGraph state checkpoints, and vector embeddings in a single database prevents synchronization drift and distributed transaction failures.
@@ -275,9 +307,9 @@ $$RRF\_Score(d) = \sum_{m \in \{dense, sparse\}} \frac{1}{k + rank_m(d)} \quad \
 
 ---
 
-## 6. 🧠 Machine Learning Default Risk Pipeline & Training Data
+## 7. 🧠 Machine Learning Default Risk Pipeline & Training Data
 
-### 6.1 Training Data Architecture & Basel II/III Alignment
+### 7.1 Training Data Architecture & Basel II/III Alignment
 The ML risk model is trained on synthetic loan portfolios modeled after Indian commercial bank credit books under **Basel II/III internal ratings-based (IRB)** standards:
 
 ```
@@ -298,14 +330,14 @@ CUST_1002,31,45000.0,610,4,3,1500000.0,9.00,58.2,88.23,1
 CUST_1003,50,450000.0,810,3,0,10000000.0,8.15,24.1,55.00,0
 ```
 
-### 6.2 Feature Engineering (23 Features)
+### 7.2 Feature Engineering (23 Features)
 1. **Numerical Features**: `AGE`, `GROSS_MONTHLY_INC`, `NET_MONTHLY_INC`, `AVG_CREDIT_BAL_6M`, `CREDIT_SCORE`, `ACTIVE_LINES`, `INQUIRIES_6M`, `EXISTING_EMI`, `TOTAL_ASSETS`, `SANCTION_AMT`, `INT_RATE`, `TENURE_MTHS`, `ASSESSED_VAL`, `CALCULATED_FOIR`, `CALCULATED_LTV`.
 2. **Derived Ratios**:
    $$\text{Income to Loan Ratio} = \frac{\text{Gross Monthly Income} \times 12}{\text{Sanction Amount}}$$
    $$\text{Assets to Loan Ratio} = \frac{\text{Total Assets}}{\text{Sanction Amount}}$$
 3. **Categoricals (Encoded)**: `GENDER`, `MARITAL_STATUS`, `CATEGORY`, `OCCUPATION`, `LOAN_TYPE`, `SECURITY_TYPE`.
 
-### 6.3 Model Performance Metrics
+### 7.3 Model Performance Metrics
 - **Algorithm**: `xgboost.XGBClassifier` (max_depth=5, n_estimators=150, learning_rate=0.05).
 - **ROC-AUC Score**: **0.942**
 - **Classification Accuracy**: **89.6%**
@@ -313,9 +345,9 @@ CUST_1003,50,450000.0,810,3,0,10000000.0,8.15,24.1,55.00,0
 
 ---
 
-## 7. 📐 Underwriting Formulations & Scoring Models
+## 8. 📐 Underwriting Formulations & Scoring Models
 
-### 7.1 Retail Underwriting Norms (LTV & FOIR)
+### 8.1 Retail Underwriting Norms (LTV & FOIR)
 
 1. **Equated Monthly Installment (EMI)**:
    $$\text{EMI} = P \times r \times \frac{(1+r)^n}{(1+r)^n - 1}$$
@@ -334,7 +366,7 @@ CUST_1003,50,450000.0,810,3,0,10000000.0,8.15,24.1,55.00,0
 
 ---
 
-### 7.2 MSME Form MSE 1 (Existing Units - 13 Parameters)
+### 8.2 MSME Form MSE 1 (Existing Units - 13 Parameters)
 
 Total Score: **100 Marks** across 4 categories:
 
@@ -357,7 +389,7 @@ Total Score: **100 Marks** across 4 categories:
 
 ---
 
-### 7.3 MSME Form MSE II (Greenfield Units - 9 Parameters)
+### 8.3 MSME Form MSE II (Greenfield Units - 9 Parameters)
 
 Total Score: **100 Marks** evaluating startup feasibility and promoter standing:
 
@@ -376,7 +408,7 @@ Total Score: **100 Marks** evaluating startup feasibility and promoter standing:
 
 ---
 
-### 7.4 Official 10-Tier Central Bank Risk Grades (CBI 1 to CBI 10)
+### 8.4 Official 10-Tier Central Bank Risk Grades (CBI 1 to CBI 10)
 
 Directly mapped from the official Central Bank of India risk rating framework (`Risk_Grades_Table.docx`):
 
@@ -395,7 +427,7 @@ Directly mapped from the official Central Bank of India risk rating framework (`
 
 ---
 
-### 7.5 Statutory 50-Mark Hurdle Rate & Defaulter Override Rule
+### 8.5 Statutory 50-Mark Hurdle Rate & Defaulter Override Rule
 
 1. **Statutory Hurdle Rate Benchmark**:
    - Every MSME borrower must achieve a total score **$> 50$ marks** (`CBI 1` to `CBI 6`).
@@ -405,7 +437,7 @@ Directly mapped from the official Central Bank of India risk rating framework (`
 
 ---
 
-### 7.6 Official RBLR Interest Rate Engine (01.07.2026 Master Circular)
+### 8.6 Official RBLR Interest Rate Engine (01.07.2026 Master Circular)
 
 All facilities are dynamically priced against the **Central Bank of India Master Circular on Rate of Interest (01.07.2026)**:
 
@@ -435,7 +467,7 @@ $$\text{Base RBLR} = \text{RBI Repo Rate (5.25\%)} + \text{Bank Spread (1.85\%)}
 
 ---
 
-## 8. 📊 Executive Risk & Portfolio Analytics Dashboard (Snapshots)
+## 9. 📊 Executive Risk & Portfolio Analytics Dashboard (Snapshots)
 
 Integrated into the Credit Manager view (`CBOI_ADMIN`), the executive dashboard provides real-time Asset-Liability Committee (ALCO) portfolio monitoring:
 
@@ -460,7 +492,7 @@ By default, the analytics dashboard strictly evaluates the **Sanctioned Credit B
 
 ---
 
-## 9. 🛠️ Technology Stack & Comprehensive Dependency Matrix
+## 10. 🛠️ Technology Stack & Comprehensive Dependency Matrix
 
 | Library / Dependency | Primary Function in ILAS | Why Chosen over Alternatives |
 |---|---|---|
@@ -479,12 +511,13 @@ By default, the analytics dashboard strictly evaluates the **Sanctioned Credit B
 | **`plotly`** (`>=5.20.0`) | High-definition interactive charting engine | Much richer and more responsive than static Matplotlib/Seaborn charts; supports zoom, pan, and hover telemetry. |
 | **`easyocr`** (`>=1.7.0`) | Deep learning optical character recognition for document scans | Highly accurate on multilingual and noisy Indian banking documents compared to legacy Tesseract. |
 | **`Pillow`** (`>=10.2.0`) | Image processing and manipulation pipeline | Standard Python Imaging Library for OCR pre-processing. |
-| **`python-docx`** (`>=1.1.0`) | Microsoft Word (.docx) formal appraisal memo generation | Creates pixel-perfect, downloadable corporate credit memos matching Central Bank of India formatting. |
+| **`pypdf`** (`>=4.0.0`) | Multi-page PDF financial statement and report extraction | Robust native parsing of audited annual reports and financial statements. |
+| **`python-docx`** (`>=1.1.0`) | Microsoft Word (.docx) formal appraisal memo generation & ingestion | Creates pixel-perfect, downloadable corporate credit memos matching Central Bank of India formatting and parses Word financials. |
 | **`pydantic`** (`>=2.6.0`) | Data validation and type enforcement for applicant payloads | Strict schema validation with instant error feedback before state ingestion. |
 
 ---
 
-## 10. 💻 Step-by-Step Local Installation & Setup Guide
+## 11. 💻 Step-by-Step Local Installation & Setup Guide
 
 Follow this guide to get the complete ILAS system running on your local machine:
 
@@ -513,7 +546,7 @@ venv\Scripts\activate
 ```
 
 **On Linux / macOS:**
-```bash
+```powershell
 python3 -m venv venv
 source venv/bin/activate
 ```
@@ -567,15 +600,15 @@ python backend/rag/ingest.py
 
 ---
 
-### 7. Run the Application Services
+### 7. Launch Backend and Frontend Servers
 
-**Terminal 1: Start the FastAPI Backend Service**
+**Terminal 1 (Backend FastAPI Service):**
 ```bash
 python backend/main.py
 ```
-*Backend is live at `http://127.0.0.1:8000` (Interactive Swagger Docs at `http://127.0.0.1:8000/docs`)*
+*Backend runs at `http://127.0.0.1:8000` with Swagger docs at `http://127.0.0.1:8000/docs`*
 
-**Terminal 2: Start the Streamlit User & Manager Portal**
+**Terminal 2 (Frontend Streamlit Application):**
 ```bash
 streamlit run frontend/app.py --server.port 8501
 ```
@@ -592,7 +625,7 @@ python -X utf8 backend/test_system_e2e_verification.py
 
 ---
 
-## 11. 🔌 REST API Endpoints Reference
+## 12. 🔌 REST API Endpoints Reference
 
 The FastAPI backend exposes the following RESTful endpoints:
 
@@ -607,7 +640,7 @@ The FastAPI backend exposes the following RESTful endpoints:
 
 ---
 
-## 12. 🧪 Benchmark Evaluation & Verification Matrix
+## 13. 🧪 Benchmark Evaluation & Verification Matrix
 
 The platform was evaluated against 8 standard institutional credit scenarios:
 
@@ -624,7 +657,7 @@ The platform was evaluated against 8 standard institutional credit scenarios:
 
 ---
 
-## 13. 📁 Repository File Tree
+## 14. 📁 Repository File Tree
 
 ```
 ├── backend/
@@ -633,7 +666,10 @@ The platform was evaluated against 8 standard institutional credit scenarios:
 │   ├── calculators.py                  # EMI compounding, FOIR, and RBI LTV compliance checks
 │   ├── roi_engine.py                   # Official CBoI 01.07.2026 RBLR rate engine
 │   ├── msme_scoring_engine.py          # Form MSE 1 & II scoring, CBI 1-10 mapping & Hurdle Rate
-│   ├── report_generator.py             # Deterministic 6-section appraisal memo synthesizer
+│   ├── financial_intelligence.py       # Corporate financial spreading, 5-pillar ratios, Altman Z'', Beneish M, MPBF & DCF
+│   ├── financial_document_parser.py    # Multi-format document parser (PDF, DOCX, XLSX, CSV, JSON, Fuzzy OCR)
+│   ├── corporate_profiles.py           # Pre-configured benchmark corporate profiles & financial spreads
+│   ├── report_generator.py             # Deterministic 7-chapter appraisal memo synthesizer (includes Chapter 4)
 │   ├── agents/
 │   │   └── agent_nodes.py              # 10 autonomous LangGraph agent node functions
 │   ├── rag/
@@ -645,8 +681,8 @@ The platform was evaluated against 8 standard institutional credit scenarios:
 │   │   └── ROI_Retail_MSME.txt         # CBoI 01.07.2026 Master Circular on Rate of Interest
 │   └── test_system_e2e_verification.py # Automated 100% verification test suite
 ├── frontend/
-│   ├── app.py                          # Streamlit UI (1-Click Demo Loaders, Analytics, HITL)
-│   ├── utils.py                        # EasyOCR scanner & Word (.docx) memo generator
+│   ├── app.py                          # Streamlit UI (1-Click Demo Loaders, Corporate Hub, Analytics, HITL)
+│   ├── utils.py                        # EasyOCR scanner & publication-grade Word (.docx) memo generator
 │   └── Logo.png                        # Central Bank of India official logo
 ├── ml_pipeline/
 │   ├── train_xgboost.py                # Script to train XGBoost credit default model
