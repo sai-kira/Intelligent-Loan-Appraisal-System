@@ -34,15 +34,11 @@ graph TD
     D --> E[4. Credit Risk ML Agent - XGBoost/SHAP]
     E --> F[5. Regulatory RAG Agent - pgvector Hybrid Search]
     F --> G[6. Sanction & Compliance Agent]
-    G --> H[7. Fraud & Anomaly Agent]
-    H --> I{Decision Splitter}
+    G --> H[7. Decision Synthesis Agent - Recommendation]
+    H --> I[8. Report Generation Agent - CAM Synthesis]
     
-    I -- Meets Auto-Sanction --> J[8. Report Generation Agent]
-    I -- Borderline / High Value --> K[9. Manager Approval HITL Node]
-    K -- Manager Decision Approved/Rejected --> J
-    
-    J --> L[10. Notification & Audit Log Agent]
-    L --> M([🏁 Final Sanction / Appraisal Memo Delivered])
+    I --> J["🛡️ Mandatory Credit Manager Review (HITL Queue)\n[Status: WAITING_FOR_MANAGER]"]
+    J -->|Manager Formal Approval / Rejection / Override| K([🏁 Final Sanction / Appraisal Memo Delivered])
 ```
 
 ### 1.1 The 10 Autonomous Underwriting Agents

@@ -92,14 +92,11 @@ graph TD
     F --> G[6. Predictive ML Risk Agent - XGBoost/SHAP]
     G --> H[7. Policy Retrieval Agent - pgvector Hybrid RAG]
     H --> I[8. Sanction & Compliance Agent]
-    I --> J[9. Decision Synthesis Agent]
+    I --> J[9. Decision Synthesis Agent - Recommendation]
+    J --> K[10. Report Writing Agent - CAM Synthesis]
     
-    J --> K{Underwriting Disposition}
-    K -- Auto-Sanction Eligible --> L[10. Report & HITL Agent]
-    K -- Discretionary / High Value --> M[🛡️ Credit Manager Review Node]
-    M -- Manager Decision Approved/Rejected --> L
-    
-    L --> N([📄 Formal Appraisal Memo & Final Sanction])
+    K --> L["🛡️ Mandatory Credit Manager Review (HITL Queue)\n[Status: WAITING_FOR_MANAGER]"]
+    L -->|Manager Formal Approval / Rejection / Override| M([📄 Disbursal Sanction / Rejection Memo Stamped])
 ```
 
 ---
