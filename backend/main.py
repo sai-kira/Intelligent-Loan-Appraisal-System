@@ -1,3 +1,12 @@
+import sys
+import os
+BACKEND_DIR = os.path.dirname(os.path.abspath(__file__))
+ROOT_DIR = os.path.abspath(os.path.join(BACKEND_DIR, ".."))
+if BACKEND_DIR not in sys.path:
+    sys.path.insert(0, BACKEND_DIR)
+if ROOT_DIR not in sys.path:
+    sys.path.insert(0, ROOT_DIR)
+
 from fastapi import FastAPI, HTTPException, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
@@ -276,5 +285,117 @@ async def get_history():
         })
     return history
 
+# =============================================================================
+# CORPORATE FINANCIAL INTELLIGENCE & FORENSIC VALUATION ENDPOINTS
+# =============================================================================
+
+from financial_intelligence import (
+    FinancialStatementSpreader,
+    RatioDiagnosticsEngine,
+    ForensicAuditor,
+    FinancialForecaster,
+    EnterpriseValuator,
+    MSEParameterAutoMapper
+)
+from corporate_profiles import CORPORATE_PROFILES
+from financial_document_parser import FinancialDocumentParser
+
+class FinancialAnalysisRequest(BaseModel):
+    profile_name: Optional[str] = None
+    financial_data: Optional[Dict[str, Any]] = None
+    proposed_loan_amount: Optional[float] = 5000000.0
+
+class StressTestRequest(BaseModel):
+    financial_data: Dict[str, Any]
+    revenue_shock_pct: float = 0.0
+    cogs_increase_pct: float = 0.0
+    interest_rate_shock_bps: float = 0.0
+
+@app.get("/financials/profiles")
+async def get_corporate_profiles():
+    """Lists all available pre-loaded 3-year audited benchmark corporate profiles."""
+    return list(CORPORATE_PROFILES.keys())
+
+@app.post("/financials/analyze")
+async def analyze_corporate_financials(req: FinancialAnalysisRequest):
+    """
+    Full financial intelligence analysis:
+    1. Spreading (3-Year CMA)
+    2. 5-Pillar Ratios & Tandon/Nayak MPBF
+    3. Forensic (Altman Z'' & Beneish M-Score)
+    4. 3-Year Forecasting & Baseline Projections
+    5. DCF Enterprise Valuation & Leverage Sizing
+    6. Auto-Populated Form MSE 1 Scorecard & CBI Grade
+    """
+    if req.profile_name and req.profile_name in CORPORATE_PROFILES:
+        raw_data = CORPORATE_PROFILES[req.profile_name]
+    elif req.financial_data:
+        raw_data = FinancialDocumentParser.parse_json_or_dict(req.financial_data)
+    else:
+        raw_data = CORPORATE_PROFILES["Apex Precision Engineering Pvt Ltd"]
+
+    loan_amount = float(req.proposed_loan_amount or raw_data.get("requested_loan_amount", 5000000.0))
+
+    # 1. Spread Financials
+    spread = FinancialStatementSpreader.spread_financials(raw_data)
+    
+    # 2. Compute 5-Pillar Ratios & MPBF
+    ratios = RatioDiagnosticsEngine.calculate_ratios(spread)
+    
+    # 3. Forensic Accounting
+    altman_z = ForensicAuditor.calculate_altman_z_double_prime(spread)
+    beneish_m = ForensicAuditor.calculate_beneish_m_score(spread)
+    
+    # 4. 3-Year Forecasting
+    projections = FinancialForecaster.project_3_years(spread, sales_cagr=0.15)
+    
+    # 5. Baseline Stress Status
+    baseline_stress = FinancialForecaster.simulate_stress_scenario(spread, 0.0, 0.0, 0.0)
+    
+    # 6. DCF Valuation
+    dcf = EnterpriseValuator.calculate_dcf_valuation(spread, proposed_loan_amount=loan_amount)
+    
+    # 7. Form MSE 1 Auto-Mapping
+    flags = raw_data.get("operational_flags", {})
+    mse_scorecard = MSEParameterAutoMapper.auto_score_form_mse_1(spread, flags)
+
+    # 8. Official ROI
+    from roi_engine import get_applicable_roi
+    credit_score = int(raw_data.get("credit_score", 750))
+    is_cgtmse = raw_data.get("cgtmse_covered", True)
+    official_roi = get_applicable_roi("MSME Loan - Existing Unit", credit_score, mse_grade=mse_scorecard["grade"], cgtmse_covered=is_cgtmse)
+
+    return {
+        "company_name": raw_data.get("company_name", "Corporate Borrower"),
+        "constitution": raw_data.get("constitution", "Private Limited Company"),
+        "industry": raw_data.get("industry", "Manufacturing"),
+        "loan_amount": loan_amount,
+        "credit_score": credit_score,
+        "official_roi": official_roi,
+        "spread": spread,
+        "ratios": ratios,
+        "forensics": {
+            "altman_z": altman_z,
+            "beneish_m": beneish_m
+        },
+        "projections": projections,
+        "baseline_stress": baseline_stress,
+        "valuation": dcf,
+        "mse_scorecard": mse_scorecard
+    }
+
+@app.post("/financials/stress-test")
+async def stress_test_financials(req: StressTestRequest):
+    """Executes real-time macro stress simulations on financial statements."""
+    spread = FinancialStatementSpreader.spread_financials(req.financial_data)
+    stress_result = FinancialForecaster.simulate_stress_scenario(
+        spread=spread,
+        revenue_shock_pct=req.revenue_shock_pct,
+        cogs_increase_pct=req.cogs_increase_pct,
+        interest_rate_shock_bps=req.interest_rate_shock_bps
+    )
+    return stress_result
+
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
+

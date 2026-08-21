@@ -26,6 +26,16 @@ import plotly.express as px
 import plotly.graph_objects as go
 from backend.roi_engine import get_applicable_roi
 from backend.msme_scoring_engine import calculate_mse_existing_score, calculate_mse_new_score, assign_cbi_risk_grade
+from backend.financial_intelligence import (
+    FinancialStatementSpreader,
+    RatioDiagnosticsEngine,
+    ForensicAuditor,
+    FinancialForecaster,
+    EnterpriseValuator,
+    MSEParameterAutoMapper
+)
+from backend.corporate_profiles import CORPORATE_PROFILES
+from backend.financial_document_parser import FinancialDocumentParser
 
 API_BASE_URL = "http://localhost:8000"
 
@@ -82,13 +92,15 @@ elif os.path.exists("Logo.png"):
     st.image("Logo.png", width=300)
 
 if st.session_state.role == "Applicant":
-    tabs = st.tabs(["📄 Applicant Portal"])
+    tabs = st.tabs(["📄 Applicant Portal", "🏢 Corporate Financial Intelligence & Valuation Hub"])
     tab1 = tabs[0]
+    tab_corp = tabs[1]
     tab2 = None
 else:
-    tabs = st.tabs(["📄 Applicant Portal", "🛡️ Credit Manager Dashboard"])
+    tabs = st.tabs(["📄 Applicant Portal", "🏢 Corporate Financial Intelligence & Valuation Hub", "🛡️ Credit Manager Dashboard"])
     tab1 = tabs[0]
-    tab2 = tabs[1]
+    tab_corp = tabs[1]
+    tab2 = tabs[2]
 
 with tab1:
     tab_apply, tab_track = st.tabs(["📝 Submit New Application", "🔍 Track Application Status"])
@@ -384,6 +396,345 @@ with tab1:
                         st.error("Invalid ID or failed to fetch status.")
                 else:
                     st.error("Please enter a Tracking ID.")
+
+# =============================================================================
+# TOP-LEVEL TAB: CORPORATE FINANCIAL INTELLIGENCE & VALUATION HUB
+# =============================================================================
+with tab_corp:
+    st.header("🏢 Corporate Financial Intelligence & Valuation Hub")
+    st.caption("Autonomous Multi-Year CMA Spreading, 5-Pillar Diagnostics, Forensic Accounting (Altman Z'' & Beneish M-Score), Macro Stress Simulator & DCF Valuation")
+
+    col_sel1, col_sel2 = st.columns([3, 2])
+    with col_sel1:
+        corp_choice = st.selectbox(
+            "Select Corporate Profile or Upload Financials:",
+            [
+                "Apex Precision Engineering Pvt Ltd (Prime MSME Manufacturing - CBI 1)",
+                "Surat Silk Mills Pvt Ltd (Moderate Textile Manufacturing - CBI 5)",
+                "BioGreen Agro Processors LLP (Greenfield Food Processing - CBI 2)",
+                "Defaulter Steels LLP (Distressed Steel Entity - CBI 10)",
+                "📁 Upload Custom Balance Sheet / P&L (CSV or JSON)"
+            ],
+            key="corp_profile_selector"
+        )
+    with col_sel2:
+        proposed_corp_loan = st.number_input("Proposed Credit Facility (₹):", min_value=100000.0, max_value=500000000.0, value=5000000.0, step=500000.0)
+
+    # Ingestion Resolution
+    raw_corp_data = None
+    if "Apex Precision" in corp_choice:
+        raw_corp_data = CORPORATE_PROFILES["Apex Precision Engineering Pvt Ltd"]
+    elif "Surat Silk" in corp_choice:
+        raw_corp_data = CORPORATE_PROFILES["Surat Silk Mills Pvt Ltd"]
+    elif "BioGreen" in corp_choice:
+        raw_corp_data = CORPORATE_PROFILES["BioGreen Agro Processors LLP"]
+    elif "Defaulter Steels" in corp_choice:
+        raw_corp_data = CORPORATE_PROFILES["Defaulter Steels LLP"]
+    else:
+        uploaded_file = st.file_uploader("Upload Audited Financials (.csv or .json):", type=["csv", "json"])
+        if uploaded_file is not None:
+            try:
+                if uploaded_file.name.endswith(".csv"):
+                    raw_corp_data = FinancialDocumentParser.parse_csv_file(uploaded_file.getvalue())
+                else:
+                    raw_corp_data = FinancialDocumentParser.parse_json_or_dict(uploaded_file.getvalue())
+                st.success("Custom financial statements parsed successfully!")
+            except Exception as e:
+                st.error(f"Error parsing uploaded file: {e}")
+                raw_corp_data = CORPORATE_PROFILES["Apex Precision Engineering Pvt Ltd"]
+        else:
+            st.info("Upload a financial file or select a benchmark corporate profile from above.")
+            raw_corp_data = CORPORATE_PROFILES["Apex Precision Engineering Pvt Ltd"]
+
+    raw_corp_data["requested_loan_amount"] = proposed_corp_loan
+
+    # --- EXECUTE CORE FINANCIAL INTELLIGENCE MATH ---
+    spread = FinancialStatementSpreader.spread_financials(raw_corp_data)
+    ratios = RatioDiagnosticsEngine.calculate_ratios(spread)
+    altman_z = ForensicAuditor.calculate_altman_z_double_prime(spread)
+    beneish_m = ForensicAuditor.calculate_beneish_m_score(spread)
+    projections = FinancialForecaster.project_3_years(spread, sales_cagr=0.15)
+    dcf = EnterpriseValuator.calculate_dcf_valuation(spread, proposed_loan_amount=proposed_corp_loan)
+    flags = raw_corp_data.get("operational_flags", {})
+    mse_scorecard = MSEParameterAutoMapper.auto_score_form_mse_1(spread, flags)
+    
+    credit_score = int(raw_corp_data.get("credit_score", 750))
+    is_cgtmse = raw_corp_data.get("cgtmse_covered", True)
+    official_roi = get_applicable_roi("MSME Loan - Existing Unit", credit_score, mse_grade=mse_scorecard["grade"], cgtmse_covered=is_cgtmse)
+
+    # --- TOP EXECUTIVE KPI BANNER ---
+    latest_rev = spread["pnl"]["revenue"][-1]
+    latest_pat = spread["pnl"]["pat"][-1]
+    latest_tnw = spread["balance_sheet"]["tangible_net_worth"][-1]
+    
+    k1, k2, k3, k4, k5, k6 = st.columns(6)
+    k1.metric("Audited Revenue (FY26)", f"₹{latest_rev/1e7:.2f} Cr", help="Latest annual turnover")
+    k2.metric("Tangible Net Worth", f"₹{latest_tnw/1e7:.2f} Cr", help="Net Worth = Equity + Reserves")
+    k3.metric("PAT Margin", f"{ratios['profitability']['pat_margin_pct'][-1]:.1f}%", help="Net profit margin")
+    k4.metric("Altman Z''-Score", f"{altman_z['z_score']:.2f}", delta=altman_z['zone'], delta_color="normal" if "Safe" in altman_z['zone'] else "inverse")
+    k5.metric("Enterprise Value", f"₹{dcf['enterprise_value']/1e7:.2f} Cr", help="Discounted Cash Flow intrinsic value")
+    k6.metric("Auto-Scored Risk Grade", f"{mse_scorecard['grade']}", delta=f"{mse_scorecard['total_score']}/100 Marks")
+
+    st.markdown("---")
+
+    # --- 6 INTERACTIVE SUB-TABS ---
+    c_tab1, c_tab2, c_tab3, c_tab4, c_tab5, c_tab6 = st.tabs([
+        "📁 3-Year Audited Financials (CMA)",
+        "📊 5-Pillar Ratio Diagnostics & MPBF",
+        "🔍 Forensic Early Warning Audit",
+        "🧪 3-Year Forecasting & Stress Simulator",
+        "💎 DCF Valuation & Debt Sizing",
+        "🏛️ Auto-Populated Form MSE 1 Scorecard"
+    ])
+
+    # 1. 3-YEAR AUDITED FINANCIALS
+    with c_tab1:
+        st.subheader("📑 3-Year Credit Monitoring Arrangement (CMA) Financial Spreading")
+        years = spread["years"]
+        
+        col_pnl, col_bs = st.columns(2)
+        with col_pnl:
+            st.markdown("##### 📈 Profit & Loss Statement (₹ Lakhs)")
+            pnl_df = pd.DataFrame({
+                "Line Item": ["Gross Turnover / Sales", "Cost of Goods Sold (COGS)", "Gross Profit", "Operating Expenses (Opex)", "EBITDA (Operating Profit)", "Depreciation & Amortization", "EBIT (Operating Income)", "Interest / Finance Charges", "Profit After Tax (PAT)", "Cash Accruals (PAT + Dep)"],
+                years[0]: [spread["pnl"]["revenue"][0]/1e5, spread["pnl"]["cogs"][0]/1e5, spread["pnl"]["gross_profit"][0]/1e5, spread["pnl"]["operating_expenses"][0]/1e5, spread["pnl"]["ebitda"][0]/1e5, spread["pnl"]["depreciation"][0]/1e5, spread["pnl"]["ebit"][0]/1e5, spread["pnl"]["interest_expense"][0]/1e5, spread["pnl"]["pat"][0]/1e5, spread["pnl"]["cash_accruals"][0]/1e5],
+                years[1]: [spread["pnl"]["revenue"][1]/1e5, spread["pnl"]["cogs"][1]/1e5, spread["pnl"]["gross_profit"][1]/1e5, spread["pnl"]["operating_expenses"][1]/1e5, spread["pnl"]["ebitda"][1]/1e5, spread["pnl"]["depreciation"][1]/1e5, spread["pnl"]["ebit"][1]/1e5, spread["pnl"]["interest_expense"][1]/1e5, spread["pnl"]["pat"][1]/1e5, spread["pnl"]["cash_accruals"][1]/1e5],
+                years[2]: [spread["pnl"]["revenue"][2]/1e5, spread["pnl"]["cogs"][2]/1e5, spread["pnl"]["gross_profit"][2]/1e5, spread["pnl"]["operating_expenses"][2]/1e5, spread["pnl"]["ebitda"][2]/1e5, spread["pnl"]["depreciation"][2]/1e5, spread["pnl"]["ebit"][2]/1e5, spread["pnl"]["interest_expense"][2]/1e5, spread["pnl"]["pat"][2]/1e5, spread["pnl"]["cash_accruals"][2]/1e5]
+            })
+            st.dataframe(pnl_df.style.format({years[0]: "{:,.2f}", years[1]: "{:,.2f}", years[2]: "{:,.2f}"}), use_container_width=True, hide_index=True)
+
+        with col_bs:
+            st.markdown("##### 🏛️ Balance Sheet (₹ Lakhs)")
+            bs_df = pd.DataFrame({
+                "Line Item": ["Cash & Bank Balances", "Sundry Debtors (Receivables)", "Inventory (Raw, WIP, FG)", "Total Current Assets", "Net Fixed Assets (PPE)", "Total Assets", "Sundry Creditors (Payables)", "Short-Term Bank Borrowings", "Total Current Liabilities", "Long-Term Term Debt", "Tangible Net Worth (TNW)"],
+                years[0]: [spread["balance_sheet"]["cash_and_bank"][0]/1e5, spread["balance_sheet"]["sundry_debtors"][0]/1e5, spread["balance_sheet"]["inventory"][0]/1e5, spread["balance_sheet"]["current_assets"][0]/1e5, spread["balance_sheet"]["net_fixed_assets"][0]/1e5, spread["balance_sheet"]["total_assets"][0]/1e5, spread["balance_sheet"]["sundry_creditors"][0]/1e5, spread["balance_sheet"]["short_term_borrowings"][0]/1e5, spread["balance_sheet"]["current_liabilities"][0]/1e5, spread["balance_sheet"]["long_term_debt"][0]/1e5, spread["balance_sheet"]["tangible_net_worth"][0]/1e5],
+                years[1]: [spread["balance_sheet"]["cash_and_bank"][1]/1e5, spread["balance_sheet"]["sundry_debtors"][1]/1e5, spread["balance_sheet"]["inventory"][1]/1e5, spread["balance_sheet"]["current_assets"][1]/1e5, spread["balance_sheet"]["net_fixed_assets"][1]/1e5, spread["balance_sheet"]["total_assets"][1]/1e5, spread["balance_sheet"]["sundry_creditors"][1]/1e5, spread["balance_sheet"]["short_term_borrowings"][1]/1e5, spread["balance_sheet"]["current_liabilities"][1]/1e5, spread["balance_sheet"]["long_term_debt"][1]/1e5, spread["balance_sheet"]["tangible_net_worth"][1]/1e5],
+                years[2]: [spread["balance_sheet"]["cash_and_bank"][2]/1e5, spread["balance_sheet"]["sundry_debtors"][2]/1e5, spread["balance_sheet"]["inventory"][2]/1e5, spread["balance_sheet"]["current_assets"][2]/1e5, spread["balance_sheet"]["net_fixed_assets"][2]/1e5, spread["balance_sheet"]["total_assets"][2]/1e5, spread["balance_sheet"]["sundry_creditors"][2]/1e5, spread["balance_sheet"]["short_term_borrowings"][2]/1e5, spread["balance_sheet"]["current_liabilities"][2]/1e5, spread["balance_sheet"]["long_term_debt"][2]/1e5, spread["balance_sheet"]["tangible_net_worth"][2]/1e5]
+            })
+            st.dataframe(bs_df.style.format({years[0]: "{:,.2f}", years[1]: "{:,.2f}", years[2]: "{:,.2f}"}), use_container_width=True, hide_index=True)
+
+        # Plotly Historical Performance Trend
+        trend_df = pd.DataFrame({
+            "Financial Year": years,
+            "Turnover (₹ Cr)": [r / 1e7 for r in spread["pnl"]["revenue"]],
+            "EBITDA (₹ Cr)": [e / 1e7 for e in spread["pnl"]["ebitda"]],
+            "PAT (₹ Cr)": [p / 1e7 for p in spread["pnl"]["pat"]]
+        })
+        fig_trend = px.bar(trend_df, x="Financial Year", y=["Turnover (₹ Cr)", "EBITDA (₹ Cr)", "PAT (₹ Cr)"], barmode="group", title="3-Year Financial Trajectory (Turnover vs EBITDA vs PAT)")
+        fig_trend.update_layout(height=350, margin=dict(l=20, r=20, t=40, b=20), plot_bgcolor="rgba(0,0,0,0)")
+        st.plotly_chart(fig_trend, use_container_width=True)
+
+    # 2. 5-PILLAR RATIOS & MPBF
+    with c_tab2:
+        st.subheader("📊 5-Pillar Institutional Ratio Diagnostics")
+        
+        r_col1, r_col2, r_col3, r_col4 = st.columns(4)
+        r_col1.metric("Current Ratio", f"{ratios['liquidity']['current_ratio'][-1]:.2f}", help="Standard Benchmark >= 1.33")
+        r_col2.metric("Debt-Equity (DER)", f"{ratios['solvency']['debt_to_equity'][-1]:.2f}", help="Prudent Cap <= 2.00")
+        r_col3.metric("DSCR Coverage", f"{ratios['solvency']['debt_service_coverage_ratio'][-1]:.2f}x", help="Minimum Bank Hurdle >= 1.20x")
+        r_col4.metric("Cash Conversion Cycle", f"{ratios['efficiency']['cash_conversion_cycle_days'][-1]:.0f} Days", help="Debtor Days + Inventory Days - Creditor Days")
+
+        st.markdown("---")
+        
+        # Working Capital Sizing Table
+        st.markdown("##### 💼 Working Capital Sizing (Tandon & Nayak Committee MPBF)")
+        mpbf = ratios["mpbf_working_capital"]
+        mpbf_df = pd.DataFrame({
+            "Regulatory Assessment Model": [
+                "Tandon Committee Method I (75% of Working Capital Gap)",
+                "Tandon Committee Method II (75% Current Assets - Other CL)",
+                "Nayak Committee Model (20% of Projected Turnover for MSEs)",
+                "🏦 Recommended Maximum Bank Working Capital Limit"
+            ],
+            "Assessed Limit (₹ Lakhs)": [
+                f"₹{mpbf['tandon_method_1']/1e5:,.2f}",
+                f"₹{mpbf['tandon_method_2']/1e5:,.2f}",
+                f"₹{mpbf['nayak_turnover_method']/1e5:,.2f}",
+                f"₹{mpbf['recommended_limit']/1e5:,.2f}"
+            ],
+            "Compliance Rule / Banking Norm": [
+                "Borrower finances min 25% of Working Capital Gap from Long-term Net Working Capital",
+                "Borrower finances min 25% of Total Current Assets from Long-term Net Working Capital",
+                "Mandatory formula for MSE borrowers with credit facilities up to ₹5 Crores",
+                "Sanctionable working capital limit within statutory solvency ceiling"
+            ]
+        })
+        st.dataframe(mpbf_df, use_container_width=True, hide_index=True)
+
+    # 3. FORENSIC AUDIT (ALTMAN Z & BENEISH M)
+    with c_tab3:
+        st.subheader("🔍 Forensic Accounting & Distress Early Warning Models")
+        
+        f_col1, f_col2 = st.columns(2)
+        with f_col1:
+            st.markdown("##### ⚠️ Altman Z''-Score (Bankruptcy & Default Risk)")
+            
+            fig_z = go.Figure(go.Indicator(
+                mode="gauge+number",
+                value=altman_z["z_score"],
+                domain={'x': [0, 1], 'y': [0, 1]},
+                title={'text': f"Altman Z''-Score: {altman_z['zone']}"},
+                gauge={
+                    'axis': {'range': [0, 5]},
+                    'bar': {'color': altman_z["badge_color"]},
+                    'steps': [
+                        {'range': [0, 1.10], 'color': '#FCA5A5'},   # Red Distress
+                        {'range': [1.10, 2.60], 'color': '#FDE68A'}, # Amber Grey
+                        {'range': [2.60, 5.0], 'color': '#A7F3D0'}   # Green Safe
+                    ],
+                    'threshold': {
+                        'line': {'color': "black", 'width': 3},
+                        'thickness': 0.75,
+                        'value': 2.60
+                    }
+                }
+            ))
+            fig_z.update_layout(height=280, margin=dict(l=20, r=20, t=40, b=20))
+            st.plotly_chart(fig_z, use_container_width=True)
+            st.caption(f"**Diagnostic Status:** {altman_z['risk_level']}")
+
+        with f_col2:
+            st.markdown("##### 🕵️ Beneish M-Score (Earnings Manipulation Detection)")
+            st.markdown(f"**M-Score:** `{beneish_m['m_score']}` *(Threshold: `-1.78`)*")
+            if beneish_m["manipulation_flag"]:
+                st.error(f"🚨 **Alert:** {beneish_m['risk_assessment']}")
+            else:
+                st.success(f"✅ **Clean Audit:** {beneish_m['risk_assessment']}")
+
+            # Indices table
+            m_df = pd.DataFrame([
+                {"Forensic Index": "DSRI (Days Sales in Receivables)", "Value": beneish_m["indices"]["DSRI_receivables_growth"], "Benchmark": "< 1.20", "Status": "Normal" if beneish_m["indices"]["DSRI_receivables_growth"] < 1.20 else "High"},
+                {"Forensic Index": "GMI (Gross Margin Index)", "Value": beneish_m["indices"]["GMI_margin_deterioration"], "Benchmark": "< 1.10", "Status": "Normal" if beneish_m["indices"]["GMI_margin_deterioration"] < 1.10 else "High"},
+                {"Forensic Index": "AQI (Asset Quality Index)", "Value": beneish_m["indices"]["AQI_asset_quality"], "Benchmark": "< 1.20", "Status": "Normal" if beneish_m["indices"]["AQI_asset_quality"] < 1.20 else "High"},
+                {"Forensic Index": "SGI (Sales Growth Index)", "Value": beneish_m["indices"]["SGI_sales_growth"], "Benchmark": "< 1.30", "Status": "Normal" if beneish_m["indices"]["SGI_sales_growth"] < 1.30 else "High"},
+                {"Forensic Index": "TATA (Total Accruals to Assets)", "Value": beneish_m["indices"]["TATA_accruals_to_assets"], "Benchmark": "< 0.05", "Status": "Normal" if beneish_m["indices"]["TATA_accruals_to_assets"] < 0.05 else "High"}
+            ])
+            st.dataframe(m_df, use_container_width=True, hide_index=True)
+
+    # 4. 3-YEAR FORECASTING & STRESS SIMULATOR
+    with c_tab4:
+        st.subheader("🧪 3-Year Financial Forecasting & Macro Stress Testing Simulator")
+        st.caption("Simulate real-time economic shocks on the borrower's audited balance sheet to test DSCR solvency buffers:")
+
+        col_s1, col_s2, col_s3 = st.columns(3)
+        with col_s1:
+            rev_shock = st.slider("📉 Demand Shock (Revenue Decline %):", min_value=-40, max_value=20, value=0, step=5)
+        with col_s2:
+            cost_shock = st.slider("📈 Cost Inflation (COGS Increase %):", min_value=0, max_value=30, value=0, step=5)
+        with col_s3:
+            rate_shock = st.slider("🏦 Interest Rate Hike (+bps on RBLR):", min_value=0, max_value=400, value=0, step=50)
+
+        stress_res = FinancialForecaster.simulate_stress_scenario(
+            spread,
+            revenue_shock_pct=rev_shock / 100.0,
+            cogs_increase_pct=cost_shock / 100.0,
+            interest_rate_shock_bps=rate_shock
+        )
+
+        sc1, sc2, sc3, sc4 = st.columns(4)
+        sc1.metric("Stressed Turnover", f"₹{stress_res['stressed_revenue']/1e7:.2f} Cr", delta=f"{rev_shock}%")
+        sc2.metric("Stressed EBITDA", f"₹{stress_res['stressed_ebitda']/1e5:.2f} L")
+        sc3.metric("Stressed DSCR", f"{stress_res['stressed_dscr']:.2f}x", delta=">= 1.20x Solvency", delta_color="normal" if stress_res["stressed_dscr"] >= 1.20 else "inverse")
+        sc4.metric("Stressed ICR", f"{stress_res['stressed_icr']:.2f}x", delta=">= 1.50x Interest", delta_color="normal" if stress_res["stressed_icr"] >= 1.50 else "inverse")
+
+        if stress_res["is_solvent"]:
+            st.success(f"🛡️ **Solvency Assessment:** {stress_res['solvency_status']}")
+        else:
+            st.error(f"🚨 **Solvency Warning:** {stress_res['solvency_status']}")
+
+        # 3-Year Forward Projections Table
+        st.markdown("##### 🔮 3-Year Baseline Projections (15% Organic Growth)")
+        proj_df = pd.DataFrame({
+            "Metric": ["Projected Turnover (₹ Lakhs)", "Projected EBITDA (₹ Lakhs)", "Projected Net Profit / PAT (₹ Lakhs)", "Projected DSCR"],
+            projections["projection_years"][0]: [f"₹{projections['projected_revenue'][0]/1e5:,.2f}", f"₹{projections['projected_ebitda'][0]/1e5:,.2f}", f"₹{projections['projected_pat'][0]/1e5:,.2f}", f"{projections['projected_dscr'][0]:.2f}x"],
+            projections["projection_years"][1]: [f"₹{projections['projected_revenue'][1]/1e5:,.2f}", f"₹{projections['projected_ebitda'][1]/1e5:,.2f}", f"₹{projections['projected_pat'][1]/1e5:,.2f}", f"{projections['projected_dscr'][1]:.2f}x"],
+            projections["projection_years"][2]: [f"₹{projections['projected_revenue'][2]/1e5:,.2f}", f"₹{projections['projected_ebitda'][2]/1e5:,.2f}", f"₹{projections['projected_pat'][2]/1e5:,.2f}", f"{projections['projected_dscr'][2]:.2f}x"]
+        })
+        st.dataframe(proj_df, use_container_width=True, hide_index=True)
+
+    # 5. DCF VALUATION & DEBT SIZING
+    with c_tab5:
+        st.subheader("💎 Discounted Cash Flow (DCF) Enterprise Valuation & Debt Sizing")
+        
+        v_col1, v_col2, v_col3 = st.columns(3)
+        v_col1.metric("Implied Enterprise Value (EV)", f"₹{dcf['enterprise_value']/1e7:.2f} Cr", help="Intrinsic Enterprise Value based on FCFF DCF model")
+        v_col2.metric("Implied Equity Value", f"₹{dcf['equity_value']/1e7:.2f} Cr", help="Equity Value = Enterprise Value - Net Debt")
+        v_col3.metric("Loan-to-Enterprise Value (LTV on EV)", f"{dcf['loan_to_enterprise_value_pct']:.1f}%", delta="Prudent < 35%", delta_color="normal" if dcf["loan_to_enterprise_value_pct"] <= 35.0 else "inverse")
+
+        st.info(f"📊 **Leverage Assessment:** {dcf['leverage_assessment']} | **Assumed WACC:** `{dcf['wacc_pct']}%` | **Terminal Growth:** `{dcf['terminal_growth_pct']}%`")
+
+        # 5-Year FCFF Cash Flow Waterfall
+        fcff_df = pd.DataFrame({
+            "Projection Year": [f"Year {t}" for t in range(1, 6)],
+            "Projected FCFF (₹ Lakhs)": [f / 1e5 for f in dcf["fcff_projections"]]
+        })
+        fig_fcff = px.bar(fcff_df, x="Projection Year", y="Projected FCFF (₹ Lakhs)", text="Projected FCFF (₹ Lakhs)", title="5-Year Free Cash Flow to Firm (FCFF) Waterfall")
+        fig_fcff.update_traces(marker_color="#3B82F6", texttemplate='%{text:.1f} L', textposition='outside')
+        fig_fcff.update_layout(height=320, margin=dict(l=20, r=20, t=40, b=20), plot_bgcolor="rgba(0,0,0,0)")
+        st.plotly_chart(fig_fcff, use_container_width=True)
+
+    # 6. AUTO-POPULATED FORM MSE 1 SCORECARD
+    with c_tab6:
+        st.subheader("🏛️ Auto-Populated Central Bank Form MSE 1 Scorecard")
+        st.markdown(f"**Total Score:** **`{mse_scorecard['total_score']}/100`** | **Central Bank Risk Grade:** **`{mse_scorecard['grade']}`** ({mse_scorecard['risk_profile']})")
+        
+        if mse_scorecard["hurdle_rate_met"]:
+            st.success(f"✅ **HURDLE RATE MET (> 50 Marks)** — Assigned Official RBLR ROI of **`{official_roi:.2f}% p.a.`**")
+        else:
+            st.error(f"🛑 **SUB-HURDLE RATE BREACH (Score <= 50 Marks)** — Ineligible for Standard Sanction under Central Bank Guidelines.")
+
+        # Full 13-parameter breakdown table
+        param_rows = []
+        for p in mse_scorecard["parameter_scores"]:
+            param_rows.append({
+                "Parameter Name": p["param"],
+                "Assessed Value / Ratio": p["value"],
+                "Score Awarded": p["score"],
+                "Max Marks": p["max"]
+            })
+        st.dataframe(pd.DataFrame(param_rows), use_container_width=True, hide_index=True)
+
+        st.markdown("---")
+        if st.button("🚀 Push This Corporate Profile to Loan Application Queue", type="primary", use_container_width=True):
+            st.session_state.ocr_data = {
+                "name": raw_corp_data["company_name"],
+                "age": 45,
+                "gender": "Male",
+                "marital_status": "Married",
+                "category": "GEN",
+                "occupation": "Business",
+                "gross_monthly_income": float(latest_rev / 12),
+                "net_monthly_income": float(latest_pat / 12),
+                "total_assets": float(spread["balance_sheet"]["total_assets"][-1]),
+                "credit_score": credit_score,
+                "avg_credit_balance_6m": float(spread["balance_sheet"]["cash_and_bank"][-1]),
+                "existing_emi": float(spread["pnl"]["interest_expense"][-1] / 12),
+                "active_lines": 3,
+                "inquiries_6m": 0,
+                "loan_amount": proposed_corp_loan,
+                "tenure_months": raw_corp_data.get("tenure_months", 60),
+                "loan_type": raw_corp_data.get("loan_type", "MSME Loan - Existing Unit"),
+                "property_value": float(spread["balance_sheet"]["net_fixed_assets"][-1] * 1.25),
+                "security_type": "Property",
+                "current_ratio": float(ratios["liquidity"]["current_ratio"][-1]),
+                "debt_equity_ratio": float(ratios["solvency"]["debt_to_equity"][-1]),
+                "sales_growth_rate": float(ratios["efficiency"]["sales_growth_rate_pct"][-1] if len(ratios["efficiency"]["sales_growth_rate_pct"]) > 1 else 15.0),
+                "pat_margin": float(ratios["profitability"]["pat_margin_pct"][-1]),
+                "sanction_compliance": flags.get("sanction_compliance", "Compliant"),
+                "stock_statement_status": flags.get("stock_statement_status", "Timely"),
+                "debt_servicing_history": flags.get("debt_servicing_history", "Within 1 month"),
+                "inventory_compliance": flags.get("inventory_compliance", "Fair compliance"),
+                "bills_culture": flags.get("bills_culture", True),
+                "bill_payment_record": flags.get("bill_payment_record", "Prompt"),
+                "review_documents_timely": flags.get("review_documents_timely", True),
+                "lc_bg_status": flags.get("lc_bg_status", "Prompt / No Facility"),
+                "ancillary_relationship": flags.get("ancillary_relationship", "Substantial"),
+                "collateral_coverage": "Covered under CGTMSE Scheme" if is_cgtmse else "Up to 100% Collateral",
+                "cgtmse_covered": is_cgtmse
+            }
+            st.session_state.ocr_done = True
+            st.success("✅ Profile pushed to Loan Application Form! Switch to Tab 1 to submit.")
+            st.rerun()
 
 if tab2:
     with tab2:
