@@ -67,7 +67,7 @@ class ApplicationRequest(BaseModel):
     category: str
     occupation: str
     gross_monthly_income: float = Field(..., ge=0)
-    net_monthly_income: float = Field(..., ge=0)
+    net_monthly_income: float
     total_assets: float = Field(..., ge=0)
     avg_credit_balance_6m: float = Field(..., ge=0)
     existing_emi: float = Field(..., ge=0)
