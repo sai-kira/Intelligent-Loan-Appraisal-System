@@ -699,6 +699,7 @@ The platform was evaluated against 8 standard institutional credit scenarios:
 │       ├── xgboost_risk_model.json     # Trained XGBoost classifier
 │       ├── label_encoders.pkl          # Categorical encoders
 │       └── model_features.pkl          # 23-parameter feature schema
+├── SYSTEM_DESIGN.md                    # Detailed system design, multi-agent architecture & token economics dossier
 ├── PROJECT_SUBMISSION_REPORT.md        # Comprehensive technical whitepaper & submission report
 ├── requirements.txt                    # Production pip dependencies
 ├── .env.example                        # Environment configuration template
