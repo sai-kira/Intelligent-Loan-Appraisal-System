@@ -241,36 +241,45 @@ with tab1:
 
         with st.expander("2. Employment & Financial Capacity", expanded=True):
             col1, col2 = st.columns(2)
-            occupation = col1.selectbox("Occupation / Entity Type", ["Salaried", "Self_Employed", "Business", "Professional", "Retired"])
-            gross_income = col2.number_input("Gross Monthly Income / Revenue (₹)", min_value=0, value=st.session_state.ocr_data.get('gross_monthly_income', 150000), step=10000)
+            occ_default = st.session_state.ocr_data.get('occupation', 'Business')
+            occ_opts = ["Salaried", "Self_Employed", "Business", "Professional", "Retired"]
+            occ_idx = occ_opts.index(occ_default) if occ_default in occ_opts else 2
+            occupation = col1.selectbox("Occupation / Entity Type", occ_opts, index=occ_idx)
+            gross_income = col2.number_input("Gross Monthly Income / Revenue (₹)", min_value=0, value=int(float(st.session_state.ocr_data.get('gross_monthly_income', 150000))), step=10000)
             
             col3, col4 = st.columns(2)
-            net_income = col3.number_input("Net Monthly Income / Profit (₹)", min_value=0, value=120000, step=10000)
-            total_assets = col4.number_input("Total Assets Value (₹)", min_value=0, value=15000000, step=500000)
+            net_income = col3.number_input("Net Monthly Income / Profit (₹)", min_value=0, value=int(float(st.session_state.ocr_data.get('net_monthly_income', 120000))), step=10000)
+            total_assets = col4.number_input("Total Assets Value (₹)", min_value=0, value=int(float(st.session_state.ocr_data.get('total_assets', 15000000))), step=500000)
 
         with st.expander("3. Credit & Bureau History", expanded=True):
             st.info("CIBIL Score is highly weighted in the risk assessment.")
             col1, col2 = st.columns(2)
-            credit_score = col1.number_input("Credit Score (CIBIL)", min_value=300, max_value=900, value=750, step=10)
-            avg_credit_balance_6m = col2.number_input("Avg Bank Balance (Last 6M) (₹)", min_value=0, value=500000, step=10000)
+            credit_score = col1.number_input("Credit Score (CIBIL)", min_value=300, max_value=900, value=int(st.session_state.ocr_data.get('credit_score', 750)), step=10)
+            avg_credit_balance_6m = col2.number_input("Avg Bank Balance (Last 6M) (₹)", min_value=0, value=int(float(st.session_state.ocr_data.get('avg_credit_balance_6m', 500000))), step=10000)
             
             col3, col4, col5 = st.columns(3)
-            existing_emi = col3.number_input("Existing Monthly EMI (₹)", min_value=0, value=25000, step=5000)
-            active_lines = col4.number_input("Active Credit Lines", min_value=0, value=2, step=1)
-            inquiries_6m = col5.number_input("Hard Inquiries (Last 6M)", min_value=0, value=0, step=1)
+            existing_emi = col3.number_input("Existing Monthly EMI (₹)", min_value=0, value=int(float(st.session_state.ocr_data.get('existing_emi', 25000))), step=5000)
+            active_lines = col4.number_input("Active Credit Lines", min_value=0, value=int(st.session_state.ocr_data.get('active_lines', 2)), step=1)
+            inquiries_6m = col5.number_input("Hard Inquiries (Last 6M)", min_value=0, value=int(st.session_state.ocr_data.get('inquiries_6m', 0)), step=1)
 
         with st.expander("4. Loan Request & Facility Details", expanded=True):
             col1, col2 = st.columns(2)
-            loan_amount = col1.number_input("Requested Loan Amount (₹)", min_value=100000, value=st.session_state.ocr_data.get('loan_amount', 5000000), step=100000)
-            tenure_months = col2.number_input("Tenure (Months)", min_value=12, value=240, step=12)
+            loan_amount = col1.number_input("Requested Loan Amount (₹)", min_value=100000, value=int(float(st.session_state.ocr_data.get('loan_amount', 5000000))), step=100000)
+            tenure_months = col2.number_input("Tenure (Months)", min_value=12, value=int(st.session_state.ocr_data.get('tenure_months', 240)), step=12)
             
             col3, col4 = st.columns(2)
             col3.info("Interest Rate: 🏦 Auto-Assigned by Central Bank of India Policy")
-            loan_type = col4.selectbox("Loan Type", ["Home Loan", "Auto Loan", "Personal Loan", "Education Loan", "MSME Loan - Existing Unit", "MSME Loan - New Unit"], key="loan_type_select")
+            ltype_default = st.session_state.ocr_data.get('loan_type', 'Home Loan')
+            ltype_opts = ["Home Loan", "Auto Loan", "Personal Loan", "Education Loan", "MSME Loan - Existing Unit", "MSME Loan - New Unit"]
+            ltype_idx = ltype_opts.index(ltype_default) if ltype_default in ltype_opts else 0
+            loan_type = col4.selectbox("Loan Type", ltype_opts, index=ltype_idx, key="loan_type_select")
             
             col5, col6 = st.columns(2)
-            property_value = col5.number_input("Property / Primary Collateral Value (₹)", min_value=0, value=7000000, step=100000)
-            security_type = col6.selectbox("Security Type", ["Property", "Vehicle", "Liquid_Assets", "CGTMSE / Plant & Machinery", "None"])
+            property_value = col5.number_input("Property / Primary Collateral Value (₹)", min_value=0, value=int(float(st.session_state.ocr_data.get('property_value', 7000000))), step=100000)
+            sec_default = st.session_state.ocr_data.get('security_type', 'Property')
+            sec_opts = ["Property", "Vehicle", "Liquid_Assets", "CGTMSE / Plant & Machinery", "None"]
+            sec_idx = sec_opts.index(sec_default) if sec_default in sec_opts else 0
+            security_type = col6.selectbox("Security Type", sec_opts, index=sec_idx)
         
         # Reactive MSME Scoring Parameters (Instantly displayed when MSME is selected)
         msme_data = {}
@@ -279,9 +288,9 @@ with tab1:
                 with st.expander("🏢 Central Bank of India MSME Scoring Parameters (Form MSE II - New Greenfield Units)", expanded=True):
                     st.caption("Scoring under **Form MSE II (New Units)** - All 9 Regulatory Parameters Evaluated")
                     m_col1, m_col2, m_col3 = st.columns(3)
-                    msme_data["projected_sales_growth"] = m_col1.number_input("1. Projected 3-Yr Sales Growth (%)", value=16.0, step=1.0)
-                    msme_data["projected_pat_margin"] = m_col2.number_input("2. Projected PAT Margin (%)", value=12.0, step=0.5)
-                    msme_data["projected_der"] = m_col3.number_input("3. Projected Debt-Equity Ratio", value=1.8, step=0.1)
+                    msme_data["projected_sales_growth"] = m_col1.number_input("1. Projected 3-Yr Sales Growth (%)", value=float(st.session_state.ocr_data.get('projected_sales_growth', 16.0)), step=1.0)
+                    msme_data["projected_pat_margin"] = m_col2.number_input("2. Projected PAT Margin (%)", value=float(st.session_state.ocr_data.get('projected_pat_margin', 12.0)), step=0.5)
+                    msme_data["projected_der"] = m_col3.number_input("3. Projected Debt-Equity Ratio", value=float(st.session_state.ocr_data.get('projected_der', 1.8)), step=0.1)
                     
                     m_col4, m_col5, m_col6 = st.columns(3)
                     msme_data["inputs_access"] = m_col4.selectbox("4. Access to Raw Materials & Inputs", ["Locally Available / Tied up", "Source Identified", "Not Identified"])
@@ -296,27 +305,61 @@ with tab1:
                 with st.expander("🏢 Central Bank of India MSME Scoring Parameters (Form MSE 1 - Existing Units)", expanded=True):
                     st.caption("Scoring under **Form MSE 1 (Existing Units)** - All 13 Regulatory Parameters Evaluated")
                     m_col1, m_col2, m_col3, m_col4 = st.columns(4)
-                    msme_data["current_ratio"] = m_col1.number_input("2. Current Ratio (CR)", value=1.35, step=0.05)
-                    msme_data["debt_equity_ratio"] = m_col2.number_input("3. Debt-Equity Ratio (DER)", value=1.9, step=0.1)
-                    msme_data["sales_growth_rate"] = m_col3.number_input("4. 3-Yr Net Sales Growth (%)", value=18.0, step=1.0)
-                    msme_data["pat_margin"] = m_col4.number_input("5. PAT Margin (%)", value=11.0, step=0.5)
+                    msme_data["current_ratio"] = m_col1.number_input("2. Current Ratio (CR)", value=float(st.session_state.ocr_data.get('current_ratio', 1.35)), step=0.05)
+                    msme_data["debt_equity_ratio"] = m_col2.number_input("3. Debt-Equity Ratio (DER)", value=float(st.session_state.ocr_data.get('debt_equity_ratio', 1.9)), step=0.1)
+                    msme_data["sales_growth_rate"] = m_col3.number_input("4. 3-Yr Net Sales Growth (%)", value=float(st.session_state.ocr_data.get('sales_growth_rate', 18.0)), step=1.0)
+                    msme_data["pat_margin"] = m_col4.number_input("5. PAT Margin (%)", value=float(st.session_state.ocr_data.get('pat_margin', 11.0)), step=0.5)
                     
                     m_col5, m_col6, m_col7 = st.columns(3)
-                    msme_data["sanction_compliance"] = m_col5.selectbox("1. Sanction Terms Compliance", ["Compliant", "Non-Compliant"])
-                    msme_data["stock_statement_status"] = m_col6.selectbox("6. Stock Statement / QIS Submission", ["Timely", "Delayed", "Non-Submission"])
-                    msme_data["debt_servicing_history"] = m_col7.selectbox("7. Debt Servicing Track Record", ["Within 1 month", "Within 2 months", "Within 3 months", "Overdue > 3 months"])
+                    s_default = st.session_state.ocr_data.get('sanction_compliance', 'Compliant')
+                    s_opts = ["Compliant", "Non-Compliant"]
+                    s_idx = s_opts.index(s_default) if s_default in s_opts else 0
+                    msme_data["sanction_compliance"] = m_col5.selectbox("1. Sanction Terms Compliance", s_opts, index=s_idx)
+
+                    stk_default = st.session_state.ocr_data.get('stock_statement_status', 'Timely')
+                    stk_opts = ["Timely", "Delayed", "Non-Submission"]
+                    stk_idx = stk_opts.index(stk_default) if stk_default in stk_opts else 0
+                    msme_data["stock_statement_status"] = m_col6.selectbox("6. Stock Statement / QIS Submission", stk_opts, index=stk_idx)
+
+                    debt_default = st.session_state.ocr_data.get('debt_servicing_history', 'Within 1 month')
+                    debt_opts = ["Within 1 month", "Within 2 months", "Within 3 months", "Overdue > 3 months"]
+                    debt_idx = debt_opts.index(debt_default) if debt_default in debt_opts else 0
+                    msme_data["debt_servicing_history"] = m_col7.selectbox("7. Debt Servicing Track Record", debt_opts, index=debt_idx)
                     
                     m_col8, m_col9, m_col10 = st.columns(3)
-                    msme_data["inventory_compliance"] = m_col8.selectbox("8. Inventory Norms Compliance", ["Fair Compliance", "Compliance (15%-30% dev)"])
-                    msme_data["bills_culture"] = m_col9.selectbox("9. Compliance to Bills Culture", ["Compliant", "Non-Compliant"]) == "Compliant"
-                    msme_data["bill_payment_record"] = m_col10.selectbox("10. Trade Bills Payment Track", ["Prompt", "Delayed", "Overdue > 3 months"])
+                    inv_default = st.session_state.ocr_data.get('inventory_compliance', 'Fair compliance')
+                    inv_opts = ["Fair Compliance", "Compliance (15%-30% dev)"]
+                    inv_idx = 0 if "fair" in str(inv_default).lower() else 1
+                    msme_data["inventory_compliance"] = m_col8.selectbox("8. Inventory Norms Compliance", inv_opts, index=inv_idx)
+
+                    bills_default = st.session_state.ocr_data.get('bills_culture', True)
+                    bills_idx = 0 if bills_default else 1
+                    msme_data["bills_culture"] = m_col9.selectbox("9. Compliance to Bills Culture", ["Compliant", "Non-Compliant"], index=bills_idx) == "Compliant"
+
+                    bpay_default = st.session_state.ocr_data.get('bill_payment_record', 'Prompt')
+                    bpay_opts = ["Prompt", "Delayed", "Overdue > 3 months"]
+                    bpay_idx = bpay_opts.index(bpay_default) if bpay_default in bpay_opts else 0
+                    msme_data["bill_payment_record"] = m_col10.selectbox("10. Trade Bills Payment Track", bpay_opts, index=bpay_idx)
                     
                     m_col11, m_col12, m_col13 = st.columns(3)
-                    msme_data["review_documents_timely"] = m_col11.selectbox("11. Review Documents Submission", ["Timely (< 3 mos)", "Delayed"]) == "Timely (< 3 mos)"
-                    msme_data["lc_bg_status"] = m_col12.selectbox("12. LC / BG Commitments", ["Prompt / No Facility", "Devolvement / Invocation"])
-                    msme_data["ancillary_relationship"] = m_col13.selectbox("13. Ancillary Deposits & Association", ["Substantial", "Moderate"])
+                    rev_default = st.session_state.ocr_data.get('review_documents_timely', True)
+                    rev_idx = 0 if rev_default else 1
+                    msme_data["review_documents_timely"] = m_col11.selectbox("11. Review Documents Submission", ["Timely (< 3 mos)", "Delayed"], index=rev_idx) == "Timely (< 3 mos)"
+
+                    lc_default = st.session_state.ocr_data.get('lc_bg_status', 'Prompt / No Facility')
+                    lc_opts = ["Prompt / No Facility", "Devolvement / Invocation"]
+                    lc_idx = lc_opts.index(lc_default) if lc_default in lc_opts else 0
+                    msme_data["lc_bg_status"] = m_col12.selectbox("12. LC / BG Commitments", lc_opts, index=lc_idx)
+
+                    anc_default = st.session_state.ocr_data.get('ancillary_relationship', 'Substantial')
+                    anc_opts = ["Substantial", "Moderate"]
+                    anc_idx = anc_opts.index(anc_default) if anc_default in anc_opts else 0
+                    msme_data["ancillary_relationship"] = m_col13.selectbox("13. Ancillary Deposits & Association", anc_opts, index=anc_idx)
                     
-                    msme_data["collateral_coverage"] = st.selectbox("Collateral / Primary Security Backing", ["Covered under CGTMSE Scheme", "Over 100% Tangible Collateral", "Up to 50% Collateral", "Below 50% Collateral", "Unsecured"])
+                    collat_default = st.session_state.ocr_data.get('collateral_coverage', 'Covered under CGTMSE Scheme')
+                    collat_opts = ["Covered under CGTMSE Scheme", "Over 100% Tangible Collateral", "Up to 50% Collateral", "Below 50% Collateral", "Unsecured"]
+                    collat_idx = collat_opts.index(collat_default) if collat_default in collat_opts else 0
+                    msme_data["collateral_coverage"] = st.selectbox("Collateral / Primary Security Backing", collat_opts, index=collat_idx)
 
         submitted = st.button("🚀 Submit Application for Automated Appraisal", type="primary", use_container_width=True)
         
@@ -706,18 +749,18 @@ with tab_corp:
                 "marital_status": "Married",
                 "category": "GEN",
                 "occupation": "Business",
-                "gross_monthly_income": float(latest_rev / 12),
-                "net_monthly_income": float(latest_pat / 12),
-                "total_assets": float(spread["balance_sheet"]["total_assets"][-1]),
-                "credit_score": credit_score,
-                "avg_credit_balance_6m": float(spread["balance_sheet"]["cash_and_bank"][-1]),
-                "existing_emi": float(spread["pnl"]["interest_expense"][-1] / 12),
+                "gross_monthly_income": int(latest_rev / 12),
+                "net_monthly_income": int(latest_pat / 12),
+                "total_assets": int(spread["balance_sheet"]["total_assets"][-1]),
+                "credit_score": int(credit_score),
+                "avg_credit_balance_6m": int(spread["balance_sheet"]["cash_and_bank"][-1]),
+                "existing_emi": int(spread["pnl"]["interest_expense"][-1] / 12),
                 "active_lines": 3,
                 "inquiries_6m": 0,
-                "loan_amount": proposed_corp_loan,
-                "tenure_months": raw_corp_data.get("tenure_months", 60),
+                "loan_amount": int(proposed_corp_loan),
+                "tenure_months": int(raw_corp_data.get("tenure_months", 60)),
                 "loan_type": raw_corp_data.get("loan_type", "MSME Loan - Existing Unit"),
-                "property_value": float(spread["balance_sheet"]["net_fixed_assets"][-1] * 1.25),
+                "property_value": int(spread["balance_sheet"]["net_fixed_assets"][-1] * 1.25),
                 "security_type": "Property",
                 "current_ratio": float(ratios["liquidity"]["current_ratio"][-1]),
                 "debt_equity_ratio": float(ratios["solvency"]["debt_to_equity"][-1]),
@@ -732,7 +775,7 @@ with tab_corp:
                 "review_documents_timely": flags.get("review_documents_timely", True),
                 "lc_bg_status": flags.get("lc_bg_status", "Prompt / No Facility"),
                 "ancillary_relationship": flags.get("ancillary_relationship", "Substantial"),
-                "collateral_coverage": "Covered under CGTMSE Scheme" if is_cgtmse else "Up to 100% Collateral",
+                "collateral_coverage": "Covered under CGTMSE Scheme" if is_cgtmse else "Over 100% Tangible Collateral",
                 "cgtmse_covered": is_cgtmse
             }
             st.session_state.ocr_done = True
