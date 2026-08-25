@@ -699,8 +699,6 @@ The platform was evaluated against 8 standard institutional credit scenarios:
 │       ├── xgboost_risk_model.json     # Trained XGBoost classifier
 │       ├── label_encoders.pkl          # Categorical encoders
 │       └── model_features.pkl          # 23-parameter feature schema
-├── ACADEMIC_PROJECT_REPORT.md          # Comprehensive 12-chapter academic & institutional project report
-├── Central_Bank_of_India_ILAS_Project_Report.docx # Publication-ready Microsoft Word dossier for college & bank submission
 ├── SYSTEM_DESIGN.md                    # Detailed system design, multi-agent architecture & token economics dossier
 ├── PROJECT_SUBMISSION_REPORT.md        # Comprehensive technical whitepaper & submission report
 ├── requirements.txt                    # Production pip dependencies
