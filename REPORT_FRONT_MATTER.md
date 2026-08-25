@@ -31,10 +31,6 @@
                                    Chief Manager, Credit & Risk Management
                                    Central Bank of India, Regional Office, Visakhapatnam
 
-  HUMAN CAPITAL MANAGEMENT:        SMT. JYOTHI IMANDI
-                                   Human Capital Management (HCM) Department
-                                   Central Bank of India, Regional Office, Visakhapatnam
-
   PROJECT DOMAIN:                  Autonomous Agentic AI, Quantitative Credit Underwriting,
                                    Corporate Financial Forensics, Machine Learning Risk Modeling
 ========================================================================================
@@ -72,11 +68,12 @@ His conduct, diligence, and technical contribution throughout the internship ten
 <br>
 
 ```
-_______________________________                      _______________________________
-       SHRI AJEET KUMAR                                     SMT. JYOTHI IMANDI
-        Chief Manager                                  Human Capital Management (HCM)
-Project Guide & Credit Mentor                              Regional Office, Visakhapatnam
-Central Bank of India, Visakhapatnam                    Central Bank of India, Visakhapatnam
+                                              _____________________________________________
+                                                             SHRI AJEET KUMAR
+                                                              Chief Manager
+                                                      Credit & Risk Management Division
+                                                        Project Guide & Credit Mentor
+                                                     Central Bank of India, Visakhapatnam
 ```
 
 <br>
