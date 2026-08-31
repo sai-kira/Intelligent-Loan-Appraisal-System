@@ -66,14 +66,16 @@ His conduct, diligence, and technical contribution throughout the internship ten
 
 <br>
 <br>
+<br>
 
 ```
                                               _____________________________________________
-                                                             SHRI AJEET KUMAR
-                                                              Chief Manager
-                                                      Credit & Risk Management Division
-                                                        Project Guide & Credit Mentor
-                                                     Central Bank of India, Visakhapatnam
+                                                            SHRI AJEET KUMAR
+                                                             Chief Manager
+                                                     Credit & Risk Management Division
+                                                       Project Guide & Credit Mentor
+                                                   Central Bank of India, Regional Office
+                                                               Visakhapatnam
 ```
 
 <br>
