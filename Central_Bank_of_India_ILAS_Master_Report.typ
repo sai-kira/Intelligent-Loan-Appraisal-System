@@ -3554,3 +3554,330 @@ def document_ocr_node(state: LoanApplicationState) -> dict:
         "ocr_processing_status": "COMPLETED_SUCCESSFULLY"
     }
 ```
+
+// ==============================================================================
+// CHAPTER 9: USER INTERFACE & HUMAN-IN-THE-LOOP GOVERNANCE (~10 PAGES)
+// ==============================================================================
+#pagebreak()
+
+// --- CHAPTER 9 TITLE SPLASH ---
+#align(center)[
+  #v(2.5cm)
+  #text(14pt, weight: "bold", fill: cboi-gold)[CHAPTER 9] \
+  #v(0.3cm)
+  #text(22pt, weight: "bold", fill: cboi-navy)[USER INTERFACE & \ HUMAN-IN-THE-LOOP GOVERNANCE] \
+  #v(0.4cm)
+  #line(length: 45%, stroke: 2pt + cboi-navy)
+  #v(0.8cm)
+  
+  #text(11pt, style: "italic", fill: rgb("334155"))[
+    "An architectural treatise on the institutional Streamlit frontend, \
+    applicant self-service portals, the 6-tab Corporate Financial Intelligence Hub, \
+    the Credit Manager Human-in-the-Loop (HITL) review queue, discretionary override governance, \
+    and automated publication-grade Microsoft Word (.docx) and PDF CAM dossier synthesis."
+  ]
+  
+  #v(1.2cm)
+  
+  #align(center)[
+    #rect(
+      width: 90%,
+      fill: rgb("f8fafc"),
+      stroke: (left: 4pt + cboi-navy, rest: 0.5pt + cboi-border),
+      radius: (right: 4pt),
+      inset: 16pt,
+      [
+        #align(left)[
+          #text(11pt, weight: "bold", fill: cboi-navy)[Chapter 9 Executive Outline & Roadmap:] \
+          #v(8pt)
+          #grid(
+            columns: (auto, 1fr),
+            row-gutter: 8pt,
+            column-gutter: 12pt,
+            [#text(weight: "bold", fill: cboi-gold)[Section 9.1:]], [#text(fill: rgb("1e293b"))[Streamlit Institutional Frontend Architecture & Dynamic Theming]],
+            [#text(weight: "bold", fill: cboi-gold)[Section 9.2:]], [#text(fill: rgb("1e293b"))[Applicant Self-Service Portal & 1-Click Institutional Demo Loaders]],
+            [#text(weight: "bold", fill: cboi-gold)[Section 9.3:]], [#text(fill: rgb("1e293b"))[Corporate Financial Intelligence & Valuation Hub (6 Sub-Tabs)]],
+            [#text(weight: "bold", fill: cboi-gold)[Section 9.4:]], [#text(fill: rgb("1e293b"))[Credit Manager HITL Dashboard: Active Queue, Portfolio Analytics & Overrides]],
+            [#text(weight: "bold", fill: cboi-gold)[Section 9.5:]], [#text(fill: rgb("1e293b"))[Publication-Grade Microsoft Word (.docx) & PDF CAM Dossier Synthesizers]]
+          )
+        ]
+      ]
+    )
+  ]
+]
+
+#pagebreak()
+
+// ==============================================================================
+// SECTION 9.1
+// ==============================================================================
+= Chapter 9: User Interface & Human-in-the-Loop Governance
+
+== 9.1 Streamlit Institutional Frontend Architecture & Dynamic Theming
+
+The user interface of the Intelligent Loan Appraisal System is built upon a high-performance **Streamlit** reactive architecture, delivering responsive, real-time credit intelligence to loan applicants, branch credit officers, and regional risk managers.
+
+The frontend design adheres strictly to the official **Central Bank of India Brand Identity Guidelines**, utilizing a formal institutional palette comprising Deep Navy (`#003366`), Muted Gold (`#c69214`), Slate Grey (`#1e293b`), and Off-White (`#f8fafc`).
+
+#v(0.2cm)
+#figure(
+  rect(
+    width: 100%,
+    fill: rgb("f8fafc"),
+    stroke: 0.5pt + cboi-border,
+    radius: 6pt,
+    inset: 12pt,
+    [
+      #align(center)[
+        #text(9.5pt, weight: "bold", fill: cboi-navy)[Streamlit Component Topology & Access Tiering] \
+        #v(6pt)
+        #grid(
+          columns: (1fr, 1.4fr, 1.4fr),
+          column-gutter: 10pt,
+          rect(
+            fill: rgb("eff6ff"),
+            stroke: 1pt + rgb("3b82f6"),
+            radius: 4pt,
+            inset: 8pt,
+            [
+              #text(9pt, weight: "bold", fill: cboi-navy)[1. APPLICANT PORTAL] \
+              #v(3pt)
+              #text(7.5pt, fill: rgb("334155"))[
+                • Public self-service access \
+                • Document upload drag-and-drop \
+                • 1-Click benchmark loaders \
+                • Real-time eligibility & RBLR rate
+              ]
+            ]
+          ),
+          rect(
+            fill: rgb("eff6ff"),
+            stroke: 1pt + rgb("3b82f6"),
+            radius: 4pt,
+            inset: 8pt,
+            [
+              #text(9pt, weight: "bold", fill: cboi-navy)[2. CORPORATE HUB] \
+              #v(3pt)
+              #text(7.5pt, fill: rgb("334155"))[
+                • 6 Financial diagnostic sub-tabs \
+                • CMA 3-year P&L / Balance Sheet \
+                • Altman Z'' & Beneish M-Score \
+                • DCF Valuation & Macro Stress
+              ]
+            ]
+          ),
+          rect(
+            fill: rgb("eff6ff"),
+            stroke: 1pt + rgb("3b82f6"),
+            radius: 4pt,
+            inset: 8pt,
+            [
+              #text(9pt, weight: "bold", fill: cboi-navy)[3. MANAGER DASHBOARD] \
+              #v(3pt)
+              #text(7.5pt, fill: rgb("334155"))[
+                • Passcode auth (`CBOI_ADMIN`) \
+                • Active HITL review queue \
+                • Visual SHAP waterfall attribution \
+                • Overrides & Word/PDF CAM gen
+              ]
+            ]
+          )
+        )
+      ]
+    ]
+  ),
+  caption: [Streamlit Frontend Component Topology & Role-Based Access Architecture]
+)
+
+#v(0.3cm)
+
+*Core Technical Principles of the Frontend Architecture:*
+
+1. *Reactive Session State & Memory Caching*:
+   To eliminate unnecessary re-computations and optimize server memory, expensive analytical pipelines (such as EasyOCR inference, XGBoost model loading, and `pgvector` index queries) are wrapped inside `@st.cache_resource` singletons. Intermediate state mutations and uploaded file buffers are preserved across user interactions using `st.session_state`.
+
+2. *Dynamic Dark / Light Mode Adaptive Theme Engine*:
+   The interface incorporates an institutional CSS stylesheet injected via `st.markdown(..., unsafe_allow_html=True)`. The theme automatically detects the operating system color scheme and applies high-contrast typography, styled metric cards, border radius geometries, and custom table headers.
+
+3. *Role-Based Access Control (RBAC) Authentication*:
+   While the *Applicant Portal* and *Corporate Financial Hub* are openly accessible for loan submission and diagnostics, the *Credit Manager Dashboard* is guarded by a cryptographic authentication barrier requiring the institutional manager passcode (`CBOI_ADMIN`), ensuring that sensitive underwriting queues and decision override tools are accessible only to authorized officers.
+
+== 9.2 Applicant Self-Service Portal & 1-Click Institutional Demo Loaders
+
+The **Applicant Portal** provides retail borrowers and MSME promoters with a streamlined digital onboarding experience, removing paper friction and delivering instant eligibility feedback:
+
+#v(0.2cm)
+#figure(
+  rect(
+    width: 100%,
+    fill: rgb("f8fafc"),
+    stroke: 0.5pt + cboi-border,
+    radius: 6pt,
+    inset: 12pt,
+    [
+      #align(left)[
+        #text(10pt, weight: "bold", fill: cboi-navy)[Applicant Portal Onboarding Workflow:] \
+        #v(4pt)
+        1. *Facility Selection*: Borrower selects loan scheme (Cent Home Loan, Cent Vehicle Loan, Cent Personal Loan, Cent Education Loan, Cent MSME Working Capital, Cent MSME Term Loan). \
+        2. *Demographic & KYC Submission*: Inputs full name, PAN, Aadhaar number, employment category, and verified monthly income. \
+        3. *Document Dossier Upload*: Multi-file uploader accepting PDF, DOCX, XLSX, and image scans (Form 16, Salary Slips, Bank Statements, 3-Year Audited Balance Sheets). \
+        4. *1-Click Institutional Benchmark Demo Loaders*: Pre-configured evaluation dossiers allowing immediate demonstration of all 8 system benchmark profiles with pre-validated financial statements. \
+        5. *Instant Underwriting Telemetry*: Upon clicking *"Submit Application"*, the LangGraph state machine executes in under 45 seconds, rendering an interactive summary card displaying Pre-Qualification Status, Debt Serviceability (FOIR / LTV), Official 10-Tier CBI Risk Grade, and Dynamic RBLR Lending Rate.
+      ]
+    ]
+  ),
+  caption: [Applicant Portal Digital Onboarding & Real-Time Underwriting Workflow]
+)
+
+== 9.3 Corporate Financial Intelligence & Valuation Hub (6 Sub-Tabs)
+
+For corporate advances, commercial MSME facilities, and credit appraisal hubs, ILAS provides a dedicated **Corporate Financial Intelligence & Valuation Hub** featuring six specialized diagnostic sub-tabs:
+
+#v(0.2cm)
+#figure(
+  rect(
+    width: 100%,
+    fill: rgb("f8fafc"),
+    stroke: 0.5pt + cboi-border,
+    radius: 6pt,
+    inset: 12pt,
+    [
+      #align(center)[
+        #text(9.5pt, weight: "bold", fill: cboi-navy)[Corporate Financial Intelligence Hub (6 Interactive Sub-Tabs)] \
+        #v(6pt)
+        #grid(
+          columns: (1fr, 1fr, 1fr),
+          row-gutter: 8pt,
+          column-gutter: 10pt,
+          rect(fill: rgb("f1f5f9"), stroke: 0.5pt + cboi-navy, radius: 4pt, inset: 6pt, [
+            #text(8pt, weight: "bold", fill: cboi-navy)[Tab 1: 3-Year CMA Spreading] \
+            #text(7pt, fill: rgb("334155"))[Full P&L and Balance Sheet normalization with Plotly trajectory charts.]
+          ]),
+          rect(fill: rgb("f1f5f9"), stroke: 0.5pt + cboi-navy, radius: 4pt, inset: 6pt, [
+            #text(8pt, weight: "bold", fill: cboi-navy)[Tab 2: 5-Pillar Diagnostics] \
+            #text(7pt, fill: rgb("334155"))[18 financial ratios & Tandon/Nayak MPBF working capital sizing.]
+          ]),
+          rect(fill: rgb("f1f5f9"), stroke: 0.5pt + cboi-navy, radius: 4pt, inset: 6pt, [
+            #text(8pt, weight: "bold", fill: cboi-navy)[Tab 3: Forensic Early Warning] \
+            #text(7pt, fill: rgb("334155"))[Altman Z'' distress gauge & Beneish M-Score earnings manipulation radar.]
+          ]),
+          rect(fill: rgb("f1f5f9"), stroke: 0.5pt + cboi-navy, radius: 4pt, inset: 6pt, [
+            #text(8pt, weight: "bold", fill: cboi-navy)[Tab 4: Macro Stress Testing] \
+            #text(7pt, fill: rgb("334155"))[3-Year scenario sliders (-30% sales, +350 bps repo) with stressed DSCR.]
+          ]),
+          rect(fill: rgb("f1f5f9"), stroke: 0.5pt + cboi-navy, radius: 4pt, inset: 6pt, [
+            #text(8pt, weight: "bold", fill: cboi-navy)[Tab 5: DCF Valuation & Sizing] \
+            #text(7pt, fill: rgb("334155"))[FCFF waterfall, WACC capital weighting, and maximum sustainable debt limits.]
+          ]),
+          rect(fill: rgb("f1f5f9"), stroke: 0.5pt + cboi-navy, radius: 4pt, inset: 6pt, [
+            #text(8pt, weight: "bold", fill: cboi-navy)[Tab 6: Form MSE Scorecard] \
+            #text(7pt, fill: rgb("334155"))[13-parameter Form MSE 1/II scorecard & 1-click push to Manager Queue.]
+          ])
+        )
+      ]
+    ]
+  ),
+  caption: [Corporate Financial Intelligence & Valuation Hub Sub-Tab Architecture]
+)
+
+#v(0.3cm)
+
+*Detailed Operational Walkthrough of the 6 Sub-Tabs:*
+
+1. *Sub-Tab 1 (3-Year Audited Financials - CMA)*:
+   Renders full comparative spreading tables across historical financial years ($T_{-2}, T_{-1}, T_0$). Includes Plotly visual trajectory bar charts tracking Gross Revenue, EBITDA Margins, Tangible Net Worth growth, and Total Outside Liabilities.
+
+2. *Sub-Tab 2 (5-Pillar Ratio Diagnostics & MPBF Sizing)*:
+   Displays four primary KPI metric cards (Current Ratio, Debt-Equity Ratio, ROCE %, and DSCR) alongside an automated working capital comparison table evaluating Tandon Method I ($"MPBF"_1$), Tandon Method II ($"MPBF"_2$), and Nayak Committee Turnover Method ($"MPBF"_"Nayak"$).
+
+3. *Sub-Tab 3 (Forensic Early Warning Audit)*:
+   Presents an interactive **Altman Z''-Score Gauge Chart** color-coded into Safe ($Z'' > 2.60$), Grey ($1.10 <= Z'' <= 2.60$), and Distress ($Z'' < 1.10$) zones. Simultaneously renders a **Beneish M-Score 5-Index Radar Profile** highlighting abnormal spikes in DSRI, GMI, AQI, SGI, or TATA.
+
+4. *Sub-Tab 4 (3-Year Forecasting & Macro Stress Simulator)*:
+   Equipped with interactive Streamlit sliders allowing credit officers to stress-test the borrower against simulated macroeconomic headwinds (Revenue Contraction: $0%$ to $-40%$, Raw Material Inflation: $0%$ to $+30%$, Repo Rate Increase: $0$ to $+400 "bps"$). Recomputes operating margins, interest burden, and debt service coverage in real-time.
+
+5. *Sub-Tab 5 (DCF Valuation & Sustainable Debt Sizing)*:
+   Computes the Free Cash Flow to Firm (FCFF) waterfall, Weighted Average Cost of Capital (WACC), and 5-year discounted enterprise valuation. Determines the maximum sustainable debt ceiling:
+   $ "Max Sustainable Debt" = min (0.60 times "Enterprise Value", 3.50 times "EBITDA") - "Existing Debt" $
+
+6. *Sub-Tab 6 (Auto-Populated Form MSE 1 / Form MSE II Scorecard)*:
+   Automatically populates marks across all 13 parameters of Form MSE 1 (or 9 parameters of Form MSE II), computes total composite score $S in [0, 100]$, maps to the official 10-Tier CBI Risk Grade (`CBI 1` through `CBI 10`), evaluates the 50-mark Hurdle Rate, and provides a 1-click button to push the completed dossier into the Regional Credit Manager's review queue.
+
+== 9.4 Credit Manager HITL Dashboard: Active Queue, Portfolio Analytics & Overrides
+
+The **Credit Manager Dashboard** serves as the institutional command center for senior underwriting officers (e.g., *Shri Ajeet Kumar*, Chief Manager, Visakhapatnam Regional Office).
+
+To fulfill statutory Reserve Bank of India governance mandates, the platform mathematically prohibits autonomous loan sanctions. Every loan dossier is routed to the Credit Manager Dashboard for supervisory validation:
+
+#v(0.2cm)
+#figure(
+  rect(
+    width: 100%,
+    fill: rgb("f8fafc"),
+    stroke: 0.5pt + cboi-border,
+    radius: 6pt,
+    inset: 12pt,
+    [
+      #align(left)[
+        #text(10pt, weight: "bold", fill: cboi-navy)[Three Primary Operational Panels in Credit Manager Dashboard:] \
+        #v(6pt)
+        #grid(
+          columns: (1fr, 1fr, 1fr),
+          column-gutter: 10pt,
+          rect(fill: rgb("f1f5f9"), stroke: 0.5pt + cboi-navy, radius: 4pt, inset: 6pt, [
+            #text(8.5pt, weight: "bold", fill: cboi-navy)[1. Active Underwriting Queue] \
+            #text(7pt, fill: rgb("334155"))[
+              • Applications in `WAITING_FOR_MANAGER` \
+              • Interactive dossier inspection \
+              • Verification timeline & SHAP waterfall \
+              • 1-Click APPROVE / REJECT buttons
+            ]
+          ]),
+          rect(fill: rgb("f1f5f9"), stroke: 0.5pt + cboi-navy, radius: 4pt, inset: 6pt, [
+            #text(8.5pt, weight: "bold", fill: cboi-navy)[2. Portfolio Analytics] \
+            #text(7pt, fill: rgb("334155"))[
+              • Risk Grade Distribution bar chart \
+              • Product Exposure donut chart \
+              • Risk Frontier scatter plot (PD vs Margin) \
+              • Underwriting Conversion funnel
+            ]
+          ]),
+          rect(fill: rgb("f1f5f9"), stroke: 0.5pt + cboi-navy, radius: 4pt, inset: 6pt, [
+            #text(8.5pt, weight: "bold", fill: cboi-navy)[3. History & Overrides] \
+            #text(7pt, fill: rgb("334155"))[
+              • Complete historical application logs \
+              • Discretionary decision override form \
+              • Mandatory text justification logging \
+              • Immutable PostgreSQL audit records
+            ]
+          ])
+        )
+      ]
+    ]
+  ),
+  caption: [Credit Manager HITL Operational Review Panels & Decision Governance Architecture]
+)
+
+#v(0.3cm)
+
+*Discretionary Manager Override Governance:* \
+If a senior Credit Manager determines that a sub-hurdle MSME application (e.g., `CBI 6` / `CBI 7` score) warrants credit sanction due to high-value unencumbered collateral or strategic regional importance, the manager selects the *Override Decision* radio button (`APPROVED`), enters detailed justification remarks into the required text area, and signs off. The system resumes the LangGraph state machine, logs the override action immutably into the PostgreSQL `manager_overrides` table, and triggers the `ReportWritingNode`.
+
+== 9.5 Publication-Grade Microsoft Word (.docx) & PDF CAM Dossier Synthesizers
+
+Upon credit manager approval or sanction sign-off, the ILAS platform automatically synthesizes an exhaustive, publication-grade **7-Chapter Credit Appraisal Memorandum (CAM)** in both editable Microsoft Word (`.docx`) and vector-rendered Typst/LaTeX PDF formats.
+
+#info-box("7-Chapter Credit Appraisal Memorandum (CAM) Structural Layout:", [
+  - *Chapter 1: Executive Underwriting Summary & Sanction Proposal*: Borrower profile, facility quantum requested, proposed limit, Dynamic RBLR interest rate (8.25% + CRP + BSP - CGTMSE), and sanction status.
+  - *Chapter 2: Borrower Demographics, KYC & Operational Profile*: Identity token verification, PAN/Aadhaar status, business activity, promoter line experience, and CIBIL commercial credit rating.
+  - *Chapter 3: Financial Ratio Diagnostics & 3-Year CMA Spreading*: Standardized multi-year P&L and Balance Sheet spreads, Current Ratio (CR), Debt-Equity Ratio (DER), ROCE %, and Cash Conversion Cycle.
+  - *Chapter 4: Machine Learning Risk Assessment & Explainable AI (SHAP)*: XGBoost Probability of Default (PD %), local SHAP waterfall feature attribution table, and risk driver analysis.
+  - *Chapter 5: Corporate Financial Forensics & Working Capital Sizing*: Emerging Market Altman Z''-Score insolvency rating, Beneish M-Score earnings manipulation audit, Tandon/Nayak MPBF debt sizing, and DCF enterprise valuation.
+  - *Chapter 6: Form MSE Scorecard & Central Bank Risk Classification*: Complete parameter-by-parameter score breakdown on Form MSE 1 (13 parameters) or Form MSE II (9 parameters), 10-Tier CBI Risk Grade assignment, and 50-mark Hurdle Rate compliance check.
+  - *Chapter 7: Regulatory Compliance, Statutory Disclosures & References*: Exact paragraph citations from RBI Master Directions (LTV/FOIR) and Central Bank Master Circulars retrieved via the GAHR-MSR Hybrid Search RAG engine.
+])
+
+*Automated Word (.docx) & PDF Generation Mechanics:* \
+The `.docx` synthesizer utilizes `python-docx` to construct publication-grade documents featuring branded table formatting (Deep Navy headers, alternating row shading), bold emphasis, callout alert containers, and automated table of contents fields. 
+
+Concurrently, the Typst compiler outputs a high-resolution, vector-rendered PDF dossier with dynamic pagination, running institutional headers, and cryptographic audit footers ready for physical signing and archival.
