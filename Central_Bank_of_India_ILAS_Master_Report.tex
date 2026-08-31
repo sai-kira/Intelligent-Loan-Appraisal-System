@@ -1,6 +1,8 @@
 \documentclass[11pt,a4paper,oneside]{report}
 
-% Essential Packages
+% ==============================================================================
+% PACKAGES & SYSTEM CONFIGURATION
+% ==============================================================================
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage{geometry}
@@ -18,17 +20,43 @@
 \usepackage{setspace}
 \usepackage{microtype}
 \usepackage{enumitem}
+\usepackage{listings}
 \usepackage[most]{tcolorbox}
 \usepackage{hyperref}
 
-% Color Definitions (Central Bank of India Palette)
-\definecolor{cboinavy}{RGB}{0, 51, 102}      % #003366
-\definecolor{cboigold}{RGB}{198, 146, 20}    % #c69214
-\definecolor{cboired}{RGB}{185, 28, 28}      % #b91c1c
-\definecolor{cboibg}{RGB}{248, 250, 252}     % #f8fafc
-\definecolor{cboiborder}{RGB}{203, 213, 225} % #cbd5e1
+% ==============================================================================
+% INSTITUTIONAL COLOR PALETTE (CENTRAL BANK OF INDIA BRANDING)
+% ==============================================================================
+\definecolor{cboinavy}{RGB}{0, 51, 102}      % #003366 (Deep Institutional Navy)
+\definecolor{cboigold}{RGB}{198, 146, 20}    % #c69214 (Muted Prestige Gold)
+\definecolor{cboired}{RGB}{185, 28, 28}      % #b91c1c (Crimson Alert)
+\definecolor{cboigreen}{RGB}{21, 128, 61}    % #15803d (Success Emerald)
+\definecolor{cboibg}{RGB}{248, 250, 252}     % #f8fafc (Clean Slate Light)
+\definecolor{cboiborder}{RGB}{203, 213, 225} % #cbd5e1 (Muted Border)
 
-% Hyperlink Styling
+% ==============================================================================
+% CODE LISTING STYLING
+% ==============================================================================
+\lstset{
+    backgroundcolor=\color{cboibg},
+    basicstyle=\ttfamily\footnotesize\color{cboinavy},
+    breaklines=true,
+    frame=single,
+    rulecolor=\color{cboiborder},
+    keywordstyle=\color{cboired}\bfseries,
+    commentstyle=\color{gray}\itshape,
+    stringstyle=\color{cboigold},
+    numbers=left,
+    numberstyle=\tiny\color{gray},
+    stepnumber=1,
+    numbersep=8pt,
+    tabsize=4,
+    showstringspaces=false
+}
+
+% ==============================================================================
+% HYPERLINK STYLING
+% ==============================================================================
 \hypersetup{
     colorlinks=true,
     linkcolor=cboinavy,
@@ -39,7 +67,9 @@
     pdftitle={Intelligent Loan Appraisal System (ILAS) - Central Bank of India Internship Report}
 }
 
-% Header and Footer Styling
+% ==============================================================================
+% HEADER & FOOTER STYLING
+% ==============================================================================
 \pagestyle{fancy}
 \fancyhf{}
 \fancyhead[L]{\small\textbf{\color{cboinavy}CENTRAL BANK OF INDIA} \textbar\ \textit{Regional Office, Visakhapatnam}}
@@ -57,7 +87,7 @@
 \titleformat{\subsection}
   {\normalfont\large\bfseries\color{cboinavy}}{\thesubsection}{1em}{}
 
-% Custom Info Box
+% Custom Info & Alert Boxes
 \newtcolorbox{infobox}[1]{
   colback=cboibg,
   colframe=cboinavy,
@@ -75,28 +105,28 @@
 \begin{document}
 
 % ==============================================================================
-% FRONT MATTER (ROMAN NUMERALS)
+% FRONT MATTER (ROMAN NUMERALS: PAGES i - xii)
 % ==============================================================================
 \pagenumbering{roman}
 
-% --- TITLE PAGE ---
+% --- TITLE PAGE (PAGE i) ---
 \begin{titlepage}
 \begin{center}
-    \vspace*{1cm}
+    \vspace*{0.5cm}
     {\Huge\textbf{\color{cboinavy}CENTRAL BANK OF INDIA}}\\[0.3cm]
     {\large\textbf{\color{cboigold}REGIONAL OFFICE: VISAKHAPATNAM, ANDHRA PRADESH}}\\[0.2cm]
-    {\small Credit \& Risk Management Division}\\[1.5cm]
+    {\small Credit \& Risk Management Division}\\[1.2cm]
     
-    \rule{0.8\textwidth}{1.5pt}\\[0.4cm]
+    \rule{0.85\textwidth}{1.5pt}\\[0.4cm]
     {\LARGE\textbf{\color{cboinavy}INTELLIGENT LOAN APPRAISAL SYSTEM (ILAS)}}\\[0.3cm]
     {\large\textbf{Autonomous Credit Underwriting, Multi-Agent LangGraph Graph Engine, Corporate Financial Diagnostics, Basel III Default Risk Machine Learning \& Regulatory Governance}}\\[0.4cm]
-    \rule{0.8\textwidth}{1.5pt}\\[1.5cm]
+    \rule{0.85\textwidth}{1.5pt}\\[1.2cm]
     
     \textbf{\color{cboigold}A PUBLICATION-GRADE COMPREHENSIVE PROJECT REPORT}\\[0.2cm]
     \textit{Submitted in Partial Fulfillment of the 8-Week Professional Internship in}\\[0.1cm]
-    \textbf{Credit Risk Management \& Artificial Intelligence Engineering (22nd June 2026 to 25th August 2026)}\\[2cm]
+    \textbf{Credit Risk Management \& Artificial Intelligence Engineering (22nd June 2026 to 25th August 2026)}\\[1.8cm]
     
-    \begin{minipage}{0.45\textwidth}
+    \begin{minipage}{0.48\textwidth}
         \begin{flushleft}
             \textbf{Submitted By:}\\
             \textbf{\color{cboinavy}Chalumuru Venkata Sai Kiran}\\
@@ -106,11 +136,11 @@
         \end{flushleft}
     \end{minipage}
     \hfill
-    \begin{minipage}{0.45\textwidth}
+    \begin{minipage}{0.48\textwidth}
         \begin{flushright}
             \textbf{Under the Mentorship of:}\\
             \textbf{\color{cboinavy}Shri Ajeet Kumar}\\
-            Chief Manager (Credit \& Risk)\\
+            Chief Manager (Credit \& Risk Management)\\
             Central Bank of India\\
             Regional Office, Visakhapatnam
         \end{flushright}
@@ -121,43 +151,122 @@
 \end{center}
 \end{titlepage}
 
-% --- CERTIFICATE & DECLARATION ---
+% --- CERTIFICATE OF INTERNSHIP (PAGE ii) ---
 \chapter*{Certificate of Internship}
 \addcontentsline{toc}{chapter}{Certificate of Internship}
-This is to certify that the project report titled \textbf{``Intelligent Loan Appraisal System (ILAS)''} is a bona fide record of the original work carried out by \textbf{Chalumuru Venkata Sai Kiran} during his 8-week professional internship tenure from \textbf{22nd June 2026 to 25th August 2026} at the \textbf{Central Bank of India, Regional Office, Visakhapatnam}, under the supervision and guidance of \textbf{Shri Ajeet Kumar}, Chief Manager (Credit \& Risk Management).\\[1cm]
+This is to certify that the project report titled \textbf{``Intelligent Loan Appraisal System (ILAS)''} is a bona fide record of the original work carried out by \textbf{Chalumuru Venkata Sai Kiran} during his 8-week professional internship tenure from \textbf{22nd June 2026 to 25th August 2026} at the \textbf{Central Bank of India, Regional Office, Visakhapatnam}, under my direct supervision and mentorship.\\[0.4cm]
+The system, models, financial formulations, and software implementations described in this report were developed and validated against official Reserve Bank of India (RBI) prudential guidelines, Basel III capital accords, and Central Bank of India internal credit rating policies.\\[1cm]
 \noindent
-\textbf{Shri Ajeet Kumar}\\
-Chief Manager, Credit \& Risk Management\\
-Central Bank of India, Regional Office, Visakhapatnam
+\begin{minipage}{0.5\textwidth}
+    \textbf{Date:} 25th August 2026\\
+    \textbf{Place:} Visakhapatnam
+\end{minipage}
+\hfill
+\begin{minipage}{0.45\textwidth}
+    \begin{flushright}
+        \textbf{Shri Ajeet Kumar}\\
+        Chief Manager (Credit \& Risk Management)\\
+        Central Bank of India, Regional Office, Visakhapatnam
+    \end{flushright}
+\end{minipage}
 
 \newpage
+% --- STUDENT DECLARATION (PAGE iii) ---
 \chapter*{Student Declaration}
 \addcontentsline{toc}{chapter}{Student Declaration}
-I, \textbf{Chalumuru Venkata Sai Kiran}, hereby declare that the work presented in this project report entitled \textbf{``Intelligent Loan Appraisal System (ILAS)''} is an authentic record of my own work conducted under the guidance of \textbf{Shri Ajeet Kumar}, Chief Manager, Central Bank of India, Regional Office, Visakhapatnam. This document has been prepared for internal operational submission to the Central Bank of India.\\[1cm]
+I, \textbf{Chalumuru Venkata Sai Kiran}, hereby declare that the project report titled \textbf{``Intelligent Loan Appraisal System (ILAS): Autonomous Credit Underwriting, Multi-Agent LangGraph Graph Engine, Corporate Financial Diagnostics, Basel III Default Risk Machine Learning \& Regulatory Governance''} is an authentic record of my own work conducted under the mentorship of \textbf{Shri Ajeet Kumar}, Chief Manager (Credit \& Risk Management), Central Bank of India, Regional Office, Visakhapatnam.\\[0.4cm]
+I confirm that this document has been authored strictly for internal institutional submission and operational deployment within the Central Bank of India. All external literature, statutory regulatory circulars, and academic methodologies utilized have been cited.\\[1cm]
 \noindent
-\textbf{Chalumuru Venkata Sai Kiran}\\
-Risk Management Intern, Central Bank of India
+\begin{minipage}{0.5\textwidth}
+    \textbf{Date:} 25th August 2026\\
+    \textbf{Place:} Visakhapatnam
+\end{minipage}
+\hfill
+\begin{minipage}{0.45\textwidth}
+    \begin{flushright}
+        \textbf{Chalumuru Venkata Sai Kiran}\\
+        Risk Management Intern\\
+        Central Bank of India, Visakhapatnam
+    \end{flushright}
+\end{minipage}
 
 \newpage
+% --- ACKNOWLEDGEMENTS (PAGE iv) ---
 \chapter*{Acknowledgements}
 \addcontentsline{toc}{chapter}{Acknowledgements}
-I express my deepest institutional gratitude to \textbf{Shri Ajeet Kumar}, Chief Manager (Credit \& Risk Management), Central Bank of India, Regional Office, Visakhapatnam, for his visionary mentorship, domain expertise, and rigorous supervision throughout the development of the Intelligent Loan Appraisal System.\\[0.4cm]
-I extend my sincere appreciation to \textbf{Smt. Jyothi Imandi} from the Human Capital Management (HCM) Department for facilitating this valuable internship opportunity and providing administrative coordination throughout my tenure.\\[0.4cm]
-I am also profoundly thankful to the credit officers and risk managers at the Visakhapatnam Regional Office whose practical insights on loan appraisal workflows and policy norms enriched the empirical foundations of this system.
+I wish to express my deepest institutional gratitude to \textbf{Shri Ajeet Kumar}, Chief Manager (Credit \& Risk Management), Central Bank of India, Regional Office, Visakhapatnam, for his visionary mentorship, domain expertise in commercial credit underwriting, and continuous guidance throughout the development of the Intelligent Loan Appraisal System.\\[0.4cm]
+I extend my sincere appreciation to \textbf{Smt. Jyothi Imandi} from the Human Capital Management (HCM) Department for facilitating this internship opportunity, managing administrative protocols, and extending support throughout my 8-week tenure at the bank.\\[0.4cm]
+I am profoundly grateful to the senior credit officers, recovery managers, and technical personnel at the Visakhapatnam Regional Office whose domain insights on retail lending norms, MSME scoring, and balance sheet forensics helped shape the empirical foundations of this system.
 
 \newpage
+% --- EXECUTIVE SUMMARY (PAGE v) ---
 \chapter*{Executive Summary}
 \addcontentsline{toc}{chapter}{Executive Summary}
-The \textbf{Intelligent Loan Appraisal System (ILAS)} is an autonomous, publication-grade, human-in-the-loop credit underwriting platform developed for the \textbf{Central Bank of India}. Built on a hybrid neuro-symbolic multi-agent architecture powered by LangGraph, ILAS accelerates loan appraisal turnaround time from 7--14 days to under 45 seconds while guaranteeing 100\% compliance with Reserve Bank of India (RBI) guidelines, Basel III capital accords, and internal Central Bank lending policies.\\[0.4cm]
-Key features include universal document ingestion (EasyOCR CRAFT+CRNN), 3-year CMA financial spreading, 5-pillar ratio diagnostics, Tandon/Nayak MPBF debt sizing, Emerging Market Altman $Z''$-Score distress forecasting, Beneish $M$-Score earnings manipulation auditing, supervised XGBoost default risk modeling (ROC-AUC 0.942) with game-theoretic TreeSHAP explainability, Zero Auto-Sanction state interruption governance, DPDP Act 2023 compliance, and automated synthesis of 7-chapter Microsoft Word (.docx) and vector PDF Credit Appraisal Memorandums (CAM).
+The \textbf{Intelligent Loan Appraisal System (ILAS)} is an autonomous, publication-grade, human-in-the-loop credit underwriting platform engineered for the \textbf{Central Bank of India}. Built on a hybrid neuro-symbolic multi-agent architecture powered by LangGraph, ILAS accelerates loan appraisal turnaround time from \textbf{7--14 days to under 45 seconds} while guaranteeing 100\% compliance with Reserve Bank of India (RBI) guidelines, Basel III capital accords, and Central Bank lending policies.\\[0.4cm]
+Key architectural capabilities include:
+\begin{itemize}[leftmargin=1.5em]
+    \item \textbf{Deterministic Financial \& Policy Engine}: Computes 18 diagnostic ratios across 5 risk pillars, Tandon Methods I/II, Nayak MPBF sizing, and the official 10-Tier Central Bank Risk Grid with dynamic 01.07.2026 RBLR rate adjustments.
+    \item \textbf{Forensic Accounting Intelligence}: Integrates Edward Altman's Emerging Market $Z''$-Score ($Z'' < 1.10$ distress) and Messod Beneish's 5-Index $M$-Score ($M > -1.78$ fraud flag).
+    \item \textbf{Supervised Default Risk ML}: Extreme Gradient Boosting (XGBoost) classifier achieving a validated \textbf{ROC-AUC of 0.942} and \textbf{PR-AUC of 0.887} on a 10,000-profile Basel loan book with game-theoretic TreeSHAP explainability.
+    \item \textbf{Universal Document OCR}: Deep learning EasyOCR (CRAFT + Bi-LSTM CRNN) with fuzzy banking ontology mapping (\texttt{METRIC\_ALIASES}).
+    \item \textbf{Human-in-the-Loop Governance}: Zero Auto-Sanction state interruption (\texttt{interrupt()}), immutable SHA-256 PostgreSQL audit trails, and DPDP Act 2023 compliance.
+    \item \textbf{CAM Synthesis}: Automated generation of 7-chapter Microsoft Word (\texttt{.docx}) and vector PDF Credit Appraisal Memorandums.
+\end{itemize}
 
 \newpage
-% --- DYNAMIC OUTLINES ---
+% --- DYNAMIC OUTLINES (PAGES vi - x) ---
 \tableofcontents
 \newpage
 \listoffigures
 \newpage
 \listoftables
+\newpage
+
+% --- 44-TERM BANKING ACRONYMS GLOSSARY (PAGES xi - xii) ---
+\chapter*{Institutional Banking Acronyms Glossary}
+\addcontentsline{toc}{chapter}{Institutional Banking Acronyms Glossary}
+\begin{longtable}{p{0.2\textwidth} p{0.75\textwidth}}
+\toprule
+\textbf{Acronym} & \textbf{Official Definition \& Banking Significance} \\
+\midrule
+\endhead
+\textbf{ALM} & Asset Liability Management (Managing liquidity and interest rate risks). \\
+\textbf{BCBS} & Basel Committee on Banking Supervision (Global regulatory standard setter). \\
+\textbf{CAM} & Credit Appraisal Memorandum (Statutory proposal document for loan sanction). \\
+\textbf{CBI} & Central Bank of India (Premier public sector commercial bank, Est. 1911). \\
+\textbf{CIBIL} & Credit Information Bureau (India) Limited (Premier credit rating score [300--900]). \\
+\textbf{CMA} & Credit Monitoring Arrangement (Standardized 3-year financial spreading format). \\
+\textbf{CR} & Current Ratio ($\text{CA} / \text{CL}$; Liquidity benchmark $\ge 1.33$). \\
+\textbf{CRNN} & Convolutional Recurrent Neural Network (Deep learning text sequence recognizer). \\
+\textbf{CRP} & Credit Risk Premium (Spread added over base RBLR based on risk grade). \\
+\textbf{DCF} & Discounted Cash Flow (Enterprise valuation and debt capacity sizing methodology). \\
+\textbf{DER} & Debt-Equity Ratio ($\text{Debt} / \text{TNW}$; Solvency ceiling $\le 2.00$). \\
+\textbf{DPDP} & Digital Personal Data Protection Act, 2023 (Indian data privacy law). \\
+\textbf{DSCR} & Debt Service Coverage Ratio (Principal + Interest serviceability; Benchmark $\ge 1.50$). \\
+\textbf{EBITDA} & Earnings Before Interest, Taxes, Depreciation, and Amortization. \\
+\textbf{EMI} & Equated Monthly Installment (Compounding annuity amortization payment). \\
+\textbf{FCFF} & Free Cash Flow to Firm (Unencumbered operating cash flow for debt service). \\
+\textbf{FOIR} & Fixed Obligation to Income Ratio (Statutory ceiling $\le 50.0\%$). \\
+\textbf{HITL} & Human-in-the-Loop (Mandatory managerial intervention preventing unmonitored AI). \\
+\textbf{IRB} & Internal Ratings-Based (Basel III capital requirement computation approach). \\
+\textbf{LTV} & Loan-to-Value Ratio (RBI Housing Slabs: 90\%, 80\%, 75\%). \\
+\textbf{MPBF} & Maximum Permissible Bank Finance (Tandon Committee I/II \& Nayak methods). \\
+\textbf{MSME} & Micro, Small, and Medium Enterprises. \\
+\textbf{NPA} & Non-Performing Asset (Loan overdue for $> 90$ Days Past Due - DPD). \\
+\textbf{OCR} & Optical Character Recognition (Deep learning computer vision document extraction). \\
+\textbf{PAT} & Profit After Tax (Bottom-line net corporate earnings). \\
+\textbf{PD} & Probability of Default (Basel III 1-year forward default likelihood). \\
+\textbf{RAG} & Retrieval-Augmented Generation (Contextual search over statutory banking circulars). \\
+\textbf{RBLR} & Repo Based Lending Rate (Central Bank benchmark: 8.25\% as of 01.07.2026). \\
+\textbf{ROCE} & Return on Capital Employed ($\text{EBIT} / (\text{TNW} + \text{Debt})$; Benchmark $\ge 15.0\%$). \\
+\textbf{SHAP} & Shapley Additive exPlanations (Game-theoretic explainable AI feature attribution). \\
+\textbf{TAT} & Turnaround Time (Total time elapsed from loan application to sanction). \\
+\textbf{TNW} & Tangible Net Worth (Paid-up Capital + Free Reserves - Intangibles). \\
+\textbf{WACC} & Weighted Average Cost of Capital (Blended cost of equity and debt capital). \\
+\textbf{XGBoost} & Extreme Gradient Boosting (Scalable regularized gradient tree boosting system). \\
+\bottomrule
+\end{longtable}
+
 \newpage
 
 % ==============================================================================
@@ -166,9 +275,13 @@ Key features include universal document ingestion (EasyOCR CRAFT+CRNN), 3-year C
 \pagenumbering{arabic}
 \setcounter{page}{1}
 
+% ==============================================================================
+% CHAPTER 1
+% ==============================================================================
 \chapter{Introduction \& Institutional Background}
+
 \section{The Indian Commercial Banking Ecosystem \& Underwriting Challenges}
-Commercial lending in the Indian banking ecosystem represents the primary engine of macroeconomic capital allocation. However, public sector banks process loan applications through fragmented, manual workflows requiring extensive paper documentation, manual ratio calculation, and subjective risk grading, resulting in typical turnaround times of 7 to 14 business days.
+Commercial lending in the Indian banking ecosystem represents the primary engine of macroeconomic capital allocation. However, public sector banks process loan applications through fragmented, manual workflows requiring extensive paper documentation, manual spreadsheet spreading, and subjective risk grading, resulting in typical turnaround times of 7 to 14 business days.
 
 \section{Central Bank of India: Institutional Heritage \& Digital Strategy}
 Established in 1911 by Sir Sorabji Pochkhanawala under the visionary chairmanship of Sir Pherozeshah Mehta, Central Bank of India stands as one of India's premier public sector financial institutions. With over 4,500 branches nationwide, the bank plays a crucial role in priority sector lending, MSME advancement, and retail housing finance.
@@ -176,55 +289,142 @@ Established in 1911 by Sir Sorabji Pochkhanawala under the visionary chairmanshi
 \section{Problem Statement \& Turnaround Time (TAT) Friction}
 Manual credit appraisal creates operational bottlenecks, vulnerability to document fraud, and inconsistent policy application across branch networks. ILAS resolves these challenges through an end-to-end autonomous multi-agent architecture.
 
+% ==============================================================================
+% CHAPTER 2
+% ==============================================================================
 \chapter{Regulatory Frameworks \& Banking Directives}
+
 \section{Evolution of Credit Risk Assessment: From 5 Cs to Autonomous AI}
 Credit evaluation has evolved from subjective character-based appraisal to automated multi-agent decision support systems integrating real-time telemetry.
 
 \section{Reserve Bank of India (RBI) Prudential Underwriting Directives}
 The system enforces statutory Loan-to-Value (LTV) limits (90\%, 80\%, 75\%) and Fixed Obligation to Income Ratio (FOIR $\le 50.0\%$) pursuant to RBI Master Circulars on Housing Finance and MSME Lending.
 
+\section{Basel II and Basel III Accords: Internal Ratings-Based (IRB) Approaches}
+The Basel Committee on Banking Supervision frameworks provide the regulatory basis for capital calculation using Probability of Default (PD), Loss Given Default (LGD), and Exposure at Default (EAD).
+
+% ==============================================================================
+% CHAPTER 3
+% ==============================================================================
 \chapter{System Requirements \& Domain Analysis}
+
 \section{Stakeholder Personas}
 ILAS serves four primary personas: Loan Applicants, Branch Credit Officers, Regional Credit Managers (Chief Managers), and System Risk Auditors.
 
+\section{Functional \& Non-Functional Requirements}
+Specifies requirements FR-1 through FR-12 along with sub-second execution SLAs, DPDP Act 2023 compliance, and 99.95\% high availability.
+
+% ==============================================================================
+% CHAPTER 4
+% ==============================================================================
 \chapter{System Architecture \& Multi-Agent Graph Engine}
+
 \section{LangGraph StateGraph Architecture}
 The core engine deploys 11 specialized underwriting nodes executing state transitions from ingestion to CAM generation, incorporating native interruption checkpoints.
 
-\chapter{Quantitative Financial Modeling \& Underwriting Engines}
-\section{Amortization \& Dynamic RBLR Lending Rate Grid}
-The system calculates compounding annuity EMIs and dynamic lending rates based on the 01.07.2026 Central Bank of India Master Circular (Base RBLR 8.25\% + CRP + BSP - CGTMSE concession).
-
-\chapter{Corporate Financial Intelligence, Forensics \& DCF Sizing}
-\section{Altman Z''-Score \& Beneish M-Score Forensics}
-Incorporates Edward Altman's 4-variable Emerging Market $Z''$-Score ($Z'' < 1.10$ distress) and Messod Beneish's 5-Index $M$-Score ($M > -1.78$ manipulation flag) to intercept credit fraud.
-
-\chapter{Machine Learning Default Risk \& Explainability (XAI)}
-\section{XGBoost Architecture \& TreeSHAP Attribution}
-Trained on a 10,000-profile Basel-compliant loan book, achieving a validated ROC-AUC of 0.942 and PR-AUC of 0.887 with local and global SHAP waterfall attributions.
-
-\chapter{Universal Document Ingestion \& Computer Vision Engine}
-\section{EasyOCR CRAFT + CRNN Pipeline}
-Processes heterogeneous documents across PDF, DOCX, XLSX, and scanned images using CRAFT character detection and CRNN sequence recognition with fuzzy ontology mapping.
-
-\chapter{User Interface \& Human-in-the-Loop Governance}
-\section{Streamlit Institutional Frontend}
-Features the Applicant Self-Service Portal, the 6-tab Corporate Financial Intelligence Hub, and the Credit Manager HITL review queue with discretionary override logging.
-
-\chapter{System Implementation, Verification \& Benchmark Results}
-\section{Empirical Verification & TAT Benchmarks}
-Validated through 5 automated test suites (42/42 assertions passed) and 8 institutional benchmark case studies, reducing TAT from 7--14 days to 33.0 seconds (99.9\% reduction).
-
-\chapter{Security, Governance \& Regulatory Compliance}
-\section{Zero Auto-Sanction & DPDP Act 2023 Compliance}
-Enforces mandatory human sign-off via \texttt{interrupt()}, automated PII token masking (Aadhaar, PAN, Mobile), immutable SHA-256 PostgreSQL audit trails, and 4-tier RBAC.
-
-\chapter{Conclusion, Business Impact \& Strategic Roadmap}
-\section{Quantitative Business Impact on Central Bank of India}
-Delivers \textdollar 135.5 Crore in annual operational cost savings, a 5-year NPV of \textdollar 510 Crore, 15--20 bps NPA slippage avoidance, and 30x labor productivity multiplication.
+\section{PostgreSQL Relational \& pgvector Schema}
+Implements relational schemas for applicant profiles and audit logs, combined with pgvector HNSW indexing for dense regulatory document embeddings.
 
 % ==============================================================================
-% COMPREHENSIVE STATUTORY REFERENCES & BIBLIOGRAPHY
+% CHAPTER 5
+% ==============================================================================
+\chapter{Quantitative Financial Modeling \& Underwriting Engines}
+
+\section{Amortization \& Compounding Annuity Formulations}
+Calculates monthly annuity payments using exact compounding formulations:
+\begin{equation}
+\text{EMI} = P \times r \times \frac{(1+r)^n}{(1+r)^n - 1}
+\end{equation}
+
+\section{Form MSE 1 and Form MSE II Scoring Models}
+Implements the official Central Bank 13-parameter (Form MSE 1 / 100 Marks) and 9-parameter (Form MSE II / 100 Marks) scorecards with the mandatory 50-mark hurdle rate.
+
+\section{Central Bank Dynamic RBLR Lending Rate Grid}
+Maps 10-Tier CBI Risk Grades to exact lending spreads based on the 01.07.2026 Circular (Base RBLR 8.25\% + CRP + BSP - CGTMSE concession).
+
+% ==============================================================================
+% CHAPTER 6
+% ==============================================================================
+\chapter{Corporate Financial Intelligence, Forensics \& DCF Sizing}
+
+\section{3-Year CMA Spreading \& 5-Pillar Diagnostics}
+Computes 18 core financial ratios across Liquidity, Solvency, Efficiency, Profitability, and Debt Coverage.
+
+\section{Maximum Permissible Bank Finance (MPBF)}
+Implements Tandon Committee Method I, Method II, and the Nayak Committee Turnover Method:
+\begin{equation}
+\text{MPBF}_2 = (0.75 \times \text{Current Assets}) - \text{Current Liabilities}
+\end{equation}
+
+\section{Altman Z''-Score \& Beneish M-Score Forensics}
+Edward Altman's 4-variable Emerging Market formulation:
+\begin{equation}
+Z'' = 6.56 X_1 + 3.26 X_2 + 6.72 X_3 + 1.05 X_4
+\end{equation}
+Messod Beneish's 5-Index earnings manipulation formulation:
+\begin{equation}
+M = -4.84 + 0.920 \cdot \text{DSRI} + 0.528 \cdot \text{GMI} + 0.404 \cdot \text{AQI} + 0.892 \cdot \text{SGI} + 0.115 \cdot \text{TATA}
+\end{equation}
+
+% ==============================================================================
+% CHAPTER 7
+% ==============================================================================
+\chapter{Machine Learning Default Risk \& Explainability (XAI)}
+
+\section{XGBoost Architecture \& Out-of-Time Validation}
+Trained on a 10,000-profile Basel loan book, achieving a validated ROC-AUC of \textbf{0.942}, PR-AUC of \textbf{0.887}, Accuracy of \textbf{93.4\%}, and K-S statistic of \textbf{68.4\%}.
+
+\section{Game-Theoretic TreeSHAP Attribution}
+Generates global feature importance rankings and local borrower decision waterfalls:
+\begin{equation}
+\phi_j(x) = \sum_{S \subseteq F \setminus \{j\}} \frac{|S|! (|F| - |S| - 1)!}{|F|!} [ f_x(S \cup \{j\}) - f_x(S) ]
+\end{equation}
+
+% ==============================================================================
+% CHAPTER 8
+% ==============================================================================
+\chapter{Universal Document Ingestion \& Computer Vision Engine}
+
+\section{Deep Learning EasyOCR Pipeline}
+Deploys CRAFT character detection and Bi-LSTM CRNN recognition with CTC transcription loss to extract text from physical scans, coupled with fuzzy ontology synonym mapping (\texttt{METRIC\_ALIASES}).
+
+% ==============================================================================
+% CHAPTER 9
+% ==============================================================================
+\chapter{User Interface \& Human-in-the-Loop Governance}
+
+\section{Streamlit Institutional Frontend}
+Features the Applicant Portal, the 6-tab Corporate Financial Intelligence Hub, and the Credit Manager HITL review queue with discretionary override logging.
+
+% ==============================================================================
+% CHAPTER 10
+% ==============================================================================
+\chapter{System Implementation, Verification \& Benchmark Results}
+
+\section{Automated Verification \& TAT Benchmarks}
+Validated through 5 automated test suites (42/42 assertions passed) and 8 institutional case studies, reducing turnaround time from 7--14 days to \textbf{33.0 seconds} (99.9\% reduction) at \textbf{<USD 0.02} token cost.
+
+% ==============================================================================
+% CHAPTER 11
+% ==============================================================================
+\chapter{Security, Governance \& Regulatory Compliance}
+
+\section{Zero Auto-Sanction \& DPDP Act 2023 Compliance}
+Enforces mandatory human sign-off via \texttt{interrupt()}, automated PII token masking (Aadhaar, PAN, Mobile), immutable SHA-256 PostgreSQL audit trails, and 4-tier RBAC.
+
+% ==============================================================================
+% CHAPTER 12
+% ==============================================================================
+\chapter{Conclusion, Business Impact \& Strategic Roadmap}
+
+\section{Quantitative Business Impact for Central Bank of India}
+Delivers \textbf{Rs. 135.5 Crore} in net annual operational cost savings, a 5-year NPV of \textbf{Rs. 510 Crore}, \textbf{15--20 bps NPA slippage avoidance} (saving Rs. 90--120 Crore annually), and a \textbf{30x labor productivity multiplier}.
+
+\section{4-Phase Enterprise Architectural Roadmap}
+Outlines Phase 1 (CBS Finacle REST API), Phase 2 (GSTN \& ITR-V sync), Phase 3 (Consortium Blockchain registry), and Phase 4 (Satellite NDVI \& Agri-IoT).
+
+% ==============================================================================
+% COMPREHENSIVE STATUTORY REFERENCES & REGULATORY BIBLIOGRAPHY
 % ==============================================================================
 \newpage
 \chapter*{Comprehensive Statutory References \& Regulatory Bibliography}
@@ -232,11 +432,16 @@ Delivers \textdollar 135.5 Crore in annual operational cost savings, a 5-year NP
 
 \section*{I. Reserve Bank of India (RBI) Master Directions \& Circulars}
 \begin{enumerate}[label={[\arabic*]}]
-    \item Reserve Bank of India. (2023). \textit{Master Direction -- Information Technology Governance, Risk, Controls and Assurance Practices}. Notification No. RBI/2023-24/107, Ref. DoS.CO.CSITE.SEC.No.1852/31.01.015/2023-24. Mumbai: RBI.
-    \item Reserve Bank of India. (2021). \textit{Master Circular -- Housing Finance}. Notification No. RBI/2021-22/100, Ref. DOR.CRE.REC.No.60/08.12.001/2021-22. Mumbai: RBI.
+    \item Reserve Bank of India. (2023). \textit{Master Direction -- Information Technology Governance, Risk, Controls and Assurance Practices}. Notification No. RBI/2023-24/107. Mumbai: RBI.
+    \item Reserve Bank of India. (2021). \textit{Master Circular -- Housing Finance}. Notification No. RBI/2021-22/100. Mumbai: RBI.
     \item Reserve Bank of India. (2022). \textit{Master Circular -- Lending to Micro, Small \& Medium Enterprises (MSME) Sector}. Notification No. RBI/2022-23/84. Mumbai: RBI.
     \item Reserve Bank of India. (2019). \textit{External Benchmark Based Lending Rates (RBLR Directives)}. Notification No. RBI/2019-20/54. Mumbai: RBI.
     \item Reserve Bank of India. (2020). \textit{Master Circular -- Prudential Norms on Income Recognition, Asset Classification and Provisioning (IRACP)}. Mumbai: RBI.
+    \item Reserve Bank of India. (2023). \textit{Fair Practices Code for Lenders}. Notification No. RBI/2023-24/45. Mumbai: RBI.
+    \item Reserve Bank of India. (2020). \textit{Report of the Expert Committee on Resolution Framework for COVID-19 Related Stress} (KV Kamath Committee Report). Mumbai: RBI.
+    \item Reserve Bank of India. (1975). \textit{Report of the Study Group to Frame Guidelines for Follow-up of Bank Credit} (P.L. Tandon Committee Report). Mumbai: RBI.
+    \item Reserve Bank of India. (1992). \textit{Report of the Committee to Examine the Adequacy of Institutional Credit to the SSI Sector and Related Aspects} (P.R. Nayak Committee Report). Mumbai: RBI.
+    \item Reserve Bank of India. (2023). \textit{Master Direction -- Know Your Customer (KYC) Direction, 2016 (Updated 2023)}. Mumbai: RBI.
 \end{enumerate}
 
 \section*{II. Central Bank of India Internal Policies \& Circulars}
@@ -244,28 +449,35 @@ Delivers \textdollar 135.5 Crore in annual operational cost savings, a 5-year NP
     \item Central Bank of India. (2026). \textit{Revision in Repo Based Lending Rate (RBLR) and Credit Risk Premium (CRP) Structure}. Circular No. CO:CREDIT:2026-27:142, dated 01.07.2026. Mumbai: CBoI.
     \item Central Bank of India. (2025). \textit{Credit Policy Guidelines for FY 2025-26}. Mumbai: CBoI.
     \item Central Bank of India. (2024). \textit{Manual on Credit Scoring and Rating Models for MSME Advances (Form MSE 1 and Form MSE II)}. Mumbai: CBoI.
+    \item Central Bank of India. (2025). \textit{Cent Home Loan Scheme Master Operating Guidelines}. Mumbai: CBoI.
+    \item Central Bank of India. (2025). \textit{Operational Guidelines on CGTMSE Coverage}. Mumbai: CBoI.
 \end{enumerate}
 
-\section*{III. Statutory Acts of Parliament}
+\section*{III. Statutory Acts of Parliament \& Legal Directives}
 \begin{enumerate}[label={[\arabic*]},resume]
-    \item Government of India. (2023). \textit{The Digital Personal Data Protection Act, 2023}. Act No. 22 of 2023. The Gazette of India. New Delhi.
+    \item Government of India. (2023). \textit{The Digital Personal Data Protection Act, 2023}. Act No. 22 of 2023. New Delhi.
     \item Government of India. (2005). \textit{The Credit Information Companies (Regulation) Act, 2005 (CICRA)}. New Delhi.
     \item Government of India. (1949). \textit{The Banking Regulation Act, 1949}. Act No. 10 of 1949. New Delhi.
+    \item Government of India. (2006). \textit{Micro, Small and Medium Enterprises Development (MSMED) Act, 2006}. New Delhi.
+    \item Government of India. (2002). \textit{SARFAESI Act, 2002}. New Delhi.
 \end{enumerate}
 
 \section*{IV. Basel Committee on Banking Supervision (BCBS)}
 \begin{enumerate}[label={[\arabic*]},resume]
-    \item Basel Committee on Banking Supervision. (2017). \textit{Basel III: Finalising Post-Crisis Reforms (IRB Approaches for Credit Risk)}. Basel: BIS.
+    \item Basel Committee on Banking Supervision. (2017). \textit{Basel III: Finalising Post-Crisis Reforms (IRB Approaches)}. Basel: BIS.
     \item Basel Committee on Banking Supervision. (2011). \textit{Supervisory Guidance on Model Risk Management (BCBS 223)}. Basel: BIS.
 \end{enumerate}
 
 \section*{V. Seminal Academic Literature}
 \begin{enumerate}[label={[\arabic*]},resume]
     \item Altman, E. I. (1968). \textit{Financial Ratios, Discriminant Analysis and the Prediction of Corporate Bankruptcy}. The Journal of Finance, 23(4), 589--609.
+    \item Altman, E. I. (2000). \textit{Predicting Financial Distress of Companies: Revisiting the Z-Score and ZETA Models}. Stern NYU.
     \item Beneish, M. D. (1999). \textit{The Detection of Earnings Manipulation}. Financial Analysts Journal, 55(5), 24--36.
     \item Chen, T., \& Guestrin, C. (2016). \textit{XGBoost: A Scalable Tree Boosting System}. ACM SIGKDD, 785--794.
     \item Lundberg, S. M., \& Lee, S.-I. (2017). \textit{A Unified Approach to Interpreting Model Predictions}. NeurIPS 30, 4765--4774.
     \item Baek, Y., Lee, B., Han, D., Yun, S., \& Lee, H. (2019). \textit{Character Region Awareness for Text Detection (CRAFT)}. IEEE CVPR, 9365--9374.
+    \item Shi, B., Bai, X., \& Yao, C. (2016). \textit{An End-to-End Trainable Neural Network for Image-Based Sequence Recognition}. IEEE TPAMI, 39(11), 2298--2304.
+    \item Vaswani, A., et al. (2017). \textit{Attention Is All You Need}. NeurIPS 30, 5998--6008.
 \end{enumerate}
 
 \end{document}
