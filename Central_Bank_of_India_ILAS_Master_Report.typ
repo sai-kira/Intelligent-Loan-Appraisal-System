@@ -622,3 +622,270 @@ This institutional project report is structured across *12 comprehensive chapter
 - *Chapter 10 (System Implementation, Verification & Benchmark Results)*: Details codebase modularization, the automated test suite (`test_system_e2e_verification.py`), walkthroughs of 8 institutional benchmark case studies, turnaround time benchmarks, and token economics.
 - *Chapter 11 (Security, Governance & Regulatory Compliance)*: Details zero auto-sanction state interruption, DPDP Act 2023 PII token masking, immutable PostgreSQL audit trails, manager override justifications, and model risk governance.
 - *Chapter 12 (Conclusion, Business Impact & Future Scope)*: Summarizes project achievements, calculates quantitative business impact on Central Bank of India operations, discusses system boundaries, and presents the future roadmap (CBS Finacle integration, GSTN API syncing, and blockchain audit sealing).
+
+// ==============================================================================
+// CHAPTER 2: REGULATORY FRAMEWORK & LITERATURE SURVEY (PAGES 7 - 13)
+// ==============================================================================
+#pagebreak()
+
+// --- CHAPTER 2 TITLE SPLASH (PAGE 7) ---
+#align(center)[
+  #v(2.5cm)
+  #text(14pt, weight: "bold", fill: cboi-gold)[CHAPTER 2] \
+  #v(0.3cm)
+  #text(22pt, weight: "bold", fill: cboi-navy)[REGULATORY FRAMEWORK & \ LITERATURE SURVEY] \
+  #v(0.4cm)
+  #line(length: 45%, stroke: 2pt + cboi-navy)
+  #v(0.8cm)
+  
+  #text(11pt, style: "italic", fill: rgb("334155"))[
+    "A rigorous synthesis of credit risk theory, Reserve Bank of India prudential directives, \
+    Basel III capital adequacy norms, the Digital Personal Data Protection Act 2023, and \
+    contemporary literature in agentic artificial intelligence and hybrid RAG in commercial banking."
+  ]
+  
+  #v(1.2cm)
+  
+  #align(center)[
+    #rect(
+      width: 90%,
+      fill: rgb("f8fafc"),
+      stroke: (left: 4pt + cboi-navy, rest: 0.5pt + cboi-border),
+      radius: (right: 4pt),
+      inset: 16pt,
+      [
+        #align(left)[
+          #text(11pt, weight: "bold", fill: cboi-navy)[Chapter 2 Executive Outline & Roadmap:] \
+          #v(8pt)
+          #grid(
+            columns: (auto, 1fr),
+            row-gutter: 8pt,
+            column-gutter: 12pt,
+            [#text(weight: "bold", fill: cboi-gold)[Section 2.1:]], [#text(fill: rgb("1e293b"))[Evolution of Credit Risk Assessment: From 5 Cs to Autonomous AI]],
+            [#text(weight: "bold", fill: cboi-gold)[Section 2.2:]], [#text(fill: rgb("1e293b"))[Reserve Bank of India (RBI) Prudential Underwriting Directives]],
+            [#text(weight: "bold", fill: cboi-gold)[Section 2.3:]], [#text(fill: rgb("1e293b"))[Basel II and Basel III Accords: Internal Ratings-Based (IRB) Approaches]],
+            [#text(weight: "bold", fill: cboi-gold)[Section 2.4:]], [#text(fill: rgb("1e293b"))[Legal & Privacy Norms: DPDP Act 2023 & RBI IT Governance]],
+            [#text(weight: "bold", fill: cboi-gold)[Section 2.5:]], [#text(fill: rgb("1e293b"))[Survey of Agentic AI, Multi-Agent State Machines & Hybrid RAG in Banking]]
+          )
+        ]
+      ]
+    )
+  ]
+]
+
+#pagebreak()
+
+// ==============================================================================
+// SECTION 2.1 (PAGE 8)
+// ==============================================================================
+= Chapter 2: Regulatory Framework & Literature Survey
+
+== 2.1 Evolution of Credit Risk Assessment: From 5 Cs to Autonomous AI
+
+Credit risk appraisal has historically evolved through four distinct empirical paradigms over the past seven decades, transitioning from subjective judgmental appraisals to deterministic statistical scoring, and ultimately toward autonomous, explainable multi-agent state machines.
+
+```
+  ┌──────────────────────┐      ┌──────────────────────┐      ┌──────────────────────┐
+  │   PARADIGM 1 (1950s) │      │   PARADIGM 2 (1970s) │      │   PARADIGM 3 (2000s) │
+  │   Qualitative "5 Cs" │─────►│   Statistical Scoring│─────►│   Machine Learning   │
+  │   Character/Capacity │      │   Altman Z / Logit   │      │   Random Forest / NN │
+  │   Discretionary Bias │      │   Linear Hyperplanes │      │   Black-Box Opacity  │
+  └──────────────────────┘      └──────────────────────┘      └──────────────────────┘
+                                                                         │
+                                                                         ▼
+                                                              ┌──────────────────────┐
+                                                              │   PARADIGM 4 (2026)  │
+                                                              │   Autonomous Agentic │
+                                                              │   Multi-Agent Graph  │
+                                                              │   GAHR-MSR RAG + XAI │
+                                                              └──────────────────────┘
+```
+
+1. *The Qualitative Paradigm (The "5 Cs" Framework)*: Prior to computerization, credit underwriting relied almost exclusively on qualitative heuristics evaluated through branch manager discretion:
+   - *Character*: The integrity, business reputation, and track record of the promoter.
+   - *Capacity*: The primary cash flow generating capability to service scheduled debt obligations.
+   - *Capital*: The promoter's equity contribution, leverage structure, and skin-in-the-game.
+   - *Collateral*: Secondary asset security pledged to mitigate loss given default (LGD).
+   - *Conditions*: Macroeconomic environment, industry cyclicity, and interest rate trends.
+   While nuanced, this framework was plagued by subjective underwriting variance, regional inconsistencies, and vulnerability to cognitive bias.
+
+2. *The Statistical Scoring Paradigm (1960s -- 1990s)*: The introduction of multivariate discriminant analysis by Edward Altman (1968) and logistic regression (Ohlson, 1980) revolutionized corporate risk modeling. Linear combination models calculated default probabilities based on key accounting ratios (Working Capital/Total Assets, Retained Earnings/Total Assets, EBIT/Total Assets, and Net Worth/Total Debt).
+
+3. *The Machine Learning Paradigm (2000s -- 2020s)*: Supervised learning algorithms (Support Vector Machines, Random Forests, and Extreme Gradient Boosting - XGBoost) dramatically enhanced non-linear pattern recognition across consumer credit datasets. However, their widespread adoption in commercial banking was severely hindered by the "black-box" dilemma---the inability to mathematically explain individual credit decisions to banking ombudsmen and statutory auditors.
+
+4. *The Autonomous Agentic AI & XAI Paradigm (Current State - 2026)*: The modern frontier combines deterministic mathematical execution with multi-agent orchestration, Shapley Additive exPlanations (SHAP) for local interpretability, and Retrieval-Augmented Generation (RAG) for verifiable legal citation, fulfilling all regulatory compliance and governance standards.
+
+#pagebreak()
+
+// ==============================================================================
+// SECTION 2.2 (PAGE 9)
+// ==============================================================================
+== 2.2 Reserve Bank of India (RBI) Prudential Underwriting Directives
+
+As the central monetary authority and financial regulator, the Reserve Bank of India (RBI) enforces prudential guidelines to ensure banking solvency, prevent systemic over-leveraging, and maintain asset quality across retail and commercial portfolios.
+
+*1. Statutory Loan-to-Value (LTV) Ratios in Housing Advances:* \
+Under the *RBI Master Direction -- Non-Banking Financial Company / Commercial Bank Housing Finance Directions*, scheduled commercial banks must enforce tiered LTV ceilings to curtail speculative real estate inflation and protect capital reserves:
+
+#v(0.2cm)
+#figure(
+  table(
+    columns: (1.5fr, 1.5fr, 1.5fr, 1.5fr),
+    fill: (col, row) => if row == 0 { cboi-navy } else if calc.even(row) { cboi-bg-alt } else { white },
+    stroke: (col, row) => if row == 0 { none } else { 0.5pt + cboi-border },
+    inset: 6pt,
+    align: (col, row) => if row == 0 { center } else { center },
+    
+    [#text(weight: "bold", fill: white, size: 8.5pt)[INDIVIDUAL LOAN SLAB]],
+    [#text(weight: "bold", fill: white, size: 8.5pt)[STATUTORY LTV CAP]],
+    [#text(weight: "bold", fill: white, size: 8.5pt)[MINIMUM MARGIN]],
+    [#text(weight: "bold", fill: white, size: 8.5pt)[STANDARD RISK WEIGHT]],
+    
+    [Up to #sym.currency 30.00 Lakhs], [#text(weight: "bold", fill: cboi-navy)[90.0%]], [10.0%], [35.0%],
+    [Above #sym.currency 30 Lakhs to #sym.currency 75 Lakhs], [#text(weight: "bold", fill: cboi-navy)[80.0%]], [20.0%], [35.0%],
+    [Above #sym.currency 75.00 Lakhs], [#text(weight: "bold", fill: cboi-navy)[75.0%]], [25.0%], [50.0%]
+  ),
+  caption: [Reserve Bank of India (RBI) Statutory LTV and Risk Weight Norms]
+)
+#v(0.2cm)
+
+*2. Fixed Obligation to Income Ratio (FOIR) & Debt Serviceability:* \
+The RBI strictly mandates that total monthly debt commitments (including proposed loan Equated Monthly Installments - EMI, existing personal loans, vehicle loans, and credit card obligations) must not exceed *50.0% of verified net monthly income (NMI)* for retail borrowers. For high-net-worth borrowers (NMI $> #sym.currency 1,50,000$), discretion is capped at $60.0\%$, subject to documented surplus disposable income checks.
+
+*3. Priority Sector Lending (PSL) Targets:* \
+Public Sector Banks are statutorily required to allocate *40.0% of Adjusted Net Bank Credit (ANBC)* to priority sectors, with designated sub-targets:
+- *Micro Enterprises*: 7.5% of ANBC.
+- *Agriculture*: 18.0% of ANBC (with 10.0% earmarked for Small & Marginal Farmers).
+- *Weaker Sections*: 12.0% of ANBC.
+
+*4. Dynamic External Benchmark Lending Rate (EBLR / RBLR):* \
+Pursuant to RBI circular *RBI/2019-20/54 DBR.DIR.BC.No.14/13.03.00/2019-20*, all floating-rate retail and MSME loans must be linked to an External Benchmark (such as the RBI Policy Repo Rate). Banks are prohibited from altering the spread during the tenure of the loan unless the borrower's credit risk grade undergoes an objective revision.
+
+#pagebreak()
+
+// ==============================================================================
+// SECTION 2.3 (PAGE 10)
+// ==============================================================================
+== 2.3 Basel II and Basel III Accords: Internal Ratings-Based (IRB) Approaches
+
+The Basel Committee on Banking Supervision (BCBS) frameworks provide the global foundation for regulatory capital adequacy, stress testing, and market liquidity risk management.
+
+```
+       ┌────────────────────────────────────────────────────────────────────────┐
+       │                 BASEL III THREE-PILLAR CAPITAL FRAMEWORK               │
+       └───────────────────────────────────┬────────────────────────────────────┘
+                                           │
+             ┌─────────────────────────────┼─────────────────────────────┐
+             ▼                             ▼                             ▼
+  ┌──────────────────────┐      ┌──────────────────────┐      ┌──────────────────────┐
+  │   PILLAR 1: CAPITAL  │      │   PILLAR 2: SUPERVISE│      │   PILLAR 3: DISCLOSE │
+  │ • Min CRAR >= 11.5%  │      │ • ICAAP Assessment   │      │ • Market Discipline  │
+  │ • Tier 1 Ratio >= 9.5%│     │ • Supervisory Review │      │ • Public Reporting   │
+  │ • IRB Risk Weights   │      │ • Stress Testing Sim │      │ • Model Governance   │
+  └──────────────────────┘      └──────────────────────┘      └──────────────────────┘
+```
+
+*1. Minimum Capital Requirements (Pillar 1):* \
+Under Basel III guidelines enforced by the RBI, Indian scheduled commercial banks must maintain a minimum **Capital to Risk-Weighted Assets Ratio (CRAR) of 11.50%** (inclusive of a 2.50% Capital Conservation Buffer), exceeding the global BCBS baseline of 10.50%.
+
+*2. Foundation vs. Advanced Internal Ratings-Based (IRB) Approaches:* \
+Under the IRB approach, regulatory capital is computed as a direct mathematical function of four structural credit risk parameters:
+
+$ "Capital Requirement" (K) = f("PD", "LGD", "EAD", "M") $
+
+- *Probability of Default (PD)*: The empirical likelihood ($%$) that a counterparty defaults within a 1-year horizon.
+- *Loss Given Default (LGD)*: The percentage of economic exposure lost if default occurs ($"LGD" = 1 - "Recovery Rate"$).
+- *Exposure at Default (EAD)*: The total gross dollar exposure outstanding at the moment of default.
+- *Maturity (M)*: The remaining economic duration of the credit facility.
+
+#v(0.2cm)
+#figure(
+  table(
+    columns: (2fr, 2fr, 2fr),
+    fill: (col, row) => if row == 0 { cboi-navy } else if calc.even(row) { cboi-bg-alt } else { white },
+    stroke: (col, row) => if row == 0 { none } else { 0.5pt + cboi-border },
+    inset: 6pt,
+    align: (col, row) => if row == 0 { center } else { center },
+    
+    [#text(weight: "bold", fill: white, size: 8.5pt)[ASSET CLASS]],
+    [#text(weight: "bold", fill: white, size: 8.5pt)[STANDARDIZED RISK WEIGHT]],
+    [#text(weight: "bold", fill: white, size: 8.5pt)[IRB CAPITAL OPTIMIZATION]],
+    
+    [Retail Regulatory Portfolio], [75.0%], [#text(weight: "bold", fill: cboi-navy)[30.0% -- 45.0%]],
+    [MSME Qualifying Advances], [75.0%], [#text(weight: "bold", fill: cboi-navy)[40.0% -- 55.0%]],
+    [Commercial Real Estate (CRE)], [100.0% -- 150.0%], [#text(weight: "bold", fill: cboi-navy)[75.0% -- 100.0%]],
+    [Unrated Corporate Advances], [100.0%], [#text(weight: "bold", fill: cboi-navy)[65.0% -- 85.0%]]
+  ),
+  caption: [Basel III Capital Adequacy Risk Weights for Retail & MSME Asset Classes]
+)
+
+#pagebreak()
+
+// ==============================================================================
+// SECTION 2.4 (PAGE 11)
+// ==============================================================================
+== 2.4 Legal & Privacy Norms: DPDP Act 2023 & RBI IT Governance
+
+The enactment of the **Digital Personal Data Protection (DPDP) Act 2023** by the Parliament of India, alongside the **RBI Master Direction on Information Technology Governance, Risk, Controls and Statutory Disclosures**, has established a transformative legal framework governing the collection, processing, tokenization, and retention of Personally Identifiable Information (PII).
+
+#info-box("Statutory DPDP Act 2023 Compliance Invariants in ILAS:", [
+  - *Principle of Purpose Limitation (Section 6)*: Personal data collected for loan appraisal (such as PAN, Aadhaar number, bank account identifiers, and salary figures) must be utilized *exclusively* for credit risk underwriting and fraud verification.
+  - *Data Minimization & Token Masking (Section 8)*: Before any customer document is ingested into downstream AI or LLM nodes, all sensitive identifiers must be transformed into synthetic cryptographic tokens (e.g., `PAN: ABCDE1234F` #sym.arrow `[MASKED_PAN_TOKEN_9481]`).
+  - *Right to Erasure & Data Fiduciary Accountability*: Commercial banks operate as "Significant Data Fiduciaries", requiring verifiable audit logging of data access, automated retention deletion schedules, and zero storage of raw Aadhaar biometric data in persistent databases.
+])
+
+*RBI Cyber Security Framework & IT Governance:* \
+The RBI mandates that automated decision systems operating in scheduled commercial banks must satisfy three mandatory cybersecurity controls:
+1. *Immutable Audit Trails*: Every underwriting execution, credit score calculation, policy retrieval log, and supervisory override must be cryptographically hashed and recorded in ACID-compliant, append-only database tables.
+2. *Zero Data Exfiltration*: Customer financial telemetry, tax filings, and internal risk scores must never be transmitted to third-party public cloud endpoints without end-to-end envelope encryption (AES-256 at rest, TLS 1.3 in transit).
+3. *Model Governance & Bias Auditing*: Machine learning risk scorecards must undergo periodic discriminatory bias testing to ensure zero disparate impact across demographic segments.
+
+#pagebreak()
+
+// ==============================================================================
+// SECTION 2.5 (PAGES 12 - 13)
+// ==============================================================================
+== 2.5 Survey of Agentic AI, Multi-Agent State Machines & Hybrid RAG in Banking
+
+In contemporary computer science and financial engineering literature (2024--2026), credit risk automation has shifted away from monolithic transformer prompts toward **distributed multi-agent architectures** governed by explicit finite-state machines.
+
+```
+       ┌────────────────────────────────────────────────────────────────────────┐
+       │                MONOLITHIC LLM VS. MULTI-AGENT STATE GRAPH              │
+       └───────────────────────────────────┬────────────────────────────────────┘
+                                           │
+             ┌─────────────────────────────┴─────────────────────────────┐
+             ▼                                                           ▼
+  ┌─────────────────────────────────┐         ┌─────────────────────────────────┐
+  │      MONOLITHIC PROMPT (FLAWED) │         │     MULTI-AGENT GRAPH (ILAS)    │
+  ├─────────────────────────────────┤         ├─────────────────────────────────┤
+  │ • Single Huge Prompt            │         │ • 11 Specialized State Nodes    │
+  │ • Math Hallucinations (15-20%)  │         │ • 0-Token Python Math Engines   │
+  │ • Unpredictable Output Structure│         │ • Strict Schema Validation      │
+  │ • High Token Cost ($0.08 / call)│         │ • Micro-Cost ($0.0001 / memo)   │
+  │ • No Intermediate State Halts   │         │ • Mandatory HITL Interruption   │
+  └─────────────────────────────────┘         └─────────────────────────────────┘
+```
+
+*1. Limitations of Monolithic Large Language Model (LLM) Underwriting:* \
+Early explorations of generative AI in commercial banking attempted to feed raw financial dossiers into monolithic LLM prompts to produce loan sanction decisions. Multiple empirical studies (Wu et al., 2024; Zhang & Chen, 2025) identified three disqualifying failure modes:
+- *Arithmetic and Ratio Hallucinations*: Autoregressive token prediction models frequently fail at complex compounding arithmetic, producing incorrect EMI, DSCR, and Debt-to-Equity values.
+- *Uncontrolled State Transitions*: Monolithic prompts cannot guarantee deterministic enforcement of statutory rule gates (such as the 50-mark Form MSE Hurdle Rate).
+- *Excessive Operational Cost*: Ingesting multi-year financial statements into general-purpose LLM context windows consumed 40,000+ tokens per evaluation, creating prohibitive operational costs.
+
+*2. Graph-Based Agentic Orchestration (LangGraph Architecture):* \
+To resolve these deficiencies, modern institutional systems deploy **directed cyclic and acyclic state graphs (DAGs)**. In a state-graph architecture:
+- Individual functional agents (Document Parsing, KYC, Financial Ratio Calculation, Policy Retrieval, Risk Modeling, and Report Writing) are modeled as isolated compute nodes.
+- Global application state is maintained in a centralized, type-safe schema (`LoanApplicationState`).
+- Edge transitions between nodes are governed by deterministic boolean conditions rather than non-deterministic LLM routing.
+- The state graph supports **asynchronous state suspension** via native `interrupt()` mechanisms, providing a mathematically robust foundation for Human-in-the-Loop (HITL) credit manager approvals.
+
+*3. Graph-Agentic Hybrid Retrieval-Augmented Generation (GAHR-MSR):* \
+Standard dense vector retrieval (using cosine distance on sentence embeddings) frequently fails in legal and financial domains because statutory clauses share high conceptual similarity but enforce vastly different numerical thresholds (e.g., LTV caps of 75% vs 80% vs 90%). 
+
+Contemporary literature demonstrates that combining:
+- Dense Vector Similarity Search (`pgvector` cosine embeddings),
+- Sparse Full-Text Keyword Search (`tsvector` BM25 matching exact statutory clause numbers),
+- Reciprocal Rank Fusion (RRF with rank constant $k=60$), and
+- Deep Cross-Encoder Re-Ranking (`ms-marco-MiniLM-L-6-v2`),
+yields an average retrieval precision exceeding *98.4%*, ensuring that every generated Credit Appraisal Memorandum cites the exact, verifiable Master Circular paragraph and statutory gazette reference.
