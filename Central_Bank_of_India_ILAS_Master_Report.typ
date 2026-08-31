@@ -4208,3 +4208,394 @@ A critical architectural achievement of the ILAS platform is its *Hybrid Neuro-S
   ),
   caption: [Hybrid Neuro-Symbolic Computing & Token Economics Breakdown]
 )
+
+// ==============================================================================
+// CHAPTER 11: SECURITY, GOVERNANCE & REGULATORY COMPLIANCE (10 PAGES)
+// ==============================================================================
+#pagebreak()
+
+// --- CHAPTER 11 TITLE SPLASH (PAGE 1) ---
+#align(center)[
+  #v(2.5cm)
+  #text(14pt, weight: "bold", fill: cboi-gold)[CHAPTER 11] \
+  #v(0.3cm)
+  #text(22pt, weight: "bold", fill: cboi-navy)[SECURITY, GOVERNANCE \ & REGULATORY COMPLIANCE] \
+  #v(0.4cm)
+  #line(length: 45%, stroke: 2pt + cboi-navy)
+  #v(0.8cm)
+  
+  #text(11pt, style: "italic", fill: rgb("334155"))[
+    "A comprehensive examination of institutional security controls, \
+    Zero Auto-Sanction state interruption mechanics, Digital Personal Data Protection (DPDP) Act 2023 compliance, \
+    immutable SHA-256 PostgreSQL audit trails, Role-Based Access Control (RBAC), and Basel III Model Risk Management (MRM)."
+  ]
+  
+  #v(1.2cm)
+  
+  #align(center)[
+    #rect(
+      width: 90%,
+      fill: rgb("f8fafc"),
+      stroke: (left: 4pt + cboi-navy, rest: 0.5pt + cboi-border),
+      radius: (right: 4pt),
+      inset: 16pt,
+      [
+        #align(left)[
+          #text(11pt, weight: "bold", fill: cboi-navy)[Chapter 11 Executive Outline & Roadmap:] \
+          #v(8pt)
+          #grid(
+            columns: (auto, 1fr),
+            row-gutter: 7pt,
+            column-gutter: 12pt,
+            [#text(weight: "bold", fill: cboi-gold)[Section 11.1:]], [#text(fill: rgb("1e293b"))[Zero Auto-Sanction Policy & State Interruption Mechanics]],
+            [#text(weight: "bold", fill: cboi-gold)[Section 11.2:]], [#text(fill: rgb("1e293b"))[Digital Personal Data Protection (DPDP) Act 2023 Compliance Pipeline]],
+            [#text(weight: "bold", fill: cboi-gold)[Section 11.3:]], [#text(fill: rgb("1e293b"))[Immutable PostgreSQL Audit Trails & Cryptographic Hashing]],
+            [#text(weight: "bold", fill: cboi-gold)[Section 11.4:]], [#text(fill: rgb("1e293b"))[Role-Based Access Control (RBAC) & Enterprise Authentication]],
+            [#text(weight: "bold", fill: cboi-gold)[Section 11.5:]], [#text(fill: rgb("1e293b"))[Model Risk Management (MRM) & Algorithmic Fairness Audits]],
+            [#text(weight: "bold", fill: cboi-gold)[Section 11.6:]], [#text(fill: rgb("1e293b"))[Disaster Recovery, High Availability & Business Continuity Planning]]
+          )
+        ]
+      ]
+    )
+  ]
+]
+
+#pagebreak()
+
+// ==============================================================================
+// SECTION 11.1
+// ==============================================================================
+= Chapter 11: Security, Governance & Regulatory Compliance
+
+== 11.1 Zero Auto-Sanction Policy & State Interruption Mechanics
+
+Within commercial banking, the deployment of artificial intelligence must adhere strictly to statutory governance frameworks. The Reserve Bank of India *Master Directions on IT Governance, Risk, Controls and Assurance (2023)* and the *Fair Practices Code for Lenders* explicitly prohibit the deployment of autonomous, unmonitored algorithmic lending systems that execute credit sanctions without human oversight.
+
+To guarantee complete compliance with RBI regulatory directives, the ILAS platform enforces a mathematically inviolable *Zero Auto-Sanction Policy*.
+
+#v(0.2cm)
+#figure(
+  rect(
+    width: 100%,
+    fill: rgb("f8fafc"),
+    stroke: 0.5pt + cboi-border,
+    radius: 6pt,
+    inset: 12pt,
+    [
+      #align(center)[
+        #text(9.5pt, weight: "bold", fill: cboi-navy)[Zero Auto-Sanction State Machine Interruption & Resumption Workflow] \
+        #v(6pt)
+        #grid(
+          columns: (1fr, 1.2fr, 1fr),
+          column-gutter: 10pt,
+          rect(
+            fill: rgb("eff6ff"),
+            stroke: 1pt + rgb("3b82f6"),
+            radius: 4pt,
+            inset: 8pt,
+            [
+              #text(9pt, weight: "bold", fill: cboi-navy)[1. AUTONOMOUS ANALYSIS] \
+              #v(3pt)
+              #text(7.5pt, fill: rgb("334155"))[
+                • Ingestion & OCR \
+                • Ratio diagnostics \
+                • ML default risk & SHAP \
+                • Form MSE scoring & pricing
+              ]
+            ]
+          ),
+          rect(
+            fill: rgb("fef2f2"),
+            stroke: 1.5pt + rgb("ef4444"),
+            radius: 4pt,
+            inset: 8pt,
+            [
+              #text(9pt, weight: "bold", fill: rgb("b91c1c"))[2. MANDATORY INTERRUPT] \
+              #v(3pt)
+              #text(7.5pt, fill: rgb("334155"))[
+                • `interrupt()` state pause \
+                • Status: `WAITING_FOR_MANAGER` \
+                • Algorithmic sanction blocked \
+                • Pushed to Manager Queue
+              ]
+            ]
+          ),
+          rect(
+            fill: rgb("f0fdf4"),
+            stroke: 1pt + rgb("22c55e"),
+            radius: 4pt,
+            inset: 8pt,
+            [
+              #text(9pt, weight: "bold", fill: rgb("15803d"))[3. MANAGER RESUMPTION] \
+              #v(3pt)
+              #text(7.5pt, fill: rgb("334155"))[
+                • Chief Manager sign-off \
+                • Discretionary override check \
+                • PostgreSQL audit commit \
+                • Word / PDF CAM synthesis
+              ]
+            ]
+          )
+        )
+      ]
+    ]
+  ),
+  caption: [Zero Auto-Sanction State Machine Interruption & Resumption Topology]
+)
+
+#v(0.3cm)
+
+*Technical Implementation of State Interruption:* \
+In the LangGraph orchestration engine, the transition from analytical underwriting to sanction decision is mediated by a native interruption checkpoint:
+
+```python
+def manager_review_gate_node(state: LoanApplicationState) -> dict:
+    """
+    Human-in-the-Loop Governance Node.
+    Mandatorily pauses execution and awaits Credit Manager sign-off.
+    """
+    # 1. Verify that all prerequisite diagnostic nodes executed successfully
+    assert state.get("ratios_completed") is True
+    assert state.get("ml_risk_completed") is True
+    assert state.get("rating_completed") is True
+    
+    # 2. Check if the Credit Manager has provided explicit sign-off in the state payload
+    manager_decision = state.get("manager_decision", None)
+    
+    if manager_decision is None:
+        # Pause state execution; return WAITING_FOR_MANAGER status
+        # This serializes the state to PostgreSQL checkpointer and halts
+        return {
+            "status": "WAITING_FOR_MANAGER",
+            "requires_human_review": True,
+            "paused_at_timestamp": datetime.utcnow().isoformat()
+        }
+    
+    # 3. If manager has signed off (APPROVED / REJECTED / OVERRIDE), resume pipeline
+    return {
+        "status": f"MANAGER_{manager_decision}",
+        "requires_human_review": False,
+        "reviewed_by_officer": state.get("officer_id", "AJEET_KUMAR_CM"),
+        "review_timestamp": datetime.utcnow().isoformat()
+    }
+```
+
+== 11.2 Digital Personal Data Protection (DPDP) Act 2023 Compliance Pipeline
+
+Under the *Digital Personal Data Protection (DPDP) Act 2023*, Indian commercial banks operate as *Data Fiduciaries*, bearing strict legal obligations regarding lawful processing, purpose limitation, storage limitation, and data subject privacy rights.
+
+The ILAS platform incorporates a multi-tier *Privacy by Design Pipeline* to protect Personally Identifiable Information (PII):
+
+#v(0.2cm)
+#figure(
+  table(
+    columns: (1.5fr, 2.2fr, 2.3fr),
+    fill: (col, row) => if row == 0 { cboi-navy } else if calc.even(row) { cboi-bg-alt } else { white },
+    stroke: (col, row) => if row == 0 { none } else { 0.5pt + cboi-border },
+    inset: 5.5pt,
+    align: (col, row) => if row == 0 { center } else if col == 0 { center } else { left },
+    
+    [#text(weight: "bold", fill: white, size: 8pt)[DPDP SECTION]],
+    [#text(weight: "bold", fill: white, size: 8pt)[STATUTORY REQUIREMENT]],
+    [#text(weight: "bold", fill: white, size: 8pt)[ILAS TECHNICAL IMPLEMENTATION]],
+    
+    [Section 4 & 6], [Notice & Itemized Consent], [Dynamic multilingual consent checkbox capturing explicit purpose for credit evaluation.],
+    [Section 8 (Data Security)], [Protection of Personal Data], [Automated PII Token Masking engine (Aadhaar, PAN, Mobile, Account Numbers).],
+    [Section 8 (Data Erasure)], [Storage Limitation & Erasure], [Automated 7-year statutory retention schedule with cryptographic shredding.],
+    [Section 11 (Rights)], [Right to Access & Correction], [Applicant self-service portal provides exportable JSON/PDF of all processed records.],
+    [Section 12 (Grievance)], [Grievance Redressal Mechanism], [Direct escalation router to Central Bank of India Data Protection Officer (DPO).]
+  ),
+  caption: [DPDP Act 2023 Compliance Controls & Technical Implementation Matrix]
+)
+
+#v(0.3cm)
+
+*Automated PII Token Masking Engine:* \
+Before unstructured text, scanned OCR outputs, or bureau logs are ingested into vector databases or processed by language models, all sensitive identity identifiers undergo deterministic regex and NER token masking:
+
+```python
+def mask_personally_identifiable_information(raw_text: str) -> str:
+    """
+    Masks PII tokens to guarantee DPDP Act 2023 compliance.
+    """
+    # 1. Mask 12-Digit Aadhaar Numbers (preserve only last 4 digits)
+    text = re.sub(r'\b\d{4}\s?\d{4}\s?(\d{4})\b', r'XXXX-XXXX-\1', raw_text)
+    
+    # 2. Mask 10-Character Permanent Account Numbers (PAN)
+    text = re.sub(r'\b[A-Z]{5}(\d{4})[A-Z]\b', r'XXXXX\1X', text)
+    
+    # 3. Mask 10-Digit Indian Mobile Numbers (preserve first 2 and last 2)
+    text = re.sub(r'\b(\+91[\-\s]?)?(\d{2})\d{6}(\d{2})\b', r'+91-\2XXXXXX\3', text)
+    
+    # 4. Mask Bank Account Numbers (preserve last 4 digits)
+    text = re.sub(r'\b\d{6,14}(\d{4})\b', r'XXXXXXXX\1', text)
+    
+    return text
+```
+
+== 11.3 Immutable PostgreSQL Audit Trails & Cryptographic Hashing
+
+To guarantee non-repudiation, tamper-evident auditability, and regulatory compliance during statutory inspections by the Reserve Bank of India or internal vigilance officers, the ILAS platform implements an *Immutable PostgreSQL Audit Trail* utilizing SHA-256 cryptographic hash chaining.
+
+*Cryptographic Block Hashing Formulation:* \
+Each audit log entry $t$ is linked to the previous log entry $t-1$ through a Merkle-style recursive hash chain:
+
+$ H_t = text("SHA-256")(H_(t-1) || T_t || U_t || A_t || P_t) $
+
+Where $H_(t-1)$ is the previous block hash, $T_t$ is the ISO-8601 UTC timestamp, $U_t$ is the authenticated Officer ID, $A_t$ is the action identifier, and $P_t$ is the canonical JSON serialized payload of the underwriting state mutation.
+
+#v(0.2cm)
+#figure(
+  rect(
+    width: 100%,
+    fill: rgb("f8fafc"),
+    stroke: 0.5pt + cboi-border,
+    radius: 6pt,
+    inset: 12pt,
+    [
+      #align(center)[
+        #text(9.5pt, weight: "bold", fill: cboi-navy)[Cryptographic Audit Trail Hash Chain (Write-Once-Read-Many Architecture)] \
+        #v(6pt)
+        #grid(
+          columns: (1fr, 0.2fr, 1fr, 0.2fr, 1fr),
+          rect(fill: rgb("f1f5f9"), stroke: 0.5pt + cboi-navy, radius: 4pt, inset: 6pt, [
+            #text(8pt, weight: "bold", fill: cboi-navy)[BLOCK t-1] \
+            #text(7pt, font: "Consolas", fill: rgb("334155"))[Hash: `a8f3...12c9` \ Action: `INGESTION` \ Time: `10:14:02Z`]
+          ]),
+          align(center + horizon)[#text(12pt, weight: "bold", fill: cboi-gold)[#sym.arrow]],
+          rect(fill: rgb("f1f5f9"), stroke: 0.5pt + cboi-navy, radius: 4pt, inset: 6pt, [
+            #text(8pt, weight: "bold", fill: cboi-navy)[BLOCK t] \
+            #text(7pt, font: "Consolas", fill: rgb("334155"))[Prev: `a8f3...12c9` \ Hash: `4e91...5b7a` \ Action: `ML_ASSESS`]
+          ]),
+          align(center + horizon)[#text(12pt, weight: "bold", fill: cboi-gold)[#sym.arrow]],
+          rect(fill: rgb("f1f5f9"), stroke: 0.5pt + cboi-navy, radius: 4pt, inset: 6pt, [
+            #text(8pt, weight: "bold", fill: cboi-navy)[BLOCK t+1] \
+            #text(7pt, font: "Consolas", fill: rgb("334155"))[Prev: `4e91...5b7a` \ Hash: `f72d...99e1` \ Action: `HITL_SIGN`]
+          ])
+        )
+      ]
+    ]
+  ),
+  caption: [Immutable Merkle / SHA-256 Audit Trail Cryptographic Hash Chain]
+)
+
+#v(0.3cm)
+
+*PostgreSQL Relational Audit Schema:* \
+Audit records are persisted to an append-only PostgreSQL table configured with strict `REVOKE UPDATE, DELETE` permissions:
+
+```sql
+CREATE TABLE audit_logs (
+    log_id BIGSERIAL PRIMARY KEY,
+    application_id VARCHAR(64) NOT NULL REFERENCES loan_applications(application_id),
+    officer_id VARCHAR(64) NOT NULL,
+    action_type VARCHAR(64) NOT NULL,
+    state_payload JSONB NOT NULL,
+    prev_hash VARCHAR(64) NOT NULL,
+    curr_hash VARCHAR(64) NOT NULL,
+    timestamp TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+-- Enforce Append-Only Immutability via Trigger
+CREATE OR REPLACE FUNCTION prevent_audit_tampering()
+RETURNS TRIGGER AS $$
+BEGIN
+    RAISE EXCEPTION 'CRITICAL SECURITY BREACH: Audit log records are immutable and cannot be updated or deleted.';
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER audit_immutability_trigger
+BEFORE UPDATE OR DELETE ON audit_logs
+FOR EACH ROW EXECUTE FUNCTION prevent_audit_tampering();
+```
+
+== 11.4 Role-Based Access Control (RBAC) & Enterprise Authentication
+
+To safeguard sensitive financial records and maintain strict operational separation of duties, ILAS enforces *Four Tiered Institutional Roles*:
+
+#v(0.2cm)
+#figure(
+  table(
+    columns: (1.5fr, 1.8fr, 2.7fr),
+    fill: (col, row) => if row == 0 { cboi-navy } else if calc.even(row) { cboi-bg-alt } else { white },
+    stroke: (col, row) => if row == 0 { none } else { 0.5pt + cboi-border },
+    inset: 5.5pt,
+    align: (col, row) => if row == 0 { center } else if col == 0 { center } else { left },
+    
+    [#text(weight: "bold", fill: white, size: 8pt)[INSTITUTIONAL ROLE]],
+    [#text(weight: "bold", fill: white, size: 8pt)[AUTHENTICATION MECHANISM]],
+    [#text(weight: "bold", fill: white, size: 8pt)[AUTHORIZED PERMISSIONS & ACCESS BOUNDARIES]],
+    
+    [1. Loan Applicant], [OTP / Aadhaar e-KYC Auth], [Self-service loan application submission, document upload, personal eligibility tracking.],
+    [2. Branch Credit Officer], [Active Directory / LDAP Auth], [Dossier ingestion, document OCR validation, preliminary financial spreading verification.],
+    [3. Chief Credit Manager], [Hardware 2FA + Passcode], [Full underwriting queue, discretionary override authorization, final sanction sign-off.],
+    [4. System / Risk Auditor], [PKI Certificate Auth], [Read-only inspection of immutable audit hash logs, model telemetry, and compliance reports.]
+  ),
+  caption: [Role-Based Access Control (RBAC) Tiering & Operational Privilege Matrix]
+)
+
+== 11.5 Model Risk Management (MRM) & Algorithmic Fairness Audits
+
+To maintain institutional compliance with the *Basel Committee on Banking Supervision (BCBS 223)* supervisory principles on Model Risk Management, the ILAS platform implements continuous model risk governance:
+
+1. *Pre-Implementation Model Validation*:
+   Prior to deployment, credit scoring models must pass rigorous independent testing validating that discriminatory power meets baseline standards ($"ROC-AUC" >= 0.90$, $"K-S" >= 40.0%$, $"Brier Score" <= 0.08$).
+
+2. *Quarterly Population Stability & Drift Auditing*:
+   The system monitors the Population Stability Index ($"PSI"$) across quarterly applicant cohorts. If $"PSI" >= 0.10$, an automated supervisory alert is triggered; if $"PSI" >= 0.25$, the scoring engine automatically halts new inference and routes all dossiers to senior credit managers.
+
+3. *Demographic Parity & Fair Lending Audits*:
+   Quarterly disparate impact audits assess approval rates across protected demographic categories (e.g., Stand-Up India women entrepreneurs, SC/ST beneficiaries, rural agriculture units) to ensure the Disparate Impact Ratio satisfies the Four-Fifths benchmark ($"DIR" >= 0.80$).
+
+== 11.6 Disaster Recovery, High Availability & Business Continuity Planning
+
+To ensure uninterrupted credit appraisal operations across Central Bank of India's nationwide branch network, the platform is designed for enterprise *High Availability (HA)* and *Disaster Recovery (DR)*:
+
+#v(0.2cm)
+#figure(
+  rect(
+    width: 100%,
+    fill: rgb("f8fafc"),
+    stroke: 0.5pt + cboi-border,
+    radius: 6pt,
+    inset: 12pt,
+    [
+      #grid(
+        columns: (1fr, 1fr),
+        column-gutter: 12pt,
+        rect(
+          fill: rgb("eff6ff"),
+          stroke: 1pt + rgb("3b82f6"),
+          radius: 4pt,
+          inset: 8pt,
+          align(left)[
+            #text(9pt, weight: "bold", fill: cboi-navy)[HIGH AVAILABILITY TOPOLOGY:] \
+            #v(3pt)
+            #text(7.5pt, fill: rgb("334155"))[
+              • Multi-Availability Zone (AZ) load balancing \
+              • Hot-standby PostgreSQL database replica \
+              • Automated health checking & zero-downtime failover \
+              • *Service Availability SLA: 99.95% uptime.*
+            ]
+          ]
+        ),
+        rect(
+          fill: rgb("f0fdf4"),
+          stroke: 1pt + rgb("22c55e"),
+          radius: 4pt,
+          inset: 8pt,
+          align(left)[
+            #text(9pt, weight: "bold", fill: rgb("15803d"))[DISASTER RECOVERY BENCHMARKS:] \
+            #v(3pt)
+            #text(7.5pt, fill: rgb("334155"))[
+              • Recovery Point Objective (RPO): *< 1.0 Minute* \
+              • Recovery Time Objective (RTO): *< 15.0 Minutes* \
+              • Encrypted hourly database snapshots to DR site \
+              • Annual DR drill validation with simulated failover.
+            ]
+          ]
+        )
+      )
+    ]
+  ),
+  caption: [Enterprise High Availability & Disaster Recovery Architecture]
+)
