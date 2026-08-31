@@ -20,7 +20,7 @@
 
 #set par(
   justify: true,
-  leading: 0.75em,
+  leading: 0.8em,
   first-line-indent: 0pt
 )
 
@@ -286,11 +286,11 @@ The system achieves a *99.2% reduction in end-to-end appraisal TAT* (from 7--14 
 
 #v(6pt)
 #toc-line("CHAPTER 1: INTRODUCTION & INSTITUTIONAL BACKGROUND", "1", bold: true, fill-clr: cboi-navy)
-#toc-line("   1.1 The Indian Commercial Banking Ecosystem & Underwriting Challenges", "1")
-#toc-line("   1.2 Central Bank of India: Institutional Heritage & Digital Strategy", "2")
-#toc-line("   1.3 Problem Statement & Turnaround Time (TAT) Friction", "3")
-#toc-line("   1.4 Objectives and Scope of the Intelligent Loan Appraisal System (ILAS)", "4")
-#toc-line("   1.5 Novelty and Institutional Value Proposition", "5")
+#toc-line("   1.1 The Indian Commercial Banking Ecosystem & Underwriting Challenges", "2")
+#toc-line("   1.2 Central Bank of India: Institutional Heritage & Digital Strategy", "3")
+#toc-line("   1.3 Problem Statement & Turnaround Time (TAT) Friction", "4")
+#toc-line("   1.4 Objectives and Scope of the Intelligent Loan Appraisal System (ILAS)", "5")
+#toc-line("   1.5 Novelty and Institutional Value Proposition", "6")
 #toc-line("   1.6 Report Organization & Chapter Roadmap", "6")
 
 #v(6pt)
@@ -403,7 +403,7 @@ The system achieves a *99.2% reduction in end-to-end appraisal TAT* (from 7--14 
   [#text(weight: "bold", fill: white, size: 8.5pt)[CHAPTER]],
   [#text(weight: "bold", fill: white, size: 8.5pt)[PAGE]],
   
-  [#text(weight: "bold", fill: cboi-navy, size: 8pt)[Fig 1.1]], [End-to-End Traditional vs. Automated Credit Underwriting Lifecycle], [Chapter 1], [3],
+  [#text(weight: "bold", fill: cboi-navy, size: 8pt)[Fig 1.1]], [End-to-End Traditional vs. Automated Credit Underwriting Lifecycle], [Chapter 1], [4],
   [#text(weight: "bold", fill: cboi-navy, size: 8pt)[Fig 3.1]], [UML Use Case Diagram for Borrower, Branch Officer, and Credit Manager], [Chapter 3], [19],
   [#text(weight: "bold", fill: cboi-navy, size: 8pt)[Fig 3.2]], [Data Flow Diagram (DFD Level 0 & Level 1) for ILAS Underwriting Pipeline], [Chapter 3], [20],
   [#text(weight: "bold", fill: cboi-navy, size: 8pt)[Fig 4.1]], [Four-Tier Institutional Architecture Topology of the ILAS Platform], [Chapter 4], [22],
@@ -448,7 +448,7 @@ The system achieves a *99.2% reduction in end-to-end appraisal TAT* (from 7--14 
   [#text(weight: "bold", fill: white, size: 8.5pt)[CHAPTER]],
   [#text(weight: "bold", fill: white, size: 8.5pt)[PAGE]],
   
-  [#text(weight: "bold", fill: cboi-navy, size: 8pt)[Table 1.1]], [Operational Turnaround Time (TAT) Breakdown Across Manual Credit Stages], [Chapter 1], [3],
+  [#text(weight: "bold", fill: cboi-navy, size: 8pt)[Table 1.1]], [Operational Turnaround Time (TAT) Breakdown Across Manual Credit Stages], [Chapter 1], [4],
   [#text(weight: "bold", fill: cboi-navy, size: 8pt)[Table 2.1]], [Reserve Bank of India (RBI) Statutory LTV and Risk Weight Norms], [Chapter 2], [9],
   [#text(weight: "bold", fill: cboi-navy, size: 8pt)[Table 2.2]], [Basel III Capital Adequacy Risk Weights for Retail & MSME Asset Classes], [Chapter 2], [11],
   [#text(weight: "bold", fill: cboi-navy, size: 8pt)[Table 3.1]], [Functional Requirements Traceability Matrix (FR-1 through FR-12)], [Chapter 3], [16],
@@ -566,62 +566,115 @@ The system achieves a *99.2% reduction in end-to-end appraisal TAT* (from 7--14 
 
 #counter(page).update(1)
 
-// --- CHAPTER 1 TITLE SPLASH ---
+// ==============================================================================
+// CHAPTER 1 TITLE SPLASH (PAGE 1)
+// ==============================================================================
 #align(center)[
-  #v(1cm)
-  #text(12pt, weight: "bold", fill: cboi-gold)[CHAPTER 1] \
-  #v(0.2cm)
-  #text(18pt, weight: "bold", fill: cboi-navy)[INTRODUCTION & INSTITUTIONAL BACKGROUND] \
+  #v(2.5cm)
+  #text(14pt, weight: "bold", fill: cboi-gold)[CHAPTER 1] \
   #v(0.3cm)
-  #line(length: 40%, stroke: 1.5pt + cboi-navy)
-  #v(0.6cm)
+  #text(22pt, weight: "bold", fill: cboi-navy)[INTRODUCTION & INSTITUTIONAL \ BACKGROUND] \
+  #v(0.4cm)
+  #line(length: 45%, stroke: 2pt + cboi-navy)
+  #v(0.8cm)
+  
+  #text(11pt, style: "italic", fill: rgb("334155"))[
+    "A comprehensive examination of commercial banking underwriting bottlenecks, \
+    Central Bank of India's institutional heritage, problem formulation, and the \
+    architectural mandate of the Intelligent Loan Appraisal System (ILAS)."
+  ]
+  
+  #v(1.2cm)
+  
+  #align(center)[
+    #rect(
+      width: 90%,
+      fill: rgb("f8fafc"),
+      stroke: (left: 4pt + cboi-navy, rest: 0.5pt + cboi-border),
+      radius: (right: 4pt),
+      inset: 16pt,
+      [
+        #align(left)[
+          #text(11pt, weight: "bold", fill: cboi-navy)[Chapter 1 Executive Outline & Roadmap:] \
+          #v(8pt)
+          #grid(
+            columns: (auto, 1fr),
+            row-gutter: 8pt,
+            column-gutter: 12pt,
+            [#text(weight: "bold", fill: cboi-gold)[Section 1.1:]], [#text(fill: rgb("1e293b"))[The Indian Commercial Banking Ecosystem & Underwriting Challenges]],
+            [#text(weight: "bold", fill: cboi-gold)[Section 1.2:]], [#text(fill: rgb("1e293b"))[Central Bank of India: Institutional Heritage & Digital Strategy]],
+            [#text(weight: "bold", fill: cboi-gold)[Section 1.3:]], [#text(fill: rgb("1e293b"))[Problem Statement & Turnaround Time (TAT) Friction]],
+            [#text(weight: "bold", fill: cboi-gold)[Section 1.4:]], [#text(fill: rgb("1e293b"))[Objectives and Scope of the Intelligent Loan Appraisal System (ILAS)]],
+            [#text(weight: "bold", fill: cboi-gold)[Section 1.5:]], [#text(fill: rgb("1e293b"))[Novelty and Institutional Value Proposition]],
+            [#text(weight: "bold", fill: cboi-gold)[Section 1.6:]], [#text(fill: rgb("1e293b"))[Report Organization & Chapter Roadmap]]
+          )
+        ]
+      ]
+    )
+  ]
 ]
 
-#info-box("Chapter 1 Synopsis & Structure:", [
-  - *1.1 The Indian Commercial Banking Ecosystem & Underwriting Challenges*
-  - *1.2 Central Bank of India: Institutional Heritage & Digital Strategy*
-  - *1.3 Problem Statement & Turnaround Time (TAT) Friction*
-  - *1.4 Objectives and Scope of the Intelligent Loan Appraisal System (ILAS)*
-  - *1.5 Novelty and Institutional Value Proposition*
-  - *1.6 Report Organization & Chapter Roadmap*
-])
+#pagebreak()
 
-#v(0.8cm)
-
+// ==============================================================================
+// SECTION 1.1 (PAGE 2)
+// ==============================================================================
 == 1.1 The Indian Commercial Banking Ecosystem & Underwriting Challenges
 
-The commercial banking sector in India constitutes the backbone of the nation's financial architecture, mediating credit allocation across diverse sectors ranging from sovereign infrastructure initiatives and large corporate conglomerates to micro, small, and medium enterprises (MSMEs) and retail households. As of the financial year 2025--2026, scheduled commercial banks (SCBs) manage an aggregate domestic credit portfolio exceeding #sym.currency 170 lakh crore. Within this credit ecosystem, Public Sector Banks (PSBs) shoulder a dual responsibility: driving commercially sustainable asset growth while fulfilling mandatory Priority Sector Lending (PSL) quotas, credit democratization, and socioeconomic inclusion.
+The commercial banking sector in India constitutes the primary artery of the nation's macroeconomic architecture, mediating the allocation of capital across industrial conglomerates, infrastructure projects, micro, small, and medium enterprises (MSMEs), and retail households. As of the financial year 2025--2026, scheduled commercial banks (SCBs) manage a domestic loan book exceeding #sym.currency 170 lakh crore. Within this expansive credit ecosystem, Public Sector Banks (PSBs) occupy a uniquely critical position: they must maintain commercial profitability and robust asset quality while executing mandatory sovereign mandates, such as Priority Sector Lending (PSL) quotas, agricultural credit democratization, and socioeconomic inclusion.
 
-Despite substantial technological modernization across digital payment rails (Unified Payments Interface - UPI, Immediate Payment Service - IMPS, and National Automated Clearing House - NACH), the *credit underwriting and risk appraisal lifecycle* within commercial banking remains heavily constrained by historical manual practices, fragmented data ingestion pipelines, and multi-tier committee governance.
+Despite landmark digital transformations across India's payment infrastructure---anchored by the Unified Payments Interface (UPI), Immediate Payment Service (IMPS), and National Automated Clearing House (NACH)---the *commercial credit underwriting and risk appraisal lifecycle* remains constrained by manual, paper-intensive procedures, unstructured multi-format data ingestion, and multi-tier committee hierarchies.
 
-The underlying challenges in modern commercial underwriting can be classified into four primary structural bottlenecks:
+#info-box("Core Structural Bottlenecks in Commercial Underwriting:", [
+  1. *Severe Information Asymmetry and Heterogeneous Ingestion*: Credit appraisal requires ingesting multi-format financial records. Retail applicants submit salary certificates, Form 16, bank statements, and property title deeds. MSME applicants submit multi-year audited balance sheets, profit and loss statements, provisional trial balances, Goods and Services Tax (GST) returns, stock statements, and project feasibility reports. These arrive in inconsistent formats (unstructured PDFs, scanned documents, Excel files, and physical paper ledgers), demanding labor-intensive manual data entry and human cross-verification. \ \
+  2. *Complex Quantitative Formulations & Operational Conduct Scoring*: Commercial lending---especially to MSMEs---cannot rely solely on static credit bureau scores. Underwriting institutions must evaluate multi-dimensional operational metrics: debt service coverage ratios (DSCR), current ratios (CR), debt-equity ratios (DER), turnover routing through operative current accounts, stock statement submission regularity, bill discounting culture, and letter of credit / bank guarantee (LC/BG) devolvement histories. Manually calculating these ratios across multi-year spreads is prone to arithmetic error and inconsistent interpretations across branch locations. \ \
+  3. *Multi-Volume Regulatory Compliance & Policy Cross-Referencing*: Underwriting officers must operate within stringent regulatory boundaries established by the *Reserve Bank of India (RBI)* and internal institutional lending circulars. These include statutory Loan-to-Value (LTV) limits, Fixed Obligation to Income Ratio (FOIR) ceilings, priority sector classifications, statutory exposure caps, and dynamic Repo-Based Lending Rate (RBLR) interest rate structures. Manually cross-referencing multi-hundred-page policy circulars across varying loan amounts and risk profiles introduces cognitive fatigue and regulatory slippage risks. \ \
+  4. *Lengthy Turnaround Times (TAT) and Credit Friction*: Because each application must pass sequentially through document verification, ratio spreading, policy checking, risk grading, and supervisory review, the end-to-end Turnaround Time (TAT) in traditional banking channels spans *7 to 14 business days*. This prolonged processing window leads to borrower dissatisfaction, loan application abandonment, elevated operational expenditure, and delayed capital deployment to critical economic sectors.
+])
 
-1. *Severe Information Asymmetry and Heterogeneous Ingestion*: Credit appraisal requires the ingestion and validation of vast, unstandardized documentation. Retail applicants submit salary slips, Form 16 certificates, bank statements, income tax returns (ITR), and property title deeds. MSME applicants submit multi-year audited balance sheets, profit and loss statements, provisional trial balances, Goods and Services Tax (GST) returns, stock statements, and project feasibility reports. These documents arrive in inconsistent formats (unstructured PDFs, scanned paper records, Word documents, Excel workbooks, and physical ledger printouts), demanding labor-intensive manual data entry and human cross-verification.
+#pagebreak()
 
-2. *Complex Quantitative Formulations & Operational Conduct Scoring*: Commercial lending---particularly to the MSME sector---cannot rely solely on static credit bureau scores. Underwriting institutions must evaluate multi-dimensional operational metrics: debt service coverage ratios (DSCR), current ratios (CR), debt-equity ratios (DER), turnover routing through operative current accounts, stock statement submission regularity, bill discounting culture, and letter of credit / bank guarantee (LC/BG) devolvement histories. Manually calculating these ratios across multi-year spreads is prone to arithmetic error and inconsistent interpretations across branch locations.
-
-3. *Multi-Volume Regulatory Compliance & Policy Cross-Referencing*: Underwriting officers must operate within stringent regulatory boundaries established by the *Reserve Bank of India (RBI)* and internal institutional lending circulars. These include statutory Loan-to-Value (LTV) limits, Fixed Obligation to Income Ratio (FOIR) ceilings, priority sector classifications, statutory exposure caps, and dynamic Repo-Based Lending Rate (RBLR) interest rate structures. Manually cross-referencing multi-hundred-page policy circulars across varying loan amounts and risk profiles introduces cognitive fatigue and regulatory slippage risks.
-
-4. *Lengthy Turnaround Times (TAT) and Credit Friction*: Because each application must pass sequentially through document verification, ratio spreading, policy checking, risk grading, and supervisory review, the end-to-end Turnaround Time (TAT) in traditional banking channels spans *7 to 14 business days*. This prolonged processing window leads to borrower dissatisfaction, loan application abandonment, elevated operational expenditure, and delayed capital deployment to critical economic sectors.
-
+// ==============================================================================
+// SECTION 1.2 (PAGE 3)
+// ==============================================================================
 == 1.2 Central Bank of India: Institutional Heritage & Digital Strategy
 
 Established on *21st December 1911* by the visionary banking pioneer *Sir Sorabji Pochkhanawala*, under the distinguished chairmanship of *Sir Pherozeshah Mehta*, the *Central Bank of India (CBoI)* holds the historic distinction of being the *very first wholly Indian commercial bank owned and managed by Indians without foreign assistance*---the premier "Swadeshi Bank" of the nation.
 
 Throughout its 115-year history of nation-building, Central Bank of India has introduced numerous pioneering banking practices in the Indian sub-continent, including the introduction of home savings safe deposit vaults, recurring deposit schemes, circular letters of credit, and specialized agricultural credit programs. Nationalized in 1969 alongside 13 other major commercial banks, Central Bank of India has maintained its institutional mandate of fostering grassroots economic development, serving millions of agriculturalists, MSMEs, small traders, and retail consumers across urban, semi-urban, and rural India.
 
-*Institutional Profile of the Visakhapatnam Regional Office:* \
-The *Regional Office at Visakhapatnam, Andhra Pradesh*, oversees an extensive network of commercial branches across coastal Andhra Pradesh. Operating in one of India's major industrial and port hubs, the Visakhapatnam Regional Office processes a high volume of credit applications spanning maritime logistics, manufacturing enterprises, pharmaceutical ancillaries, real estate, and retail priority advances. 
-
-Under the leadership of the Regional Management and the Credit & Risk Management Division (headed by *Shri Ajeet Kumar*, Chief Manager), the region has prioritized:
-- Accelerating MSME credit delivery while maintaining zero-tolerance for non-performing asset (NPA) slippages.
-- Standardizing credit appraisal formats across branches using the bank's official *Form MSE 1* (for existing units) and *Form MSE II* (for greenfield units).
-- Ensuring dynamic interest rate compliance with the bank's *Master Circular on Rate of Interest (RBLR)* dated *01.07.2026*.
-- Enhancing governance and auditability under the *Digital Personal Data Protection (DPDP) Act 2023*.
+#align(center)[
+  #rect(
+    width: 100%,
+    fill: rgb("f8fafc"),
+    stroke: 0.5pt + cboi-border,
+    radius: 4pt,
+    inset: 12pt,
+    [
+      #align(left)[
+        #text(10pt, weight: "bold", fill: cboi-navy)[Institutional Profile of the Visakhapatnam Regional Office:] \
+        #v(4pt)
+        The *Regional Office at Visakhapatnam, Andhra Pradesh*, oversees an extensive network of commercial branches across coastal Andhra Pradesh. Operating in one of India's major industrial and port hubs, the Visakhapatnam Regional Office processes a high volume of credit applications spanning maritime logistics, manufacturing enterprises, pharmaceutical ancillaries, real estate, and retail priority advances. \ \
+        Under the leadership of the Regional Management and the Credit & Risk Management Division (headed by *Shri Ajeet Kumar*, Chief Manager), the region has prioritized:
+        - Accelerating MSME credit delivery while maintaining zero-tolerance for non-performing asset (NPA) slippages.
+        - Standardizing credit appraisal formats across branches using the bank's official *Form MSE 1* (for existing units) and *Form MSE II* (for greenfield units).
+        - Ensuring dynamic interest rate compliance with the bank's *Master Circular on Rate of Interest (RBLR)* dated *01.07.2026*.
+        - Enhancing governance and auditability under the *Digital Personal Data Protection (DPDP) Act 2023*.
+      ]
+    ]
+  )
+]
 
 *Central Bank Digital Transformation Vision (2026 & Beyond):* \
 To maintain competitiveness against private commercial banks and fintech non-banking financial companies (NBFCs), Central Bank of India is actively transitioning toward automated, data-driven credit appraisal. The deployment of autonomous artificial intelligence systems, graph-based agent orchestration, and automated retrieval-augmented generation represents the next frontier in the bank's digital underwriting roadmap.
 
+The development of the *Intelligent Loan Appraisal System (ILAS)* directly addresses this strategic priority by automating the extraction, spreading, policy compliance, forensic auditing, and memorandum synthesis of retail and MSME loan dossiers.
+
+#pagebreak()
+
+// ==============================================================================
+// SECTION 1.3 (PAGE 4)
+// ==============================================================================
 == 1.3 Problem Statement & Turnaround Time (TAT) Friction
 
 In the prevailing manual credit underwriting framework at commercial public sector bank branches, the appraisal of a loan application involves six distinct, disjointed operational phases. Each phase introduces structural latency, human transcription errors, and subjective variance.
@@ -635,7 +688,7 @@ In the prevailing manual credit underwriting framework at commercial public sect
   columns: (0.9fr, 1.8fr, 3fr, 1.1fr, 1.2fr),
   fill: (col, row) => if row == 0 { cboi-navy } else if row == 7 { rgb("e2e8f0") } else if calc.even(row) { cboi-bg-alt } else { white },
   stroke: (col, row) => if row == 0 { none } else { 0.5pt + cboi-border },
-  inset: 5pt,
+  inset: 6pt,
   align: (col, row) => if row == 0 { center } else if col == 0 or col == 3 or col == 4 { center } else { left },
   
   [#text(weight: "bold", fill: white, size: 8pt)[STAGE No.]],
@@ -660,6 +713,11 @@ In the prevailing manual credit underwriting framework at commercial public sect
 3. *Delayed Policy Ingestion*: When the Reserve Bank of India or Central Bank Central Office issues updated Master Circulars (e.g., changes in repo rates, risk weights, or CGTMSE guarantee limits), branch officers often experience lag in applying the updated guidelines.
 4. *Vulnerability to Accounting Irregularities*: Manual underwriting lacks algorithmic tools to detect sophisticated financial statement manipulation (such as aggressive revenue recognition, abnormal accruals, or asset inflation) that are captured by statistical indices like the Beneish M-Score.
 
+#pagebreak()
+
+// ==============================================================================
+// SECTION 1.4 (PAGE 5)
+// ==============================================================================
 == 1.4 Objectives and Scope of the Intelligent Loan Appraisal System (ILAS)
 
 The primary aim of this 8-week internship project is to architect, develop, validate, and deploy the *Intelligent Loan Appraisal System (ILAS)*---an autonomous, institutional-grade, multi-agent AI underwriting platform tailored to the credit governance policies of the *Central Bank of India*.
@@ -673,12 +731,19 @@ The primary aim of this 8-week internship project is to architect, develop, vali
   - *OBJ-6 (Publication-Grade CAM Dossier Synthesis)*: Generate 7-chapter Credit Appraisal Memorandums in download-ready Microsoft Word and PDF formats with complete regulatory citations.
 ])
 
+#v(0.3cm)
+
 *Scope of the System:*
 - *Retail Credit Facilities*: Cent Home Loans, Cent Vehicle Loans, Cent Personal Loans, and Cent Education Loans. Evaluates debt-serviceability via Equated Monthly Installment (EMI), Fixed Obligation to Income Ratio (FOIR $<= 50.0\%$), and Loan-to-Value (LTV $<= 75\%-90\%$).
 - *MSME Commercial Facilities*: Working capital cash credit limits, term loans, and composite facilities for existing manufacturing/services enterprises (Form MSE 1) and greenfield startups (Form MSE II).
 - *Forensic Audit & Working Capital Sizing*: Covers corporate balance sheet normalization, Tandon Committee Methods I & II, Nayak Committee turnover sizing, Altman Z'' bankruptcy forecasting, and Beneish M-Score accounting manipulation detection.
 - *Statutory Regulatory Directives*: RBI Master Directions on Prudential Norms, Basel III Capital Adequacy guidelines, and the Digital Personal Data Protection (DPDP) Act 2023.
 
+#pagebreak()
+
+// ==============================================================================
+// SECTION 1.5 & 1.6 (PAGE 6)
+// ==============================================================================
 == 1.5 Novelty and Institutional Value Proposition
 
 Unlike generic machine learning credit scorecards or commercial rule engines, the *Intelligent Loan Appraisal System (ILAS)* introduces four foundational innovations specifically engineered for public sector banking:
