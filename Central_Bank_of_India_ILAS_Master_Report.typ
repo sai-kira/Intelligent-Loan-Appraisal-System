@@ -1719,46 +1719,89 @@ To guarantee that generated Credit Appraisal Memorandums cite exact, legally ver
 
 == 5.1 Retail Debt Serviceability Models (Compounding EMI, FOIR, LTV)
 
-Retail credit underwriting within the Central Bank of India relies upon three fundamental mathematical pillars to ensure that loan repayment schedules remain within the verifiable surplus disposable cash flow of retail households:
+Retail credit underwriting within the Central Bank of India relies upon three fundamental mathematical formulations to ensure that loan repayment schedules remain strictly within the verifiable surplus disposable cash flow of applicant households.
 
 *1. Compounding Equated Monthly Installment (EMI) Model:* \
-For a fixed principal advance $P$ sanctioned at an annualized percentage rate $R$ over a tenure of $n$ monthly installments, the monthly interest rate is $r = R / (12 times 100)$. The standard reducing-balance monthly annuity installment is computed via:
+For a sanctioned loan facility of principal amount $P$, an annualized interest rate $R$ (percentage), and a loan tenure of $n$ monthly installments, the effective monthly interest rate is given by $r = R / (12 times 100)$. 
 
-$ "EMI" = P times r times frac((1+r)^n, (1+r)^n - 1) $
+The standard monthly annuity amortization installment (EMI) is derived from the present value of an ordinary annuity:
+
+$ P = sum_(t=1)^n frac("EMI", (1+r)^t) = "EMI" times [ frac{1 - (1+r)^(-n)}{r} ] $
+
+Solving for $"EMI"$ yields the closed-form deterministic formula implemented in the ILAS Financial Engine:
+
+$ "EMI" = P times r times [ frac{(1+r)^n}{(1+r)^n - 1} ] $
 
 *2. Fixed Obligation to Income Ratio (FOIR):* \
-FOIR measures the total monthly debt absorption capacity of the applicant. It aggregates existing documented loan repayments, vehicle loans, personal credit lines, and the proposed facility EMI against verified Net Monthly Income (NMI):
+The Fixed Obligation to Income Ratio measures the total debt service burden of the borrower relative to their net monthly disposable income. It aggregates all existing documented loan commitments (personal loans, auto loans, credit card revolving debt) with the proposed loan facility's EMI:
 
-$ "FOIR" = frac(sum "Existing Monthly Obligations" + "Proposed Facility EMI", "Verified Net Monthly Income (NMI)") times 100% $
+$ "FOIR" = [ frac{sum "Existing Monthly Debt Obligations" + "Proposed Facility EMI"}{"Verified Net Monthly Income (NMI)"} ] times 100% $
 
-Pursuant to Reserve Bank of India retail lending guidelines and Central Bank policy:
-- Standard Retail Borrowers ($"NMI" <= #sym.currency 1,50,000$): Mandatory statutory ceiling of $"FOIR" <= 50.0%$.
-- High-Net-Worth Individuals ($"NMI" > #sym.currency 1,50,000$): Discretionary allowance up to $"FOIR" <= 60.0%$, provided residual unencumbered surplus income exceeds #sym.currency 60,000 per month.
+Pursuant to Reserve Bank of India retail lending guidelines and Central Bank lending policy:
+- *Standard Retail Applicants ($"NMI" <= #sym.currency 1,50,000$)*: Mandatory statutory ceiling of $"FOIR" <= 50.0%$.
+- *High-Net-Worth Individuals ($"NMI" > #sym.currency 1,50,000$)*: Discretionary allowance up to $"FOIR" <= 60.0%$, provided residual unencumbered surplus income exceeds #sym.currency 60,000 per month.
 
 *3. Loan-to-Value (LTV) Ratio & Statutory Margin Compliance:* \
-LTV ensures adequate collateral equity cushion to absorb asset price depreciation in the event of foreclosure under SARFAESI:
+The Loan-to-Value ratio evaluates the collateral equity cushion available to protect the bank against property devaluation in the event of default and foreclosure under the SARFAESI Act 2002:
 
-$ "LTV" = frac("Sanctioned Loan Amount", "Documented Property / Asset Value") times 100% $
+$ "LTV" = [ frac{"Sanctioned Loan Amount"}{"Documented Property / Asset Market Valuation"} ] times 100% $
 
-```
-  ┌─────────────────────────────────────────────────────────────────────────────┐
-  │         FIGURE 5.1: RBI LOAN-TO-VALUE (LTV) AND FOIR BOUNDARY CONTOURS      │
-  └─────────────────────────────────────────────────────────────────────────────┘
-
-    100% ┌──────────────────────────────────────────────────────────────────┐
-         │ [PROHIBITED HIGH-RISK ZONE - LTV > 90%]                          │
-     90% ├───────────────────────┬──────────────────────────────────────────┤
-         │ Up to ₹30 Lakhs       │                                          │
-         │ Max LTV: 90.0%        │                                          │
-     80% ├───────────────────────┼───────────────────┬──────────────────────┤
-         │                       │ > ₹30L to ₹75L    │                      │
-         │                       │ Max LTV: 80.0%    │                      │
-     75% ├───────────────────────┴───────────────────┼──────────────────────┤
-         │                                           │ Above ₹75 Lakhs      │
-         │                                           │ Max LTV: 75.0%       │
-      0% └───────────────────────────────────────────┴──────────────────────┘
-         ₹0                     ₹30 Lakhs           ₹75 Lakhs             Above
-```
+#v(0.3cm)
+#figure(
+  rect(
+    width: 100%,
+    fill: rgb("f8fafc"),
+    stroke: 0.5pt + cboi-border,
+    radius: 6pt,
+    inset: 12pt,
+    [
+      #grid(
+        columns: (1fr, 1fr, 1fr),
+        column-gutter: 10pt,
+        rect(
+          fill: rgb("eff6ff"),
+          stroke: 1pt + rgb("3b82f6"),
+          radius: 4pt,
+          inset: 8pt,
+          align(center)[
+            #text(9pt, weight: "bold", fill: cboi-navy)[Loan Up to #sym.currency 30 Lakhs] \
+            #v(4pt)
+            #text(16pt, weight: "bold", fill: rgb("1d4ed8"))[Max 90% LTV] \
+            #v(2pt)
+            #text(8pt, fill: rgb("475569"))[Minimum Borrower Margin: 10% \ Standard Risk Weight: 35%]
+          ]
+        ),
+        rect(
+          fill: rgb("eff6ff"),
+          stroke: 1pt + rgb("3b82f6"),
+          radius: 4pt,
+          inset: 8pt,
+          align(center)[
+            #text(9pt, weight: "bold", fill: cboi-navy)[#sym.currency 30L to #sym.currency 75 Lakhs] \
+            #v(4pt)
+            #text(16pt, weight: "bold", fill: rgb("1d4ed8"))[Max 80% LTV] \
+            #v(2pt)
+            #text(8pt, fill: rgb("475569"))[Minimum Borrower Margin: 20% \ Standard Risk Weight: 35%]
+          ]
+        ),
+        rect(
+          fill: rgb("eff6ff"),
+          stroke: 1pt + rgb("3b82f6"),
+          radius: 4pt,
+          inset: 8pt,
+          align(center)[
+            #text(9pt, weight: "bold", fill: cboi-navy)[Above #sym.currency 75 Lakhs] \
+            #v(4pt)
+            #text(16pt, weight: "bold", fill: rgb("1d4ed8"))[Max 75% LTV] \
+            #v(2pt)
+            #text(8pt, fill: rgb("475569"))[Minimum Borrower Margin: 25% \ Standard Risk Weight: 50%]
+          ]
+        )
+      )
+    ]
+  ),
+  caption: [RBI Loan-to-Value (LTV) Slabs and Minimum Margin Thresholds]
+)
 
 #pagebreak()
 
@@ -1767,65 +1810,124 @@ $ "LTV" = frac("Sanctioned Loan Amount", "Documented Property / Asset Value") ti
 // ==============================================================================
 == 5.2 MSME Form MSE 1 Rating Framework (Existing Units - 13 Parameters)
 
-The *Form MSE 1* credit rating model is the official Central Bank of India quantitative scoring scorecard for *existing manufacturing, processing, and service enterprises* having at least two full financial years of operational balance sheet history.
+The *Form MSE 1* credit rating model is the official Central Bank of India quantitative scoring scorecard for *existing manufacturing, processing, and service enterprises* possessing at least two consecutive financial years of audited operational history.
 
-The scorecard evaluates *13 parameters* grouped into three overarching risk pillars totaling *100 maximum marks*:
+The scoring model evaluates **13 distinct parameters** grouped across three core institutional pillars totaling **100 maximum marks**:
 
-```
-  ┌─────────────────────────────────────────────────────────────────────────────┐
-  │        FIGURE 5.2: FORM MSE 1 PARAMETER WEIGHTAGE DISTRIBUTION (100 MARKS)  │
-  └─────────────────────────────────────────────────────────────────────────────┘
+#v(0.3cm)
+#figure(
+  rect(
+    width: 100%,
+    fill: rgb("f8fafc"),
+    stroke: 0.5pt + cboi-border,
+    radius: 6pt,
+    inset: 12pt,
+    [
+      #grid(
+        columns: (1fr, 1fr, 1fr),
+        column-gutter: 10pt,
+        rect(
+          fill: rgb("f1f5f9"),
+          stroke: (left: 3pt + cboi-navy, rest: 0.5pt + cboi-border),
+          radius: 4pt,
+          inset: 8pt,
+          [
+            #text(9.5pt, weight: "bold", fill: cboi-navy)[PILLAR 1: FINANCIALS] \
+            #text(8pt, fill: cboi-gold, weight: "bold")[40 Marks (40% Weight)] \
+            #v(4pt)
+            #text(7.5pt, fill: rgb("334155"))[
+              • Current Ratio (CR) [10M] \
+              • Debt-Equity Ratio (DER) [10M] \
+              • Operating Profit Margin [8M] \
+              • Return on Capital (ROCE) [6M] \
+              • Tangible Net Worth Growth [6M]
+            ]
+          ]
+        ),
+        rect(
+          fill: rgb("f1f5f9"),
+          stroke: (left: 3pt + cboi-navy, rest: 0.5pt + cboi-border),
+          radius: 4pt,
+          inset: 8pt,
+          [
+            #text(9.5pt, weight: "bold", fill: cboi-navy)[PILLAR 2: CONDUCT] \
+            #text(8pt, fill: cboi-gold, weight: "bold")[35 Marks (35% Weight)] \
+            #v(4pt)
+            #text(7.5pt, fill: rgb("334155"))[
+              • Capacity Utilization % [8M] \
+              • Turnover Growth Rate % [8M] \
+              • CBoI Account Routeing % [8M] \
+              • Stock Statement Regularity [6M] \
+              • LC/BG Devolvement History [5M]
+            ]
+          ]
+        ),
+        rect(
+          fill: rgb("f1f5f9"),
+          stroke: (left: 3pt + cboi-navy, rest: 0.5pt + cboi-border),
+          radius: 4pt,
+          inset: 8pt,
+          [
+            #text(9.5pt, weight: "bold", fill: cboi-navy)[PILLAR 3: MANAGEMENT] \
+            #text(8pt, fill: cboi-gold, weight: "bold")[25 Marks (25% Weight)] \
+            #v(4pt)
+            #text(7.5pt, fill: rgb("334155"))[
+              • Promoter Track Record [8M] \
+              • CIBIL Commercial Rank [7M] \
+              • Industry Sector Outlook [5M] \
+              • Collateral / SARFAESI [5M]
+            ]
+          ]
+        )
+      )
+    ]
+  ),
+  caption: [Form MSE 1 Parameter Weightage Distribution Across Core Risk Pillars]
+)
 
-  ┌───────────────────────────────────────────────────────────────────────────┐
-  │ PILLAR 1: FINANCIAL PERFORMANCE & BALANCE SHEET STRENGTH (40 MARKS / 40%) │
-  │ • Current Ratio (CR) [10] • Debt-Equity Ratio (DER) [10]                  │
-  │ • Operating Profit Margin (OPM %) [8] • Return on Capital (ROCE %) [6]    │
-  │ • Tangible Net Worth (TNW) Annual Growth Rate [6]                         │
-  ├───────────────────────────────────────────────────────────────────────────┤
-  │ PILLAR 2: OPERATIONAL & BUSINESS CONDUCT (35 MARKS / 35%)                 │
-  │ • Capacity Utilization % [8] • Turnover Annual Growth % [8]               │
-  │ • Routeing of Funds Through CBoI Operative Account % [8]                  │
-  │ • Regularity of Monthly Stock Statement Submissions [6]                   │
-  │ • Devolvement History of LC / BG Non-Fund Facilities [5]                  │
-  ├───────────────────────────────────────────────────────────────────────────┤
-  │ PILLAR 3: MANAGEMENT & EXTERNAL RISK FACTORS (25 MARKS / 25%)             │
-  │ • Promoter Line Experience & Management Capability [8]                    │
-  │ • External Credit Bureau (CIBIL Commercial) Rating [7]                    │
-  │ • Industry Growth Prospects & Cyclicality Vulnerability [5]               │
-  │ • Primary & Collateral Security Realizability (SARFAESI) [5]              │
-  └───────────────────────────────────────────────────────────────────────────┘
-```
+#v(0.4cm)
+
+*Institutional Parameter Formulations in Form MSE 1:*
+
+1. *Current Ratio (CR)*: Measures short-term liquidity ($"CR" = "Current Assets" / "Current Liabilities"$). A benchmark of $"CR" >= 1.33$ is required for maximum marks (10 marks).
+2. *Debt-Equity Ratio (DER)*: Measures long-term leverage ($"DER" = "Total Long-Term Debt" / "Tangible Net Worth"$). A benchmark of $"DER" <= 2.00$ receives full marks (10 marks).
+3. *Operating Profit Margin (OPM %)*: Measures core business profitability ($"OPM" = ("EBITDA" / "Gross Sales") times 100%$). Benchmarks $>= 15.0%$ receive 8 marks.
+4. *Return on Capital Employed (ROCE %)*: Measures capital efficiency ($"ROCE" = ("EBIT" / ("Tangible Net Worth" + "Long-Term Debt")) times 100%$). Benchmarks $>= 20.0%$ receive 6 marks.
+5. *Tangible Net Worth (TNW) Growth*: Evaluates retained earnings capitalization and balance sheet accretion. Annual growth $>= 15.0%$ receives 6 marks.
+6. *Routeing of Funds Through CBoI Account*: Measures the percentage of annual sales proceeds deposited into the bank's operative current account. Routeing $>= 75.0%$ receives 8 marks.
+7. *Regularity of Stock Statement Submissions*: Evaluates borrower operational compliance. Monthly submissions within 15 days receive 6 marks; unrectified default receives 0 marks.
+8. *LC / BG Devolvement History*: Assesses non-fund facility discipline. Zero devolvements in 24 months receive 5 marks; repeated devolvement results in 0 marks.
 
 #pagebreak()
 
 #v(0.2cm)
 #figure(
   table(
-    columns: (0.8fr, 2.5fr, 1.2fr, 1.5fr),
-    fill: (col, row) => if row == 0 { cboi-navy } else if calc.even(row) { cboi-bg-alt } else { white },
+    columns: (0.9fr, 2.3fr, 0.9fr, 3fr),
+    fill: (col, row) => if row == 0 { cboi-navy } else if row == 14 { rgb("e2e8f0") } else if calc.even(row) { cboi-bg-alt } else { white },
     stroke: (col, row) => if row == 0 { none } else { 0.5pt + cboi-border },
     inset: 5pt,
     align: (col, row) => if row == 0 { center } else if col == 0 or col == 2 { center } else { left },
     
     [#text(weight: "bold", fill: white, size: 8pt)[PARAM No.]],
-    [#text(weight: "bold", fill: white, size: 8pt)[FORM MSE 1 SCORING PARAMETER]],
-    [#text(weight: "bold", fill: white, size: 8pt)[MAX MARKS]],
-    [#text(weight: "bold", fill: white, size: 8pt)[INSTITUTIONAL BENCHMARK CRITERIA]],
+    [#text(weight: "bold", fill: white, size: 8pt)[SCORING PARAMETER]],
+    [#text(weight: "bold", fill: white, size: 8pt)[MAX]],
+    [#text(weight: "bold", fill: white, size: 8pt)[INSTITUTIONAL SCORING BREAKUP & BENCHMARKS]],
     
-    [#text(weight: "bold", fill: cboi-navy, size: 7.5pt)[P-01]], [Current Ratio (CR = CA / CL)], [10.0], [CR >= 1.33: 10 marks | 1.17-1.32: 7 | 1.00-1.16: 4 | \<1.00: 0],
-    [#text(weight: "bold", fill: cboi-navy, size: 7.5pt)[P-02]], [Debt-Equity Ratio (DER = Debt / TNW)], [10.0], [DER <= 2.00: 10 marks | 2.01-3.00: 7 | 3.01-4.00: 4 | >4.00: 0],
-    [#text(weight: "bold", fill: cboi-navy, size: 7.5pt)[P-03]], [Operating Profit Margin (OPM %)], [8.0], [OPM >= 15.0%: 8 marks | 10.0-14.9%: 6 | 5.0-9.9%: 3 | \<5.0%: 0],
-    [#text(weight: "bold", fill: cboi-navy, size: 7.5pt)[P-04]], [Return on Capital Employed (ROCE %)], [6.0], [ROCE >= 20.0%: 6 marks | 12.0-19.9%: 4 | 6.0-11.9%: 2 | \<6.0%: 0],
-    [#text(weight: "bold", fill: cboi-navy, size: 7.5pt)[P-05]], [Tangible Net Worth (TNW) Annual Growth], [6.0], [Growth >= 15.0%: 6 marks | 8.0-14.9%: 4 | 0.1-7.9%: 2 | Negative: 0],
-    [#text(weight: "bold", fill: cboi-navy, size: 7.5pt)[P-06]], [Capacity Utilization %], [8.0], [Util >= 75.0%: 8 marks | 60.0-74.9%: 6 | 45.0-59.9%: 3 | \<45.0%: 0],
-    [#text(weight: "bold", fill: cboi-navy, size: 7.5pt)[P-07]], [Turnover Annual Growth Rate %], [8.0], [Growth >= 20.0%: 8 marks | 10.0-19.9%: 6 | 0.1-9.9%: 3 | Negative: 0],
-    [#text(weight: "bold", fill: cboi-navy, size: 7.5pt)[P-08]], [Routeing of Funds Through CBoI Account], [8.0], [Routeing >= 75.0%: 8 marks | 50.0-74.9%: 5 | 25.0-49.9%: 2 | \<25.0%: 0],
-    [#text(weight: "bold", fill: cboi-navy, size: 7.5pt)[P-09]], [Regularity of Stock Statement Submissions], [6.0], [Monthly Regular (within 15 days): 6 marks | Occasional Delay: 3 | Defaulter: 0],
-    [#text(weight: "bold", fill: cboi-navy, size: 7.5pt)[P-10]], [Devolvement History of LC / BG Facilities], [5.0], [Zero Devolvement: 5 marks | Single Rectified Delay: 2 | Repeated Devolvement: 0],
-    [#text(weight: "bold", fill: cboi-navy, size: 7.5pt)[P-11]], [Promoter Experience & Line Track Record], [8.0], [Experience >= 10 Yrs: 8 marks | 5-9 Yrs: 6 | 2-4 Yrs: 3 | \<2 Yrs: 1],
-    [#text(weight: "bold", fill: cboi-navy, size: 7.5pt)[P-12]], [Commercial Credit Bureau (CIBIL) Rating], [7.0], [CMR 1-2 (Excellent): 7 marks | CMR 3-4: 5 | CMR 5-6: 3 | CMR 7-10: 0],
-    [#text(weight: "bold", fill: cboi-navy, size: 7.5pt)[P-13]], [Collateral Security (SARFAESI Enforceability)], [5.0], [Collateral >= 100% Loan: 5 marks | 50-99%: 3 | \<50%: 1 | Zero: 0],
-    [#text(weight: "bold", fill: cboi-navy, size: 7.5pt)[TOTAL]], [#text(weight: "bold")[Aggregate Form MSE 1 Rating Score]], [#text(weight: "bold")[100.0]], [#text(weight: "bold")[Statutory Hurdle Rate: Minimum 50.0 Marks]]
+    [#text(weight: "bold", fill: cboi-navy, size: 7.5pt)[P-01]], [Current Ratio (CR = CA/CL)], [10.0], [CR >= 1.33: 10M | 1.17--1.32: 7M | 1.00--1.16: 4M | \< 1.00: 0M],
+    [#text(weight: "bold", fill: cboi-navy, size: 7.5pt)[P-02]], [Debt-Equity Ratio (DER)], [10.0], [DER <= 2.00: 10M | 2.01--3.00: 7M | 3.01--4.00: 4M | > 4.00: 0M],
+    [#text(weight: "bold", fill: cboi-navy, size: 7.5pt)[P-03]], [Operating Profit Margin %], [8.0], [OPM >= 15.0%: 8M | 10.0--14.9%: 6M | 5.0--9.9%: 3M | \< 5.0%: 0M],
+    [#text(weight: "bold", fill: cboi-navy, size: 7.5pt)[P-04]], [ROCE %], [6.0], [ROCE >= 20.0%: 6M | 12.0--19.9%: 4M | 6.0--11.9%: 2M | \< 6.0%: 0M],
+    [#text(weight: "bold", fill: cboi-navy, size: 7.5pt)[P-05]], [Tangible Net Worth Growth], [6.0], [Growth >= 15.0%: 6M | 8.0--14.9%: 4M | 0.1--7.9%: 2M | Negative: 0M],
+    [#text(weight: "bold", fill: cboi-navy, size: 7.5pt)[P-06]], [Capacity Utilization %], [8.0], [Util >= 75.0%: 8M | 60.0--74.9%: 6M | 45.0--59.9%: 3M | \< 45.0%: 0M],
+    [#text(weight: "bold", fill: cboi-navy, size: 7.5pt)[P-07]], [Turnover Annual Growth %], [8.0], [Growth >= 20.0%: 8M | 10.0--19.9%: 6M | 0.1--9.9%: 3M | Negative: 0M],
+    [#text(weight: "bold", fill: cboi-navy, size: 7.5pt)[P-08]], [CBoI Account Routeing %], [8.0], [Routeing >= 75.0%: 8M | 50.0--74.9%: 5M | 25.0--49.9%: 2M | \< 25.0%: 0M],
+    [#text(weight: "bold", fill: cboi-navy, size: 7.5pt)[P-09]], [Stock Statement Regularity], [6.0], [Monthly Regular (within 15d): 6M | Occasional Delay: 3M | Default: 0M],
+    [#text(weight: "bold", fill: cboi-navy, size: 7.5pt)[P-10]], [LC / BG Devolvements], [5.0], [Zero Devolvements: 5M | Single Rectified: 2M | Repeated: 0M],
+    [#text(weight: "bold", fill: cboi-navy, size: 7.5pt)[P-11]], [Promoter Line Experience], [8.0], [Exp >= 10 Yrs: 8M | 5--9 Yrs: 6M | 2--4 Yrs: 3M | \< 2 Yrs: 1M],
+    [#text(weight: "bold", fill: cboi-navy, size: 7.5pt)[P-12]], [CIBIL Commercial Rank], [7.0], [CMR 1--2: 7M | CMR 3--4: 5M | CMR 5--6: 3M | CMR 7--10: 0M],
+    [#text(weight: "bold", fill: cboi-navy, size: 7.5pt)[P-13]], [Collateral Security Cover], [5.0], [Collateral >= 100% Loan: 5M | 50--99%: 3M | \< 50%: 1M | Nil: 0M],
+    [#text(weight: "bold", fill: cboi-navy, size: 7.5pt)[TOTAL]], [#text(weight: "bold")[Aggregate Form MSE 1 Score]], [#text(weight: "bold")[100.0]], [#text(weight: "bold")[Minimum Statutory Hurdle Rate: 50.0 Marks]]
   ),
   caption: [Form MSE 1 Quantitative Scoring Matrix (Existing Units - 13 Parameters)]
 )
@@ -1837,32 +1939,34 @@ The scorecard evaluates *13 parameters* grouped into three overarching risk pill
 // ==============================================================================
 == 5.3 MSME Form MSE II Rating Framework (Greenfield Units - 9 Parameters)
 
-For new MSME units, startups, and greenfield industrial projects lacking historical financial statement track records, the Central Bank of India deploys the *Form MSE II* model. This model substitutes historical ratio spreading with rigorous project appraisal, techno-economic feasibility, and promoter capital commitment:
+For newly established MSME units, startups, and greenfield industrial projects lacking historical financial statement track records, the Central Bank of India deploys the *Form MSE II* model. 
+
+This model substitutes historical financial spreading with comprehensive techno-economic feasibility appraisal, promoter equity skin-in-the-game, and project execution milestones:
 
 #v(0.2cm)
 #figure(
   table(
-    columns: (0.8fr, 2.5fr, 1.2fr, 1.5fr),
-    fill: (col, row) => if row == 0 { cboi-navy } else if calc.even(row) { cboi-bg-alt } else { white },
+    columns: (0.9fr, 2.3fr, 0.9fr, 3fr),
+    fill: (col, row) => if row == 0 { cboi-navy } else if row == 10 { rgb("e2e8f0") } else if calc.even(row) { cboi-bg-alt } else { white },
     stroke: (col, row) => if row == 0 { none } else { 0.5pt + cboi-border },
     inset: 5pt,
     align: (col, row) => if row == 0 { center } else if col == 0 or col == 2 { center } else { left },
     
     [#text(weight: "bold", fill: white, size: 8pt)[PARAM No.]],
-    [#text(weight: "bold", fill: white, size: 8pt)[FORM MSE II SCORING PARAMETER]],
-    [#text(weight: "bold", fill: white, size: 8pt)[MAX MARKS]],
-    [#text(weight: "bold", fill: white, size: 8pt)[INSTITUTIONAL BENCHMARK CRITERIA]],
+    [#text(weight: "bold", fill: white, size: 8pt)[SCORING PARAMETER]],
+    [#text(weight: "bold", fill: white, size: 8pt)[MAX]],
+    [#text(weight: "bold", fill: white, size: 8pt)[INSTITUTIONAL SCORING BREAKUP & BENCHMARKS]],
     
-    [#text(weight: "bold", fill: cboi-navy, size: 7.5pt)[G-01]], [Promoter Equity Contribution (Skin-in-the-Game)], [15.0], [Promoter Margin >= 35%: 15 marks | 25-34%: 11 | 15-24%: 6 | \<15%: 0],
-    [#text(weight: "bold", fill: cboi-navy, size: 7.5pt)[G-02]], [Projected Debt Service Coverage Ratio (DSCR)], [15.0], [Average DSCR >= 1.75: 15 marks | 1.50-1.74: 11 | 1.25-1.49: 6 | \<1.25: 0],
-    [#text(weight: "bold", fill: cboi-navy, size: 7.5pt)[G-03]], [Promoter Technical & Managerial Background], [15.0], [Professional Degree + Industry Exp: 15 marks | Industry Exp Only: 10 | New: 4],
-    [#text(weight: "bold", fill: cboi-navy, size: 7.5pt)[G-04]], [Techno-Economic Feasibility & Consultant Report], [12.0], [TEV Approved by Empanelled Agency: 12 marks | Internal Branch TEV: 8 | Unverified: 0],
-    [#text(weight: "bold", fill: cboi-navy, size: 7.5pt)[G-05]], [Statutory Clearances & Environmental Approvals], [10.0], [All Approvals in Place: 10 marks | In-Principle Approvals: 6 | Pending: 0],
-    [#text(weight: "bold", fill: cboi-navy, size: 7.5pt)[G-06]], [Offtake Tie-Ups & Market Demand Projections], [10.0], [Firm Offtake Contracts: 10 marks | Letters of Intent (LOI): 6 | Unsecured: 2],
-    [#text(weight: "bold", fill: cboi-navy, size: 7.5pt)[G-07]], [Project Location & Infrastructure Availability], [8.0], [Industrial Area + Power/Water Ready: 8 marks | Developing Site: 5 | Rural: 2],
-    [#text(weight: "bold", fill: cboi-navy, size: 7.5pt)[G-08]], [Collateral Security & CGTMSE Guarantee Cover], [10.0], [100% CGTMSE / Collateral Cover: 10 marks | 50-99% Cover: 6 | \<50%: 2],
-    [#text(weight: "bold", fill: cboi-navy, size: 7.5pt)[G-09]], [Individual Promoter CIBIL Credit Bureau Score], [5.0], [CIBIL >= 750: 5 marks | 700-749: 3 | 650-699: 1 | \<650: 0],
-    [#text(weight: "bold", fill: cboi-navy, size: 7.5pt)[TOTAL]], [#text(weight: "bold")[Aggregate Form MSE II Rating Score]], [#text(weight: "bold")[100.0]], [#text(weight: "bold")[Statutory Hurdle Rate: Minimum 50.0 Marks]]
+    [#text(weight: "bold", fill: cboi-navy, size: 7.5pt)[G-01]], [Promoter Equity Contribution], [15.0], [Margin >= 35%: 15M | 25--34%: 11M | 15--24%: 6M | \< 15%: 0M],
+    [#text(weight: "bold", fill: cboi-navy, size: 7.5pt)[G-02]], [Projected DSCR (Average)], [15.0], [DSCR >= 1.75: 15M | 1.50--1.74: 11M | 1.25--1.49: 6M | \< 1.25: 0M],
+    [#text(weight: "bold", fill: cboi-navy, size: 7.5pt)[G-03]], [Promoter Technical Background], [15.0], [Professional Degree + Industry Exp: 15M | Industry Exp: 10M | New: 4M],
+    [#text(weight: "bold", fill: cboi-navy, size: 7.5pt)[G-04]], [Techno-Economic Feasibility], [12.0], [Approved Empanelled Agency TEV: 12M | Internal TEV: 8M | Nil: 0M],
+    [#text(weight: "bold", fill: cboi-navy, size: 7.5pt)[G-05]], [Statutory Clearances], [10.0], [All Approvals in Place: 10M | In-Principle Approvals: 6M | Pending: 0M],
+    [#text(weight: "bold", fill: cboi-navy, size: 7.5pt)[G-06]], [Offtake Tie-Ups & Contracts], [10.0], [Firm Offtake Contracts: 10M | Letters of Intent (LOI): 6M | Nil: 2M],
+    [#text(weight: "bold", fill: cboi-navy, size: 7.5pt)[G-07]], [Project Site & Infrastructure], [8.0], [Industrial Area + Power/Water: 8M | Developing Site: 5M | Rural: 2M],
+    [#text(weight: "bold", fill: cboi-navy, size: 7.5pt)[G-08]], [CGTMSE / Collateral Cover], [10.0], [100% CGTMSE / Collateral: 10M | 50--99% Cover: 6M | \< 50%: 2M],
+    [#text(weight: "bold", fill: cboi-navy, size: 7.5pt)[G-09]], [Promoter CIBIL Score], [5.0], [CIBIL >= 750: 5M | 700--749: 3M | 650--699: 1M | \< 650: 0M],
+    [#text(weight: "bold", fill: cboi-navy, size: 7.5pt)[TOTAL]], [#text(weight: "bold")[Aggregate Form MSE II Score]], [#text(weight: "bold")[100.0]], [#text(weight: "bold")[Minimum Statutory Hurdle Rate: 50.0 Marks]]
   ),
   caption: [Form MSE II Quantitative Scoring Matrix (Greenfield Units - 9 Parameters)]
 )
@@ -1874,13 +1978,13 @@ For new MSME units, startups, and greenfield industrial projects lacking histori
 // ==============================================================================
 == 5.4 Official 10-Tier Central Bank Risk Rating Framework (CBI 1 to CBI 10)
 
-The total composite score $S in [0, 100]$ derived from Form MSE 1 or Form MSE II is mapped directly into the bank's official *10-Tier Risk Rating Grid (CBI 1 to CBI 10)*:
+The total composite score $S in [0, 100]$ derived from Form MSE 1 or Form MSE II is mapped directly into the bank's official **10-Tier Risk Rating Grid (CBI 1 to CBI 10)**:
 
-#v(0.2cm)
+#v(0.3cm)
 #figure(
   table(
-    columns: (1.2fr, 1.5fr, 1.8fr, 1.5fr),
-    fill: (col, row) => if row == 0 { cboi-navy } else if row == 5 { rgb("dcfce7") } else if row >= 6 { rgb("fee2e2") } else if calc.even(row) { cboi-bg-alt } else { white },
+    columns: (1.2fr, 1.4fr, 2.2fr, 1.4fr),
+    fill: (col, row) => if row == 0 { cboi-navy } else if row >= 1 and row <= 5 { rgb("f0fdf4") } else if row == 6 { rgb("fefce8") } else { rgb("fef2f2") },
     stroke: (col, row) => if row == 0 { none } else { 0.5pt + cboi-border },
     inset: 6pt,
     align: (col, row) => if row == 0 { center } else if col == 0 or col == 1 or col == 3 { center } else { left },
@@ -1890,12 +1994,12 @@ The total composite score $S in [0, 100]$ derived from Form MSE 1 or Form MSE II
     [#text(weight: "bold", fill: white, size: 8.5pt)[CREDIT RISK CLASSIFICATION]],
     [#text(weight: "bold", fill: white, size: 8.5pt)[PRICING SPREAD (CRP)]],
     
-    [#text(weight: "bold", fill: cboi-navy)[CBI 1]], [90.0 -- 100.0 Marks], [Prime / Minimal Risk], [+0.40% over Base],
-    [#text(weight: "bold", fill: cboi-navy)[CBI 2]], [80.0 -- 89.9 Marks], [Very Low Risk], [+0.65% over Base],
-    [#text(weight: "bold", fill: cboi-navy)[CBI 3]], [70.0 -- 79.9 Marks], [Low Risk], [+0.90% over Base],
-    [#text(weight: "bold", fill: cboi-navy)[CBI 4]], [60.0 -- 69.9 Marks], [Moderate / Satisfactory Risk], [+1.20% over Base],
-    [#text(weight: "bold", fill: rgb("15803d"))[CBI 5]], [#text(weight: "bold")[50.0 -- 59.9 Marks]], [#text(weight: "bold")[Acceptable Risk (Hurdle Rate)]], [+1.55% over Base],
-    [#text(weight: "bold", fill: rgb("b91c1c"))[CBI 6]], [45.0 -- 49.9 Marks], [Sub-Hurdle Risk (Requires Scale IV Override)], [+2.00% over Base],
+    [#text(weight: "bold", fill: rgb("15803d"))[CBI 1]], [90.0 -- 100.0 Marks], [Prime / Minimal Credit Risk], [+0.40% over Base],
+    [#text(weight: "bold", fill: rgb("15803d"))[CBI 2]], [80.0 -- 89.9 Marks], [Very Low Default Risk], [+0.65% over Base],
+    [#text(weight: "bold", fill: rgb("15803d"))[CBI 3]], [70.0 -- 79.9 Marks], [Low Default Risk], [+0.90% over Base],
+    [#text(weight: "bold", fill: rgb("15803d"))[CBI 4]], [60.0 -- 69.9 Marks], [Moderate / Satisfactory Risk], [+1.20% over Base],
+    [#text(weight: "bold", fill: rgb("15803d"))[CBI 5]], [#text(weight: "bold")[50.0 -- 59.9 Marks]], [#text(weight: "bold")[Acceptable Risk (Minimum Hurdle)]], [+1.55% over Base],
+    [#text(weight: "bold", fill: rgb("b45309"))[CBI 6]], [45.0 -- 49.9 Marks], [Sub-Hurdle Risk (Scale IV Override)], [+2.00% over Base],
     [#text(weight: "bold", fill: rgb("b91c1c"))[CBI 7]], [40.0 -- 44.9 Marks], [Vulnerable Credit Risk], [+2.50% over Base],
     [#text(weight: "bold", fill: rgb("b91c1c"))[CBI 8]], [35.0 -- 39.9 Marks], [High Default Vulnerability], [+3.10% over Base],
     [#text(weight: "bold", fill: rgb("b91c1c"))[CBI 9]], [30.0 -- 34.9 Marks], [Very High Risk (Near Default)], [+3.80% over Base],
@@ -1913,34 +2017,63 @@ The total composite score $S in [0, 100]$ derived from Form MSE 1 or Form MSE II
 
 The ILAS underwriting engine strictly enforces three non-negotiable policy invariants mandated by Central Bank of India credit governance:
 
-```
-  ┌─────────────────────────────────────────────────────────────────────────────┐
-  │       FIGURE 5.3: CBI 10-TIER RISK STAIRCASE & 50-MARK HURDLE THRESHOLD     │
-  └─────────────────────────────────────────────────────────────────────────────┘
+#v(0.3cm)
+#figure(
+  rect(
+    width: 100%,
+    fill: rgb("f8fafc"),
+    stroke: 0.5pt + cboi-border,
+    radius: 6pt,
+    inset: 12pt,
+    [
+      #align(left)[
+        #text(10pt, weight: "bold", fill: cboi-navy)[Central Bank Risk Classification Architecture:] \
+        #v(6pt)
+        #grid(
+          columns: (1fr, 1fr),
+          row-gutter: 8pt,
+          column-gutter: 12pt,
+          rect(
+            fill: rgb("f0fdf4"),
+            stroke: 1pt + rgb("22c55e"),
+            radius: 4pt,
+            inset: 8pt,
+            [
+              #text(9pt, weight: "bold", fill: rgb("15803d"))[ELIGIBLE ZONE (Score >= 50.0)] \
+              #v(2pt)
+              #text(7.5pt, fill: rgb("1e293b"))[
+                • Grades: *CBI 1 to CBI 5* \
+                • Underwriting Decision: *RECOMMEND_SANCTION* \
+                • Automatic pricing via standard RBLR rate grid.
+              ]
+            ]
+          ),
+          rect(
+            fill: rgb("fef2f2"),
+            stroke: 1pt + rgb("ef4444"),
+            radius: 4pt,
+            inset: 8pt,
+            [
+              #text(9pt, weight: "bold", fill: rgb("b91c1c"))[SUB-HURDLE ZONE (Score < 50.0)] \
+              #v(2pt)
+              #text(7.5pt, fill: rgb("1e293b"))[
+                • Grades: *CBI 6 to CBI 10* \
+                • Underwriting Decision: *RECOMMEND_REJECTION* \
+                • Requires Scale IV Manager discretionary override.
+              ]
+            ]
+          )
+        )
+      ]
+    ]
+  ),
+  caption: [Central Bank 10-Tier CBI Risk Grade Staircase & 50-Mark Hurdle Threshold]
+)
 
-   100 ┌──────────────────────────────────────────────────┐
-       │ CBI 1 [90-100]  - Prime Low Risk                 │ ──► Auto-Eligible
-    90 ├──────────────────────────────────────────────────┤
-       │ CBI 2 [80-89.9] - Very Low Risk                  │ ──► Auto-Eligible
-    80 ├──────────────────────────────────────────────────┤
-       │ CBI 3 [70-79.9] - Low Risk                       │ ──► Auto-Eligible
-    70 ├──────────────────────────────────────────────────┤
-       │ CBI 4 [60-69.9] - Moderate Risk                  │ ──► Auto-Eligible
-    60 ├──────────────────────────────────────────────────┤
-       │ CBI 5 [50-59.9] - Acceptable Risk                │ ──► MINIMUM HURDLE
-   ════╪══════════════════════════════════════════════════╪═════════════════════
-    50 │ [STATUTORY 50-MARK HURDLE THRESHOLD]             │
-   ════╪══════════════════════════════════════════════════╪═════════════════════
-    45 │ CBI 6 [45-49.9] - Sub-Hurdle Risk                │ ──► Requires Scale IV Override
-    40 │ CBI 7 [40-44.9] - Vulnerable Risk                │ ──► Policy Breach Flag
-    35 │ CBI 8 [35-39.9] - High Risk                      │ ──► Policy Breach Flag
-    30 │ CBI 9 [30-34.9] - Very High Risk                 │ ──► Policy Breach Flag
-     0 │ CBI 10 [\<30]    - Substantial Default Risk       │ ──► Mandatory Reject
-       └──────────────────────────────────────────────────┘
-```
+#v(0.4cm)
 
 *Invariant 1: The 50-Mark Hurdle Rate Rule* \
-An application having total composite score $S \< 50.0$ (`CBI 6` through `CBI 10`) is mathematically classified as a *Credit Policy Hurdle Breach*. The system assigns `hurdle_rate_passed: False` and defaults the preliminary sanction recommendation to `RECOMMEND_REJECTION`.
+An application having total composite score $S < 50.0$ (`CBI 6` through `CBI 10`) is mathematically classified as a *Credit Policy Hurdle Breach*. The system assigns `hurdle_rate_passed: False` and defaults the preliminary sanction recommendation to `RECOMMEND_REJECTION`.
 
 *Invariant 2: The Defaulter Hard-Override Rule* \
 Regardless of numerical score on Form MSE 1/II, if an applicant, enterprise, or associated promoter appears in:
@@ -1959,22 +2092,22 @@ A Regional Credit Manager (Scale IV / Scale V) possesses the institutional autho
 // ==============================================================================
 == 5.6 Dynamic RBLR Interest Rate Engine (01.07.2026 Master Circular)
 
-Under the Central Bank of India *Master Circular on Rate of Interest* dated *01.07.2026*, all floating-rate MSME advances and retail facilities are priced against the Repo-Based Lending Rate (RBLR).
+Under the Central Bank of India *Master Circular on Rate of Interest* dated **01.07.2026**, all floating-rate MSME advances and retail facilities are priced against the Repo-Based Lending Rate (RBLR).
 
 *The Master Interest Rate Formulation:*
 
 $ "Effective Lending Rate" = "Base RBLR" + "Credit Risk Premium (CRP)" + "Business Strategy Premium (BSP)" - "CGTMSE Concession" $
 
 Where:
-- *Base RBLR*: *8.25% per annum* (pegged to the prevailing RBI Repo Rate of 6.50% + Bank Operating Spread of 1.75%).
+- *Base RBLR*: **8.25% per annum** (pegged to the prevailing RBI Repo Rate of 6.50% + Bank Operating Spread of 1.75%).
 - *Credit Risk Premium (CRP)*: Dynamic spread ($0.40%$ to $4.50%$) determined exclusively by the borrower's official 10-Tier CBI Risk Grade (`CBI 1` through `CBI 10`).
-- *Business Strategy Premium (BSP)*: Fixed at *0.25% per annum* across all commercial MSME advances as per ALCO guidelines.
-- *Credit Guarantee Concession (CGTMSE)*: Borrowers covered under the Credit Guarantee Fund Trust for Micro and Small Enterprises receive a *0.25% interest rate discount*.
+- *Business Strategy Premium (BSP)*: Fixed at **0.25% per annum** across all commercial MSME advances as per ALCO guidelines.
+- *Credit Guarantee Concession (CGTMSE)*: Borrowers covered under the Credit Guarantee Fund Trust for Micro and Small Enterprises receive a **0.25% interest rate discount**.
 
 #v(0.2cm)
 #figure(
   table(
-    columns: (1.1fr, 1.3fr, 1.3fr, 1.3fr, 1.4fr, 1.4fr),
+    columns: (1.1fr, 1.2fr, 1.2fr, 1.2fr, 1.4fr, 1.4fr),
     fill: (col, row) => if row == 0 { cboi-navy } else if calc.even(row) { cboi-bg-alt } else { white },
     stroke: (col, row) => if row == 0 { none } else { 0.5pt + cboi-border },
     inset: 5pt,
@@ -1982,10 +2115,10 @@ Where:
     
     [#text(weight: "bold", fill: white, size: 8pt)[CBI GRADE]],
     [#text(weight: "bold", fill: white, size: 8pt)[BASE RBLR]],
-    [#text(weight: "bold", fill: white, size: 8pt)[RISK SPREAD (CRP)]],
-    [#text(weight: "bold", fill: white, size: 8pt)[STRATEGY (BSP)]],
-    [#text(weight: "bold", fill: white, size: 8pt)[FINAL RATE (STANDARD)]],
-    [#text(weight: "bold", fill: white, size: 8pt)[FINAL RATE (CGTMSE)]],
+    [#text(weight: "bold", fill: white, size: 8pt)[RISK SPREAD]],
+    [#text(weight: "bold", fill: white, size: 8pt)[STRATEGY]],
+    [#text(weight: "bold", fill: white, size: 8pt)[FINAL (STANDARD)]],
+    [#text(weight: "bold", fill: white, size: 8pt)[FINAL (CGTMSE)]],
     
     [#text(weight: "bold", fill: cboi-navy)[CBI 1]], [8.25%], [+0.40%], [+0.25%], [#text(weight: "bold", fill: cboi-navy)[8.90%]], [#text(weight: "bold", fill: rgb("15803d"))[8.65%]],
     [#text(weight: "bold", fill: cboi-navy)[CBI 2]], [8.25%], [+0.65%], [+0.25%], [#text(weight: "bold", fill: cboi-navy)[9.15%]], [#text(weight: "bold", fill: rgb("15803d"))[8.90%]],
