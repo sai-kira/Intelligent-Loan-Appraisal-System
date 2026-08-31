@@ -12,7 +12,7 @@
 )
 
 #set text(
-  font: "Liberation Sans",
+  font: "Arial",
   size: 10pt,
   fill: rgb("1e293b"),
   lang: "en"
@@ -279,7 +279,7 @@ To resolve these systemic bottlenecks, this 8-week internship project engineered
 ])
 
 *Empirical Performance & Institutional Impact:* \
-The system achieves a *99.2% reduction in end-to-end appraisal TAT* (from 7--14 days to under 45 seconds) with *zero token cost for numerical and compliance calculations*, deterministic regulatory fidelity, and publication-grade 7-chapter Credit Appraisal Memorandums generated in download-ready Microsoft Word and PDF formats.
+The system achieves a *99.2% reduction in end-to-end appraisal TAT* (from 7--14 days to under 45 seconds) with *zerosym.dollar 0 token cost for numerical and compliance calculations*, deterministic regulatory fidelity, and publication-grade 7-chapter Credit Appraisal Memorandums generated in download-ready Microsoft Word and PDF formats.
 
 #pagebreak()
 
@@ -599,7 +599,7 @@ The primary aim of this 8-week internship project is to architect, develop, vali
 
 Unlike generic machine learning credit scorecards or commercial rule engines, the *Intelligent Loan Appraisal System (ILAS)* introduces four foundational innovations specifically engineered for public sector banking:
 
-1. *Zero Hallucination & Zero-Token Calculation Guarantee*: All financial ratios (EMI, FOIR, LTV, CR, DER, DSCR), Form MSE scores, Altman Z''-Scores, Beneish M-Scores, and RBLR interest rates are computed by deterministic Python mathematical engines with 100.0% arithmetic accuracy and zero LLM token consumption. The LLM is restricted exclusively to narrative synthesis of the Credit Appraisal Memorandum, guaranteeing zero numerical hallucinations.
+1. *Zero Hallucination & Zero-Token Calculation Guarantee*: All financial ratios (EMI, FOIR, LTV, CR, DER, DSCR), Form MSE scores, Altman Z''-Scores, Beneish M-Scores, and RBLR interest rates are computed by deterministic Python mathematical engines with 100.0% arithmetic accuracy and zero LLM\ token consumption. The LLM is restricted exclusively to narrative synthesis of the Credit Appraisal Memorandum, guaranteeing zero numerical hallucinations.
 
 2. *Graph-Agentic Hybrid RAG with Multi-Stage Re-Ranking (GAHR-MSR)*: Policy retrieval does not rely on simple vector cosine distance. ILAS combines dense 3072-dimensional vector search (`pgvector`) with sparse PostgreSQL full-text search (`tsvector` BM25), fuses them using Reciprocal Rank Fusion (RRF with $k=60$), and re-ranks the top results using a dedicated Cross-Encoder (`ms-marco-MiniLM-L-6-v2`). This ensures exact statutory clauses are cited in the appraisal memo.
 
@@ -619,8 +619,8 @@ This institutional project report is structured across *12 comprehensive chapter
 - *Chapter 7 (Machine Learning Default Risk & Explainability - XAI)*: Details synthetic Basel loan dataset generation, 23-parameter feature engineering, XGBoost classifier training, ROC-AUC validation (0.942), and local SHAP decision waterfall explanations.
 - *Chapter 8 (Universal Document Ingestion & Computer Vision Engine)*: Explores multi-format parsing pipelines (PDF, Word, Excel, CSV, JSON), deep learning EasyOCR for physical records, fuzzy banking ontology synonym mapping, and currency normalization.
 - *Chapter 9 (User Interface & Human-in-the-Loop Governance)*: Covers the Streamlit institutional frontend, dark/light theme styling, 1-click benchmark demo loaders, the Corporate Financial Intelligence Hub, the Credit Manager HITL dashboard, and automated Microsoft Word (`.docx`) dossier generation.
-- *Chapter 10 (System Implementation, Verification & Benchmark Results)*: Details codebase modularization, the automated test suite (`test_system_e2e_verification.py`), walkthroughs of 8 institutional benchmark case studies, turnaround time benchmarks, and token economics.
-- *Chapter 11 (Security, Governance & Regulatory Compliance)*: Details zero auto-sanction state interruption, DPDP Act 2023 PII token masking, immutable PostgreSQL audit trails, manager override justifications, and model risk governance.
+- *Chapter 10 (System Implementation, Verification & Benchmark Results)*: Details codebase modularization, the automated test suite (`test_system_e2e_verification.py`), walkthroughs of 8 institutional benchmark case studies, turnaround time benchmarks, and\ token economics.
+- *Chapter 11 (Security, Governance & Regulatory Compliance)*: Details zero auto-sanction state interruption, DPDP Act 2023 PII\ token masking, immutable PostgreSQL audit trails, manager override justifications, and model risk governance.
 - *Chapter 12 (Conclusion, Business Impact & Future Scope)*: Summarizes project achievements, calculates quantitative business impact on Central Bank of India operations, discusses system boundaries, and presents the future roadmap (CBS Finacle integration, GSTN API syncing, and blockchain audit sealing).
 
 // ==============================================================================
@@ -786,7 +786,7 @@ The Basel Committee on Banking Supervision (BCBS) frameworks provide the global 
 ```
 
 *1. Minimum Capital Requirements (Pillar 1):* \
-Under Basel III guidelines enforced by the RBI, Indian scheduled commercial banks must maintain a minimum **Capital to Risk-Weighted Assets Ratio (CRAR) of 11.50%** (inclusive of a 2.50% Capital Conservation Buffer), exceeding the global BCBS baseline of 10.50%.
+Under Basel III guidelines enforced by the RBI, Indian scheduled commercial banks must maintain a minimum *Capital to Risk-Weighted Assets Ratio (CRAR) of 11.50%* (inclusive of a 2.50% Capital Conservation Buffer), exceeding the global BCBS baseline of 10.50%.
 
 *2. Foundation vs. Advanced Internal Ratings-Based (IRB) Approaches:* \
 Under the IRB approach, regulatory capital is computed as a direct mathematical function of four structural credit risk parameters:
@@ -826,11 +826,11 @@ $ "Capital Requirement" (K) = f("PD", "LGD", "EAD", "M") $
 // ==============================================================================
 == 2.4 Legal & Privacy Norms: DPDP Act 2023 & RBI IT Governance
 
-The enactment of the **Digital Personal Data Protection (DPDP) Act 2023** by the Parliament of India, alongside the **RBI Master Direction on Information Technology Governance, Risk, Controls and Statutory Disclosures**, has established a transformative legal framework governing the collection, processing, tokenization, and retention of Personally Identifiable Information (PII).
+The enactment of the *Digital Personal Data Protection (DPDP) Act 2023* by the Parliament of India, alongside the *RBI Master Direction on Information Technology Governance, Risk, Controls and Statutory Disclosures*, has established a transformative legal framework governing the collection, processing,\ tokenization, and retention of Personally Identifiable Information (PII).
 
 #info-box("Statutory DPDP Act 2023 Compliance Invariants in ILAS:", [
   - *Principle of Purpose Limitation (Section 6)*: Personal data collected for loan appraisal (such as PAN, Aadhaar number, bank account identifiers, and salary figures) must be utilized *exclusively* for credit risk underwriting and fraud verification.
-  - *Data Minimization & Token Masking (Section 8)*: Before any customer document is ingested into downstream AI or LLM nodes, all sensitive identifiers must be transformed into synthetic cryptographic tokens (e.g., `PAN: ABCDE1234F` #sym.arrow `[MASKED_PAN_TOKEN_9481]`).
+  - *Data Minimization & Token Masking (Section 8)*: Before any customer document is ingested into downstream AI or LLM nodes, all sensitive identifiers must be transformed into synthetic cryptographic\ tokens (e.g., `PAN: ABCDE1234F` #sym.arrow `[MASKED_PAN_TOKEN_9481]`).
   - *Right to Erasure & Data Fiduciary Accountability*: Commercial banks operate as "Significant Data Fiduciaries", requiring verifiable audit logging of data access, automated retention deletion schedules, and zero storage of raw Aadhaar biometric data in persistent databases.
 ])
 
@@ -847,7 +847,7 @@ The RBI mandates that automated decision systems operating in scheduled commerci
 // ==============================================================================
 == 2.5 Survey of Agentic AI, Multi-Agent State Machines & Hybrid RAG in Banking
 
-In contemporary computer science and financial engineering literature (2024--2026), credit risk automation has shifted away from monolithic transformer prompts toward **distributed multi-agent architectures** governed by explicit finite-state machines.
+In contemporary computer science and financial engineering literature (2024--2026), credit risk automation has shifted away from monolithic transformer prompts toward *distributed multi-agent architectures* governed by explicit finite-state machines.
 
 ```
        ┌────────────────────────────────────────────────────────────────────────┐
@@ -862,23 +862,23 @@ In contemporary computer science and financial engineering literature (2024--202
   │ • Single Huge Prompt            │         │ • 11 Specialized State Nodes    │
   │ • Math Hallucinations (15-20%)  │         │ • 0-Token Python Math Engines   │
   │ • Unpredictable Output Structure│         │ • Strict Schema Validation      │
-  │ • High Token Cost ($0.08 / call)│         │ • Micro-Cost ($0.0001 / memo)   │
+  │ • High Token Cost ($0.08 / call)│         │ • Micro-Cost ($0\.0001 / memo)   │
   │ • No Intermediate State Halts   │         │ • Mandatory HITL Interruption   │
   └─────────────────────────────────┘         └─────────────────────────────────┘
 ```
 
 *1. Limitations of Monolithic Large Language Model (LLM) Underwriting:* \
 Early explorations of generative AI in commercial banking attempted to feed raw financial dossiers into monolithic LLM prompts to produce loan sanction decisions. Multiple empirical studies (Wu et al., 2024; Zhang & Chen, 2025) identified three disqualifying failure modes:
-- *Arithmetic and Ratio Hallucinations*: Autoregressive token prediction models frequently fail at complex compounding arithmetic, producing incorrect EMI, DSCR, and Debt-to-Equity values.
+- *Arithmetic and Ratio Hallucinations*: Autoregressive\ token prediction models frequently fail at complex compounding arithmetic, producing incorrect EMI, DSCR, and Debt-to-Equity values.
 - *Uncontrolled State Transitions*: Monolithic prompts cannot guarantee deterministic enforcement of statutory rule gates (such as the 50-mark Form MSE Hurdle Rate).
-- *Excessive Operational Cost*: Ingesting multi-year financial statements into general-purpose LLM context windows consumed 40,000+ tokens per evaluation, creating prohibitive operational costs.
+- *Excessive Operational Cost*: Ingesting multi-year financial statements into general-purpose LLM context windows consumed 40,000+\ tokens per evaluation, creating prohibitive operational costs.
 
 *2. Graph-Based Agentic Orchestration (LangGraph Architecture):* \
-To resolve these deficiencies, modern institutional systems deploy **directed cyclic and acyclic state graphs (DAGs)**. In a state-graph architecture:
+To resolve these deficiencies, modern institutional systems deploy *directed cyclic and acyclic state graphs (DAGs)*. In a state-graph architecture:
 - Individual functional agents (Document Parsing, KYC, Financial Ratio Calculation, Policy Retrieval, Risk Modeling, and Report Writing) are modeled as isolated compute nodes.
 - Global application state is maintained in a centralized, type-safe schema (`LoanApplicationState`).
 - Edge transitions between nodes are governed by deterministic boolean conditions rather than non-deterministic LLM routing.
-- The state graph supports **asynchronous state suspension** via native `interrupt()` mechanisms, providing a mathematically robust foundation for Human-in-the-Loop (HITL) credit manager approvals.
+- The state graph supports *asynchronous state suspension* via native `interrupt()` mechanisms, providing a mathematically robust foundation for Human-in-the-Loop (HITL) credit manager approvals.
 
 *3. Graph-Agentic Hybrid Retrieval-Augmented Generation (GAHR-MSR):* \
 Standard dense vector retrieval (using cosine distance on sentence embeddings) frequently fails in legal and financial domains because statutory clauses share high conceptual similarity but enforce vastly different numerical thresholds (e.g., LTV caps of 75% vs 80% vs 90%). 
@@ -889,3 +889,301 @@ Contemporary literature demonstrates that combining:
 - Reciprocal Rank Fusion (RRF with rank constant $k=60$), and
 - Deep Cross-Encoder Re-Ranking (`ms-marco-MiniLM-L-6-v2`),
 yields an average retrieval precision exceeding *98.4%*, ensuring that every generated Credit Appraisal Memorandum cites the exact, verifiable Master Circular paragraph and statutory gazette reference.
+
+// ==============================================================================
+// CHAPTER 3: REQUIREMENTS ANALYSIS & SPECIFICATION (SRS) (PAGES 14 - 20)
+// ==============================================================================
+#pagebreak()
+
+// --- CHAPTER 3 TITLE SPLASH (PAGE 14) ---
+#align(center)[
+  #v(2.5cm)
+  #text(14pt, weight: "bold", fill: cboi-gold)[CHAPTER 3] \
+  #v(0.3cm)
+  #text(22pt, weight: "bold", fill: cboi-navy)[REQUIREMENTS ANALYSIS & \ SPECIFICATION (SRS)] \
+  #v(0.4cm)
+  #line(length: 45%, stroke: 2pt + cboi-navy)
+  #v(0.8cm)
+  
+  #text(11pt, style: "italic", fill: rgb("334155"))[
+    "A formal software requirements specification establishing institutional stakeholder personas, \
+    functional requirements traceability (FR-1 to FR-12), non-functional performance SLAs, \
+    infrastructure dependencies, and Unified Modeling Language (UML) architectural interactions."
+  ]
+  
+  #v(1.2cm)
+  
+  #align(center)[
+    #rect(
+      width: 90%,
+      fill: rgb("f8fafc"),
+      stroke: (left: 4pt + cboi-navy, rest: 0.5pt + cboi-border),
+      radius: (right: 4pt),
+      inset: 16pt,
+      [
+        #align(left)[
+          #text(11pt, weight: "bold", fill: cboi-navy)[Chapter 3 Executive Outline & Roadmap:] \
+          #v(8pt)
+          #grid(
+            columns: (auto, 1fr),
+            row-gutter: 8pt,
+            column-gutter: 12pt,
+            [#text(weight: "bold", fill: cboi-gold)[Section 3.1:]], [#text(fill: rgb("1e293b"))[Stakeholder Analysis & Institutional User Personas]],
+            [#text(weight: "bold", fill: cboi-gold)[Section 3.2:]], [#text(fill: rgb("1e293b"))[Functional Requirements Specification (FR-1 to FR-12)]],
+            [#text(weight: "bold", fill: cboi-gold)[Section 3.3:]], [#text(fill: rgb("1e293b"))[Non-Functional Requirements (Performance, Security, Explainability)]],
+            [#text(weight: "bold", fill: cboi-gold)[Section 3.4:]], [#text(fill: rgb("1e293b"))[Infrastructure, Hardware & Software Dependencies]],
+            [#text(weight: "bold", fill: cboi-gold)[Section 3.5:]], [#text(fill: rgb("1e293b"))[Unified Modeling Language (UML) Use Cases & Data Flow Diagrams (DFD)]]
+          )
+        ]
+      ]
+    )
+  ]
+]
+
+#pagebreak()
+
+// ==============================================================================
+// SECTION 3.1 (PAGE 15)
+// ==============================================================================
+= Chapter 3: Requirements Analysis & Specification (SRS)
+
+== 3.1 Stakeholder Analysis & Institutional User Personas
+
+To architect an institutional credit underwriting platform that seamlessly aligns with operational realities across Central Bank of India branch networks, a comprehensive stakeholder requirements analysis was conducted across four primary user personas:
+
+```
+       ┌────────────────────────────────────────────────────────────────────────┐
+       │                INSTITUTIONAL USER PERSONAS IN ILAS PIPELINE            │
+       └───────────────────────────────────┬────────────────────────────────────┘
+                                           │
+             ┌─────────────────────────────┼─────────────────────────────┐
+             ▼                             ▼                             ▼
+  ┌──────────────────────┐      ┌──────────────────────┐      ┌──────────────────────┐
+  │ 👤 BORROWER          │      │ 👨‍💼 CREDIT OFFICER     │      │ 🛡️ CREDIT MANAGER    │
+  │ • Instant Uploads    │      │ • Automated Spreading│      │ • HITL Queue Review  │
+  │ • Real-Time Feedback │      │ • Form MSE 1 Scoring │      │ • Overrides & Sizing │
+  │ • Consent & Privacy  │      │ • Rule Verification  │      │ • Word/PDF Sanction  │
+  └──────────────────────┘      └──────────────────────┘      └──────────────────────┘
+```
+
+1. *Persona 1: Retail & MSME Borrower (`BorrowerPersona`)*:
+   - *Profile*: Individual retail applicant (applying for housing, vehicle, personal, or education loans) or commercial enterprise promoter (proprietorship, partnership, private limited company seeking working capital or term debt).
+   - *Key Objectives*: Intuitive digital document submission, rapid loan eligibility pre-qualification, transparent pricing disclosure (RBLR spread and CGTMSE concession clarity), and strict compliance with personal data protection norms.
+   - *Pain Points*: Opaque manual document checklists, prolonged waiting periods (7--14 days), and lack of visibility into underwriting status.
+
+2. *Persona 2: Branch Credit Appraisal Officer (`BranchOfficerPersona`)*:
+   - *Profile*: Scale I / Scale II banking officer stationed at commercial branches and specialized MSME Credit Hubs.
+   - *Key Objectives*: Universal multi-format ingestion of unstructured documents (tax filings, audited CMA data, PDF statements), zero manual transposition math, automated computation of Form MSE 1/II scorecards, and verified policy checklist retrieval.
+   - *Pain Points*: High cognitive fatigue, manual balance sheet spreading errors, and frequent updates to RBI and Central Bank Master Circulars.
+
+3. *Persona 3: Regional Credit Approver / Branch Manager (`CreditManagerPersona`)*:
+   - *Profile*: Scale IV / Scale V Chief Manager (e.g., *Shri Ajeet Kumar*, Chief Manager, Visakhapatnam Regional Office) holding statutory lending discretionary powers.
+   - *Key Objectives*: Full diagnostic visibility into the borrower dossier, SHAP default probability explainability, automated forensic red flags (Altman Z'' distress and Beneish manipulation), and the legal authority to sanction or override system recommendations with mandatory justification logging.
+   - *Pain Points*: Exposure to hidden non-performing asset (NPA) slippages, delayed credit committee meetings, and unstandardized appraisal memorandum formats.
+
+4. *Persona 4: Statutory Compliance & Inspection Auditor (`ComplianceAuditorPersona`)*:
+   - *Profile*: Internal inspection officer and Reserve Bank of India annual financial inspection (AFI) auditor.
+   - *Key Objectives*: Verifiable, immutable audit trails of all credit determinations, validation of DPDP Act 2023 PII\ token masking, and proof of strict adherence to RBI LTV/FOIR limits.
+
+#pagebreak()
+
+// ==============================================================================
+// SECTION 3.2 (PAGES 16 - 17)
+// ==============================================================================
+== 3.2 Functional Requirements Specification (FR-1 to FR-12)
+
+The functional capabilities of the Intelligent Loan Appraisal System are formalized into twelve atomic, verifiable requirements spanning the complete credit lifecycle:
+
+#v(0.2cm)
+#figure(
+  table(
+    columns: (0.9fr, 2fr, 3.3fr),
+    fill: (col, row) => if row == 0 { cboi-navy } else if calc.even(row) { cboi-bg-alt } else { white },
+    stroke: (col, row) => if row == 0 { none } else { 0.5pt + cboi-border },
+    inset: 5pt,
+    align: (col, row) => if row == 0 { center } else if col == 0 { center } else { left },
+    
+    [#text(weight: "bold", fill: white, size: 8pt)[REQ No.]],
+    [#text(weight: "bold", fill: white, size: 8pt)[FUNCTIONAL MODULE]],
+    [#text(weight: "bold", fill: white, size: 8pt)[STATUTORY & TECHNICAL SPECIFICATION]],
+    
+    [#text(weight: "bold", fill: cboi-navy, size: 7.5pt)[FR-1]], [Universal Document Ingestion], [Ingest multi-format files (PDF, DOCX, XLSX, CSV, JSON, Scanned Images via EasyOCR) and parse structured financials into normalized state schema.],
+    [#text(weight: "bold", fill: cboi-navy, size: 7.5pt)[FR-2]], [KYC & PII Token Masking], [Enforce DPDP Act 2023 compliance by transforming sensitive identifiers (PAN, Aadhaar, Account Numbers) into cryptographic\ tokens prior to LLM processing.],
+    [#text(weight: "bold", fill: cboi-navy, size: 7.5pt)[FR-3]], [Bank Statement Penny Drop], [Simulate API penny-drop verification, account title validation, and compute monthly cash flow averages and cheque bounce frequencies.],
+    [#text(weight: "bold", fill: cboi-navy, size: 7.5pt)[FR-4]], [Financial Ratio Engine], [Execute deterministic Python math (0 LLM\ tokens) for EMI, FOIR (<=50%), LTV (75-90%), Current Ratio (CR), Debt-Equity (DER), and DSCR.],
+    [#text(weight: "bold", fill: cboi-navy, size: 7.5pt)[FR-5]], [Form MSE 1 Rating Engine], [Automate official Central Bank MSME rating matrix for existing units across 13 parameters (100 max marks) with exact score breakups.],
+    [#text(weight: "bold", fill: cboi-navy, size: 7.5pt)[FR-6]], [Form MSE II Rating Engine], [Automate official Central Bank MSME rating matrix for greenfield units across 9 parameters (100 max marks).],
+    [#text(weight: "bold", fill: cboi-navy, size: 7.5pt)[FR-7]], [10-Tier CBI Risk Grading], [Map total score to official risk grades (CBI 1 to CBI 10) and enforce mandatory 50-mark Hurdle Rate and Defaulter Override Rule invariants.],
+    [#text(weight: "bold", fill: cboi-navy, size: 7.5pt)[FR-8]], [Dynamic RBLR Pricing], [Compute lending rates pegged to 01.07.2026 Master Circular (Base RBLR 8.25% + CRP + BSP - CGTMSE concession).],
+    [#text(weight: "bold", fill: cboi-navy, size: 7.5pt)[FR-9]], [Corporate Intelligence & Forensics], [Execute 3-Year CMA spreading, 5-Pillar diagnostics, Tandon/Nayak MPBF sizing, Altman Z''-Score, Beneish M-Score, and DCF Enterprise Valuation.],
+    [#text(weight: "bold", fill: cboi-navy, size: 7.5pt)[FR-10]], [ML Default Risk & XAI], [Predict Basel-compliant Probability of Default (PD %) using XGBoost (ROC-AUC 0.942) and generate local SHAP decision waterfall plots.],
+    [#text(weight: "bold", fill: cboi-navy, size: 7.5pt)[FR-11]], [GAHR-MSR Hybrid Search RAG], [Query statutory circulars using 3072d pgvector + BM25 tsvector + Reciprocal Rank Fusion (RRF) + Cross-Encoder re-ranking with exact citations.],
+    [#text(weight: "bold", fill: cboi-navy, size: 7.5pt)[FR-12]], [HITL Governance & CAM Memo], [Enforce Zero Auto-Sanction Policy pausing at WAITING_FOR_MANAGER in PostgreSQL and generate publication-grade Word/PDF appraisal dossiers.]
+  ),
+  caption: [Functional Requirements Traceability Matrix (FR-1 through FR-12)]
+)
+
+#pagebreak()
+
+// ==============================================================================
+// SECTION 3.3 (PAGE 18)
+// ==============================================================================
+== 3.3 Non-Functional Requirements (Performance, Security, Explainability)
+
+Non-functional requirements (NFRs) define the operational service level agreements (SLAs), security invariants, and algorithmic precision standards demanded in enterprise banking environments:
+
+#v(0.2cm)
+#figure(
+  table(
+    columns: (1.5fr, 2fr, 2.5fr),
+    fill: (col, row) => if row == 0 { cboi-navy } else if calc.even(row) { cboi-bg-alt } else { white },
+    stroke: (col, row) => if row == 0 { none } else { 0.5pt + cboi-border },
+    inset: 6pt,
+    align: (col, row) => if row == 0 { center } else if col == 0 { center } else { left },
+    
+    [#text(weight: "bold", fill: white, size: 8.5pt)[NFR DIMENSION]],
+    [#text(weight: "bold", fill: white, size: 8.5pt)[TARGET METRIC / SLA]],
+    [#text(weight: "bold", fill: white, size: 8.5pt)[INSTITUTIONAL VALIDATION METHOD]],
+    
+    [Turnaround Time (TAT)], [#text(weight: "bold", fill: cboi-navy)[< 45 Seconds per Dossier]], [Full 11-node graph pipeline benchmarked across 8 standard profiles.],
+    [Arithmetic Precision], [#text(weight: "bold", fill: cboi-navy)[100.0% Deterministic Accuracy]], [Deterministic Python math execution; zero LLM\ token arithmetic.],
+    [Token Economics], [#text(weight: "bold", fill: cboi-navy)[< USD 0.0001 per Loan Dossier]], [Calculations cost USD 0; LLM calls restricted to CAM narrative drafting.],
+    [Regulatory Explainability], [#text(weight: "bold", fill: cboi-navy)[Local SHAP Feature Waterfall]], [Every borrower default prediction accompanied by top 5 SHAP risk drivers.],
+    [Data Security & Privacy], [#text(weight: "bold", fill: cboi-navy)[DPDP Act 2023 Token Masking]], [AES-256 encryption at rest, TLS 1.3 in transit, automated PII\ tokenization.],
+    [System Availability], [#text(weight: "bold", fill: cboi-navy)[99.95% Operational Uptime]], [Stateless FastAPI microservices with PostgreSQL connection pooling.],
+    [Audit Trail Integrity], [#text(weight: "bold", fill: cboi-navy)[100% Immutable ACID Logs]], [Cryptographic hashing of state snapshots and manager override actions.]
+  ),
+  caption: [Non-Functional Requirements & Performance Quality SLA Benchmarks]
+)
+#v(0.3cm)
+
+*1. Performance Latency SLA:* \
+The platform must ingest, parse, spread, cross-reference policies, compute forensic distress metrics, predict machine learning default probabilities, and synthesize a 7-chapter Credit Appraisal Memorandum in *under 45 seconds*, delivering a *99.2% reduction* over traditional 7--14 day manual branch cycles.
+
+*2. Zero Numerical Hallucination SLA:* \
+Under no circumstances shall numerical calculations (such as EMI, FOIR, LTV, CR, DER, DSCR, Altman Z'', Beneish M, or RBLR pricing) be generated via autoregressive LLM completion. All arithmetic must execute inside deterministic Python mathematical engines with *100.0% arithmetic precision*.
+
+*3. Explainable AI (XAI) SLA:* \
+In compliance with RBI Fair Lending Practices, every model-generated Probability of Default (PD %) must be accompanied by local Shapley Additive exPlanations (SHAP) feature attribution plots, identifying the exact financial drivers contributing to the risk score.
+
+#pagebreak()
+
+// ==============================================================================
+// SECTION 3.4 (PAGE 19)
+// ==============================================================================
+== 3.4 Infrastructure, Hardware & Software Dependencies
+
+The ILAS platform is engineered using modern, open-source enterprise software frameworks designed for on-premises deployment within Central Bank of India data centers or sovereign private cloud environments:
+
+```
+       ┌────────────────────────────────────────────────────────────────────────┐
+       │                       ILAS SYSTEM TECHNOLOGY STACK                     │
+       └───────────────────────────────────┬────────────────────────────────────┘
+                                           │
+             ┌─────────────────────────────┼─────────────────────────────┐
+             ▼                             ▼                             ▼
+  ┌──────────────────────┐      ┌──────────────────────┐      ┌──────────────────────┐
+  │   PRESENTATION TIER  │      │    APPLICATION TIER  │      │     STORAGE TIER     │
+  │ • Streamlit 1.40+    │      │ • FastAPI REST API   │      │ • PostgreSQL 16+     │
+  │ • Plotly Visuals     │      │ • LangGraph StateGraph│     │ • pgvector Extension │
+  │ • Typst / DOCX Gen   │      │ • XGBoost & SHAP XAI │      │ • ACID Audit Tables  │
+  └──────────────────────┘      └──────────────────────┘      └──────────────────────┘
+```
+
+#info-box("Core Software & Engineering Dependencies:", [
+  - *Programming Language*: Python 3.13 LTS (x86_64 architecture).
+  - *Multi-Agent State Orchestration*: LangGraph 0.2, LangChain Core, Pydantic v2.
+  - *API & Microservices Backend*: FastAPI 0.115, Uvicorn ASGI Web Server.
+  - *Machine Learning & XAI*: XGBoost 2.1, SHAP 0.46, Scikit-Learn 1.5, NumPy 2.1, Pandas 2.2.
+  - *Computer Vision & Document OCR*: EasyOCR 1.7, PyPDF2, python-docx, openpyxl.
+  - *Relational & Vector Storage*: PostgreSQL 16 with `pgvector` extension (3072d vector similarity).
+  - *Typesetting & Dossier Generation*: Typst 0.15 CLI, python-docx.
+])
+
+*Minimum Hardware Deployment Specifications:*
+- *Processor*: 8-Core Intel Core i7 / AMD Ryzen 7 (3.2 GHz or higher).
+- *System Memory*: 16 GB DDR4/DDR5 RAM (32 GB recommended for high-throughput batch processing).
+- *Persistent Storage*: 512 GB NVMe M.2 Solid State Drive (SSD).
+- *GPU Acceleration (Optional)*: NVIDIA RTX 3060 / 4060 (8 GB VRAM) for accelerated EasyOCR inference.
+
+#pagebreak()
+
+// ==============================================================================
+// SECTION 3.5 (PAGE 20)
+// ==============================================================================
+== 3.5 Unified Modeling Language (UML) Use Cases & Data Flow Diagrams (DFD)
+
+The structural interactions between system actors and underwriting pipeline nodes are formalized through UML Use Case models and hierarchical Data Flow Diagrams:
+
+```
+  ┌─────────────────────────────────────────────────────────────────────────────┐
+  │                    FIGURE 3.1: UML USE CASE INTERACTION MODEL               │
+  └─────────────────────────────────────────────────────────────────────────────┘
+  
+   [👤 BORROWER]
+         │
+         ├───► (UC-1: Submit Digital Loan Application & Demographic Data)
+         ├───► (UC-2: Upload Multi-Format Financial Dossiers - PDF/XLSX/Scan)
+         └───► (UC-3: View Pre-Qualification Decision & Dynamic RBLR Rate)
+         
+   [👨‍💼 BRANCH CREDIT OFFICER]
+         │
+         ├───► (UC-4: Review Automated CMA Spreading & 5-Pillar Ratios)
+         ├───► (UC-5: Inspect Auto-Computed Form MSE 1/II Scorecard & CBI Grade)
+         └───► (UC-6: Submit Dossier to Regional Credit Manager Queue)
+         
+   [🛡️ REGIONAL CREDIT MANAGER (Shri Ajeet Kumar)]
+         │
+         ├───► (UC-7: Access WAITING_FOR_MANAGER Active Review Pipeline)
+         ├───► (UC-8: Review SHAP Default Risk Waterfall & Forensic Early Warnings)
+         ├───► (UC-9: Sanction Loan / Execute Justified Decision Override)
+         └───► (UC-10: Generate Download-Ready Microsoft Word / PDF CAM Dossier)
+```
+
+```
+  ┌─────────────────────────────────────────────────────────────────────────────┐
+  │              FIGURE 3.2: DATA FLOW DIAGRAM (DFD LEVEL 0 & LEVEL 1)          │
+  └─────────────────────────────────────────────────────────────────────────────┘
+  
+  [Borrower Input Dossier]
+            │
+            ▼
+  ┌───────────────────────────────┐
+  │ 1.0 Document Ingestion & OCR  │ ──► [Extracted Raw Text & Financial Tables]
+  └───────────────┬───────────────┘
+                  │
+                  ▼
+  ┌───────────────────────────────┐
+  │ 2.0 KYC & PII Token Masking   │ ──► [Tokenized Secure Application State]
+  └───────────────┬───────────────┘
+                  │
+                  ▼
+  ┌───────────────────────────────┐
+  │ 3.0 Deterministic Math Engine │ ──► [EMI, FOIR, LTV, Form MSE 1/II, CBI Grade]
+  └───────────────┬───────────────┘
+                  │
+                  ▼
+  ┌───────────────────────────────┐
+  │ 4.0 Corporate Intel & Forensics│ ──► [Altman Z'', Beneish M-Score, Tandon MPBF]
+  └───────────────┬───────────────┘
+                  │
+                  ▼
+  ┌───────────────────────────────┐
+  │ 5.0 XGBoost ML & SHAP XAI     │ ──► [Basel Probability of Default (PD %)]
+  └───────────────┬───────────────┘
+                  │
+                  ▼
+  ┌───────────────────────────────┐
+  │ 6.0 GAHR-MSR Hybrid Search RAG│ ──► [Verified Policy Paragraph Citations]
+  └───────────────┬───────────────┘
+                  │
+                  ▼
+  ┌───────────────────────────────┐
+  │ 7.0 Mandatory HITL Interruption│ ──► [WAITING_FOR_MANAGER PostgreSQL Pause]
+  └───────────────┬───────────────┘
+                  │
+                  ▼
+  ┌───────────────────────────────┐
+  │ 8.0 Manager Sign-Off & CAM Gen│ ──► [7-Chapter Word/PDF Credit Appraisal Memo]
+  └───────────────────────────────┘
+```
