@@ -184,97 +184,97 @@ PRELIMINARY PAGES
    Certificate of Internship Completion ......................................... ii
    Declaration of Originality by Author ........................................ iii
    Acknowledgements ............................................................. iv
-   Executive Summary ............................................................. v
-   Master Table of Contents ..................................................... vi
-   List of Figures ............................................................. viii
-   List of Tables ................................................................ ix
-   Glossary of Banking & Technical Acronyms ...................................... x
+   Executive Summary ............................................................ v
+   Master Table of Contents ..................................................... vii
+   List of Figures .............................................................. ix
+   List of Tables ............................................................... x
+   Glossary of Banking & Technical Acronyms ..................................... xi
 
 CHAPTER 1: INTRODUCTION & INSTITUTIONAL BACKGROUND .............................. 1
    1.1 The Indian Commercial Banking Ecosystem & Underwriting Challenges ......... 1
-   1.2 Central Bank of India: Institutional Heritage & Digital Strategy .......... 4
-   1.3 Problem Statement & Turnaround Time (TAT) Friction ........................ 7
-   1.4 Objectives and Scope of the Intelligent Loan Appraisal System (ILAS) ...... 9
-   1.5 Novelty and Institutional Value Proposition ............................... 12
-   1.6 Report Organization & Chapter Roadmap ..................................... 14
+   1.2 Central Bank of India: Institutional Heritage & Digital Strategy .......... 2
+   1.3 Problem Statement & Turnaround Time (TAT) Friction ........................ 3
+   1.4 Objectives and Scope of the Intelligent Loan Appraisal System (ILAS) ...... 4
+   1.5 Novelty and Institutional Value Proposition ............................... 5
+   1.6 Report Organization & Chapter Roadmap ..................................... 6
 
-CHAPTER 2: REGULATORY FRAMEWORK & LITERATURE SURVEY ............................. 16
-   2.1 Evolution of Credit Risk Assessment: From 5 Cs to Autonomous AI ........... 16
-   2.2 Reserve Bank of India (RBI) Prudential Underwriting Directives ............ 19
-   2.3 Basel II and Basel III Accords: Internal Ratings-Based (IRB) Approaches ... 23
-   2.4 Legal & Privacy Norms: DPDP Act 2023 & RBI IT Governance .................. 27
-   2.5 Survey of Agentic AI, Multi-Agent State Machines & Hybrid RAG in Banking .. 30
+CHAPTER 2: REGULATORY FRAMEWORK & LITERATURE SURVEY ............................. 7
+   2.1 Evolution of Credit Risk Assessment: From 5 Cs to Autonomous AI ........... 7
+   2.2 Reserve Bank of India (RBI) Prudential Underwriting Directives ............ 8
+   2.3 Basel II and Basel III Accords: Internal Ratings-Based (IRB) Approaches ... 10
+   2.4 Legal & Privacy Norms: DPDP Act 2023 & RBI IT Governance .................. 11
+   2.5 Survey of Agentic AI, Multi-Agent State Machines & Hybrid RAG in Banking .. 12
 
-CHAPTER 3: REQUIREMENTS ANALYSIS & SPECIFICATION (SRS) .......................... 35
-   3.1 Stakeholder Analysis & Institutional User Personas ........................ 35
-   3.2 Functional Requirements Specification (FR-1 to FR-12) ..................... 38
-   3.3 Non-Functional Requirements (Performance, Security, Explainability) ....... 42
-   3.4 Infrastructure, Hardware & Software Dependencies .......................... 46
-   3.5 Unified Modeling Language (UML) Use Cases & Data Flow Diagrams (DFD) ...... 49
+CHAPTER 3: REQUIREMENTS ANALYSIS & SPECIFICATION (SRS) .......................... 14
+   3.1 Stakeholder Analysis & Institutional User Personas ........................ 14
+   3.2 Functional Requirements Specification (FR-1 to FR-12) ..................... 15
+   3.3 Non-Functional Requirements (Performance, Security, Explainability) ....... 17
+   3.4 Infrastructure, Hardware & Software Dependencies .......................... 18
+   3.5 Unified Modeling Language (UML) Use Cases & Data Flow Diagrams (DFD) ...... 19
 
-CHAPTER 4: SYSTEM DESIGN & MULTI-AGENT ARCHITECTURE ............................. 54
-   4.1 Four-Tier Institutional Architecture Topology ............................. 54
-   4.2 Multi-Agent State Machine Orchestration (LangGraph StateGraph) ............ 58
-   4.3 Comprehensive Deep-Dive into the 11 Autonomous Underwriting Nodes ......... 62
-   4.4 PostgreSQL Relational & pgvector Vector Storage Design .................... 75
-   4.5 GAHR-MSR Hybrid Search RAG (Vector + BM25 + RRF + Cross-Encoder) .......... 81
+CHAPTER 4: SYSTEM DESIGN & MULTI-AGENT ARCHITECTURE ............................. 21
+   4.1 Four-Tier Institutional Architecture Topology ............................. 21
+   4.2 Multi-Agent State Machine Orchestration (LangGraph StateGraph) ............ 23
+   4.3 Comprehensive Deep-Dive into the 11 Autonomous Underwriting Nodes ......... 24
+   4.4 PostgreSQL Relational & pgvector Vector Storage Design .................... 27
+   4.5 GAHR-MSR Hybrid Search RAG (Vector + BM25 + RRF + Cross-Encoder) .......... 28
 
-CHAPTER 5: QUANTITATIVE FINANCIAL MODELING & UNDERWRITING ENGINES ................ 87
-   5.1 Retail Debt Serviceability Models (Compounding EMI, FOIR, LTV) ............ 87
-   5.2 MSME Form MSE 1 Rating Framework (Existing Units - 13 Parameters) ......... 92
-   5.3 MSME Form MSE II Rating Framework (Greenfield Units - 9 Parameters) ....... 99
-   5.4 Official 10-Tier Central Bank Risk Rating Framework (CBI 1 to CBI 10) ..... 105
-   5.5 Statutory 50-Mark Hurdle Rate & Defaulter Override Rule Invariants ........ 110
-   5.6 Dynamic RBLR Interest Rate Engine (01.07.2026 Master Circular) ............ 114
+CHAPTER 5: QUANTITATIVE FINANCIAL MODELING & UNDERWRITING ENGINES ................ 30
+   5.1 Retail Debt Serviceability Models (Compounding EMI, FOIR, LTV) ............ 30
+   5.2 MSME Form MSE 1 Rating Framework (Existing Units - 13 Parameters) ......... 32
+   5.3 MSME Form MSE II Rating Framework (Greenfield Units - 9 Parameters) ....... 34
+   5.4 Official 10-Tier Central Bank Risk Rating Framework (CBI 1 to CBI 10) ..... 35
+   5.5 Statutory 50-Mark Hurdle Rate & Defaulter Override Rule Invariants ........ 36
+   5.6 Dynamic RBLR Interest Rate Engine (01.07.2026 Master Circular) ............ 37
 
-CHAPTER 6: CORPORATE FINANCIAL INTELLIGENCE, FORENSICS & DCF SIZING .............. 121
-   6.1 Multi-Year CMA Financial Spreading Engine (P&L and Balance Sheet) ......... 121
-   6.2 5-Pillar Financial Ratio Diagnostics & Working Capital Sizing ............. 126
-   6.3 Maximum Permissible Bank Finance (MPBF): Tandon Methods I & II, Nayak .... 131
-   6.4 Forensic Early Warning: Emerging Market Altman Z''-Score Model ............. 136
-   6.5 Beneish M-Score (5 Forensic Earnings Manipulation Indices) ................ 141
-   6.6 3-Year Macroeconomic Stress Testing Simulator ............................. 146
-   6.7 Discounted Cash Flow (DCF) Enterprise Valuation & Debt Sizing ............. 151
+CHAPTER 6: CORPORATE FINANCIAL INTELLIGENCE, FORENSICS & DCF SIZING .............. 39
+   6.1 Multi-Year CMA Financial Spreading Engine (P&L and Balance Sheet) ......... 39
+   6.2 5-Pillar Financial Ratio Diagnostics & Working Capital Sizing ............. 41
+   6.3 Maximum Permissible Bank Finance (MPBF): Tandon Methods I & II, Nayak .... 42
+   6.4 Forensic Early Warning: Emerging Market Altman Z''-Score Model ............. 43
+   6.5 Beneish M-Score (5 Forensic Earnings Manipulation Indices) ................ 44
+   6.6 3-Year Macroeconomic Stress Testing Simulator ............................. 45
+   6.7 Discounted Cash Flow (DCF) Enterprise Valuation & Debt Sizing ............. 46
 
-CHAPTER 7: MACHINE LEARNING DEFAULT RISK & EXPLAINABILITY (XAI) .................. 157
-   7.1 Synthetic Basel-Compliant Loan Book Dataset Generation & Schema ........... 157
-   7.2 23-Parameter Feature Engineering & Preprocessing Pipeline ................. 162
-   7.3 Extreme Gradient Boosting (XGBoost) Architecture & Training .............. 167
-   7.4 Model Performance Validation Metrics (ROC-AUC 0.942, Confusion Matrix) ... 172
-   7.5 Shapley Additive exPlanations (SHAP) for Regulatory Explainability ........ 177
+CHAPTER 7: MACHINE LEARNING DEFAULT RISK & EXPLAINABILITY (XAI) .................. 48
+   7.1 Synthetic Basel-Compliant Loan Book Dataset Generation & Schema ........... 48
+   7.2 23-Parameter Feature Engineering & Preprocessing Pipeline ................. 49
+   7.3 Extreme Gradient Boosting (XGBoost) Architecture & Training .............. 51
+   7.4 Model Performance Validation Metrics (ROC-AUC 0.942, Confusion Matrix) ... 52
+   7.5 Shapley Additive exPlanations (SHAP) for Regulatory Explainability ........ 54
 
-CHAPTER 8: UNIVERSAL DOCUMENT INGESTION & COMPUTER VISION ENGINE ................ 183
-   8.1 Multi-Format Ingestion Pipeline (PDF, DOCX, XLSX, CSV, JSON) .............. 183
-   8.2 Deep Learning OCR Architecture (EasyOCR) for Physical Documents ........... 188
-   8.3 Fuzzy Banking Ontology & Synonym Mapping (METRIC_ALIASES) ................. 193
-   8.4 Currency Magnitude & Unit Normalization Algorithm ......................... 198
+CHAPTER 8: UNIVERSAL DOCUMENT INGESTION & COMPUTER VISION ENGINE ................ 56
+   8.1 Multi-Format Ingestion Pipeline (PDF, DOCX, XLSX, CSV, JSON) .............. 56
+   8.2 Deep Learning OCR Architecture (EasyOCR) for Physical Documents ........... 58
+   8.3 Fuzzy Banking Ontology & Synonym Mapping (METRIC_ALIASES) ................. 59
+   8.4 Currency Magnitude & Unit Normalization Algorithm ......................... 60
 
-CHAPTER 9: USER INTERFACE & HUMAN-IN-THE-LOOP GOVERNANCE ........................ 203
-   9.1 Streamlit Frontend Architecture, Dark/Light Mode & Institutional Theme .... 203
-   9.2 Applicant Portal & 1-Click Institutional Demo Loaders ..................... 208
-   9.3 Corporate Financial Intelligence & Valuation Hub (6 Sub-Tabs) ............. 213
-   9.4 Credit Manager Dashboard: Active Queue, Portfolio Analytics & Overrides .. 220
-   9.5 Publication-Grade Microsoft Word (.docx) CAM Dossier Synthesizer .......... 227
+CHAPTER 9: USER INTERFACE & HUMAN-IN-THE-LOOP GOVERNANCE ........................ 62
+   9.1 Streamlit Frontend Architecture, Dark/Light Mode & Institutional Theme .... 62
+   9.2 Applicant Portal & 1-Click Institutional Demo Loaders ..................... 64
+   9.3 Corporate Financial Intelligence & Valuation Hub (6 Sub-Tabs) ............. 65
+   9.4 Credit Manager Dashboard: Active Queue, Portfolio Analytics & Overrides .. 66
+   9.5 Publication-Grade Microsoft Word (.docx) CAM Dossier Synthesizer .......... 67
 
-CHAPTER 10: SYSTEM IMPLEMENTATION, VERIFICATION & BENCHMARK RESULTS ............. 232
-   10.1 Codebase Structure & Component Integration ............................... 232
-   10.2 Automated Verification Test Suite (test_system_e2e_verification.py) ...... 237
-   10.3 Walkthrough of 8 Institutional Benchmark Case Studies .................... 242
-   10.4 Performance Benchmarking (TAT, Throughput, Token Consumption Economics) .. 251
+CHAPTER 10: SYSTEM IMPLEMENTATION, VERIFICATION & BENCHMARK RESULTS ............. 69
+   10.1 Codebase Structure & Component Integration ............................... 69
+   10.2 Automated Verification Test Suite (test_system_e2e_verification.py) ...... 71
+   10.3 Walkthrough of 8 Institutional Benchmark Case Studies .................... 72
+   10.4 Performance Benchmarking (TAT, Throughput, Token Consumption Economics) .. 75
 
-CHAPTER 11: SECURITY, GOVERNANCE & REGULATORY COMPLIANCE ........................ 256
-   11.1 Zero Auto-Sanction Policy & State Interruption Mechanics ................. 256
-   11.2 Data Protection & PII Token Masking under DPDP Act 2023 .................. 260
-   11.3 Immutable Audit Trail & Manager Override Governance ...................... 264
-   11.4 Disaster Recovery, ACID Compliance & Model Risk Management ............... 268
+CHAPTER 11: SECURITY, GOVERNANCE & REGULATORY COMPLIANCE ........................ 77
+   11.1 Zero Auto-Sanction Policy & State Interruption Mechanics ................. 77
+   11.2 Data Protection & PII Token Masking under DPDP Act 2023 .................. 78
+   11.3 Immutable Audit Trail & Manager Override Governance ...................... 80
+   11.4 Disaster Recovery, ACID Compliance & Model Risk Management ............... 81
 
-CHAPTER 12: CONCLUSION, BUSINESS IMPACT & FUTURE SCOPE .......................... 273
-   12.1 Summary of Project Deliverables & Key Findings ........................... 273
-   12.2 Quantitative Business Impact on Central Bank Operations .................. 277
-   12.3 System Limitations ....................................................... 281
-   12.4 Future Roadmap (CBS Core Banking Integration, GSTN API, Blockchain) ...... 284
+CHAPTER 12: CONCLUSION, BUSINESS IMPACT & FUTURE SCOPE .......................... 83
+   12.1 Summary of Project Deliverables & Key Findings ........................... 83
+   12.2 Quantitative Business Impact on Central Bank Operations .................. 84
+   12.3 System Limitations ....................................................... 85
+   12.4 Future Roadmap (CBS Core Banking Integration, GSTN API, Blockchain) ...... 86
 
-REFERENCES & BIBLIOGRAPHY ....................................................... 289
+REFERENCES & BIBLIOGRAPHY ....................................................... 88
 ```
 
 ---
@@ -286,29 +286,29 @@ REFERENCES & BIBLIOGRAPHY ......................................................
 
 | Figure # | Title of Figure | Chapter | Page |
 |:---:|---|:---:|:---:|
-| **Fig 1.1** | End-to-End Traditional vs. Automated Credit Underwriting Lifecycle | Chapter 1 | 8 |
-| **Fig 3.1** | UML Use Case Diagram for Borrower, Branch Officer, and Credit Manager | Chapter 3 | 50 |
-| **Fig 3.2** | Data Flow Diagram (DFD Level 0 & Level 1) for ILAS Underwriting Pipeline | Chapter 3 | 52 |
-| **Fig 4.1** | Four-Tier Institutional Architecture Topology of the ILAS Platform | Chapter 4 | 55 |
-| **Fig 4.2** | LangGraph StateGraph State Transition & Node Orchestration Map | Chapter 4 | 59 |
-| **Fig 4.3** | GAHR-MSR Hybrid Search Architecture (pgvector + BM25 + RRF + Cross-Encoder) | Chapter 4 | 82 |
-| **Fig 5.1** | RBI Loan-to-Value (LTV) Slabs and FOIR Ceiling Boundary Contours | Chapter 5 | 89 |
-| **Fig 5.2** | Form MSE 1 Parameter Weightage Distribution (13 Parameters / 100 Marks) | Chapter 5 | 94 |
-| **Fig 5.3** | Central Bank 10-Tier CBI Risk Grade Staircase & 50-Mark Hurdle Rate | Chapter 5 | 108 |
-| **Fig 6.1** | 3-Year CMA Financial Spreading & Balance Sheet Normalization Pipeline | Chapter 6 | 123 |
-| **Fig 6.2** | Maximum Permissible Bank Finance (MPBF) Sizing Comparison (Tandon vs. Nayak) | Chapter 6 | 133 |
-| **Fig 6.3** | Emerging Market Altman Z''-Score Distress Zones (Safe, Grey, Distress) | Chapter 6 | 138 |
-| **Fig 6.4** | Beneish M-Score 5-Index Radar Profile for Financial Manipulation Auditing | Chapter 6 | 143 |
-| **Fig 6.5** | Free Cash Flow to Firm (FCFF) Waterfall and DCF Debt Capacity Sizing | Chapter 6 | 153 |
-| **Fig 7.1** | Synthetic Basel-Compliant Loan Book Feature Correlation Matrix Heatmap | Chapter 7 | 164 |
-| **Fig 7.2** | XGBoost Default Risk Model Receiver Operating Characteristic (ROC-AUC 0.942) | Chapter 7 | 173 |
-| **Fig 7.3** | SHAP Global Feature Importance Bar Plot (Top 10 Risk Drivers) | Chapter 7 | 178 |
-| **Fig 7.4** | SHAP Local Decision Waterfall Plot for Individual Borrower Default Forecast | Chapter 7 | 180 |
-| **Fig 8.1** | Universal Document Parsing Pipeline (PDF/DOCX/XLSX/CSV/JSON & EasyOCR) | Chapter 8 | 185 |
-| **Fig 9.1** | Streamlit UI Dark/Light Mode Adaptive Layout & Telemetry Dashboard | Chapter 9 | 205 |
-| **Fig 9.2** | Corporate Financial Intelligence & Valuation Hub Visual Analytics Suite | Chapter 9 | 215 |
-| **Fig 9.3** | Credit Manager HITL Active Review Pipeline and Decision Override Interface | Chapter 9 | 222 |
-| **Fig 10.1** | Underwriting Turnaround Time (TAT) Comparison (Manual vs. ILAS) | Chapter 10 | 253 |
+| **Fig 1.1** | End-to-End Traditional vs. Automated Credit Underwriting Lifecycle | Chapter 1 | 3 |
+| **Fig 3.1** | UML Use Case Diagram for Borrower, Branch Officer, and Credit Manager | Chapter 3 | 19 |
+| **Fig 3.2** | Data Flow Diagram (DFD Level 0 & Level 1) for ILAS Underwriting Pipeline | Chapter 3 | 20 |
+| **Fig 4.1** | Four-Tier Institutional Architecture Topology of the ILAS Platform | Chapter 4 | 22 |
+| **Fig 4.2** | LangGraph StateGraph State Transition & Node Orchestration Map | Chapter 4 | 23 |
+| **Fig 4.3** | GAHR-MSR Hybrid Search Architecture (pgvector + BM25 + RRF + Cross-Encoder) | Chapter 4 | 29 |
+| **Fig 5.1** | RBI Loan-to-Value (LTV) Slabs and FOIR Ceiling Boundary Contours | Chapter 5 | 31 |
+| **Fig 5.2** | Form MSE 1 Parameter Weightage Distribution (13 Parameters / 100 Marks) | Chapter 5 | 33 |
+| **Fig 5.3** | Central Bank 10-Tier CBI Risk Grade Staircase & 50-Mark Hurdle Rate | Chapter 5 | 36 |
+| **Fig 6.1** | 3-Year CMA Financial Spreading & Balance Sheet Normalization Pipeline | Chapter 6 | 40 |
+| **Fig 6.2** | Maximum Permissible Bank Finance (MPBF) Sizing Comparison (Tandon vs. Nayak) | Chapter 6 | 42 |
+| **Fig 6.3** | Emerging Market Altman Z''-Score Distress Zones (Safe, Grey, Distress) | Chapter 6 | 44 |
+| **Fig 6.4** | Beneish M-Score 5-Index Radar Profile for Financial Manipulation Auditing | Chapter 6 | 45 |
+| **Fig 6.5** | Free Cash Flow to Firm (FCFF) Waterfall and DCF Debt Capacity Sizing | Chapter 6 | 47 |
+| **Fig 7.1** | Synthetic Basel-Compliant Loan Book Feature Correlation Matrix Heatmap | Chapter 7 | 50 |
+| **Fig 7.2** | XGBoost Default Risk Model Receiver Operating Characteristic (ROC-AUC 0.942) | Chapter 7 | 53 |
+| **Fig 7.3** | SHAP Global Feature Importance Bar Plot (Top 10 Risk Drivers) | Chapter 7 | 54 |
+| **Fig 7.4** | SHAP Local Decision Waterfall Plot for Individual Borrower Default Forecast | Chapter 7 | 55 |
+| **Fig 8.1** | Universal Document Parsing Pipeline (PDF/DOCX/XLSX/CSV/JSON & EasyOCR) | Chapter 8 | 57 |
+| **Fig 9.1** | Streamlit UI Dark/Light Mode Adaptive Layout & Telemetry Dashboard | Chapter 9 | 63 |
+| **Fig 9.2** | Corporate Financial Intelligence & Valuation Hub Visual Analytics Suite | Chapter 9 | 65 |
+| **Fig 9.3** | Credit Manager HITL Active Review Pipeline and Decision Override Interface | Chapter 9 | 67 |
+| **Fig 10.1** | Underwriting Turnaround Time (TAT) Comparison (Manual vs. ILAS) | Chapter 10 | 75 |
 
 ---
 <div style="page-break-after: always;"></div>
@@ -319,27 +319,27 @@ REFERENCES & BIBLIOGRAPHY ......................................................
 
 | Table # | Title of Table | Chapter | Page |
 |:---:|---|:---:|:---:|
-| **Table 1.1** | Operational Turnaround Time (TAT) Breakdown Across Manual Credit Stages | Chapter 1 | 7 |
-| **Table 2.1** | Reserve Bank of India (RBI) Statutory LTV and Risk Weight Norms | Chapter 2 | 21 |
-| **Table 2.2** | Basel III Capital Adequacy Risk Weights for Retail & MSME Asset Classes | Chapter 2 | 25 |
-| **Table 3.1** | Functional Requirements Traceability Matrix (FR-1 through FR-12) | Chapter 3 | 39 |
-| **Table 3.2** | Non-Functional Requirements & Performance Quality SLA Benchmarks | Chapter 3 | 43 |
-| **Table 4.1** | The 11 Autonomous Underwriting Agents: Roles, Algorithms & State Outputs | Chapter 4 | 63 |
-| **Table 4.2** | PostgreSQL Relational Schema & pgvector Embedding Specifications | Chapter 4 | 77 |
-| **Table 5.1** | Form MSE 1 Quantitative Scoring Matrix (Existing Units - 13 Parameters) | Chapter 5 | 95 |
-| **Table 5.2** | Form MSE II Quantitative Scoring Matrix (Greenfield Units - 9 Parameters) | Chapter 5 | 101 |
-| **Table 5.3** | Official 10-Tier Central Bank Risk Rating Grid (`CBI 1` to `CBI 10`) | Chapter 5 | 106 |
-| **Table 5.4** | Official Central Bank RBLR Lending Rate Grid (01.07.2026 Master Circular) | Chapter 5 | 116 |
-| **Table 6.1** | 5-Pillar Financial Ratio Diagnostics Framework & Benchmark Standards | Chapter 6 | 128 |
-| **Table 6.2** | Emerging Market Altman Z''-Score Variables & Parameter Coefficients | Chapter 6 | 137 |
-| **Table 6.3** | Beneish M-Score 5-Index Mathematical Formulations & Forensic Cutoffs | Chapter 6 | 142 |
-| **Table 6.4** | 3-Year Macroeconomic Stress Simulation Scenarios & Capital Impact | Chapter 6 | 148 |
-| **Table 7.1** | 23 Feature Preprocessing Schema for XGBoost Credit Risk Model | Chapter 7 | 163 |
-| **Table 7.2** | Confusion Matrix & Classification Metrics (Accuracy, Precision, Recall, F1) | Chapter 7 | 174 |
-| **Table 8.1** | Banking Ontology Metric Synonym Dictionary (`METRIC_ALIASES`) | Chapter 8 | 194 |
-| **Table 10.1** | End-to-End Test Verification Suite Results (5/5 Test Suites Passing) | Chapter 10 | 239 |
-| **Table 10.2** | 8 Standard Institutional Benchmark Profiles Simulation Results Matrix | Chapter 10 | 244 |
-| **Table 10.3** | LLM Token Consumption Economics & Operational Cost per Loan Dossier | Chapter 10 | 254 |
+| **Table 1.1** | Operational Turnaround Time (TAT) Breakdown Across Manual Credit Stages | Chapter 1 | 3 |
+| **Table 2.1** | Reserve Bank of India (RBI) Statutory LTV and Risk Weight Norms | Chapter 2 | 9 |
+| **Table 2.2** | Basel III Capital Adequacy Risk Weights for Retail & MSME Asset Classes | Chapter 2 | 11 |
+| **Table 3.1** | Functional Requirements Traceability Matrix (FR-1 through FR-12) | Chapter 3 | 16 |
+| **Table 3.2** | Non-Functional Requirements & Performance Quality SLA Benchmarks | Chapter 3 | 17 |
+| **Table 4.1** | The 11 Autonomous Underwriting Agents: Roles, Algorithms & State Outputs | Chapter 4 | 25 |
+| **Table 4.2** | PostgreSQL Relational Schema & pgvector Embedding Specifications | Chapter 4 | 28 |
+| **Table 5.1** | Form MSE 1 Quantitative Scoring Matrix (Existing Units - 13 Parameters) | Chapter 5 | 33 |
+| **Table 5.2** | Form MSE II Quantitative Scoring Matrix (Greenfield Units - 9 Parameters) | Chapter 5 | 34 |
+| **Table 5.3** | Official 10-Tier Central Bank Risk Rating Grid (`CBI 1` to `CBI 10`) | Chapter 5 | 35 |
+| **Table 5.4** | Official Central Bank RBLR Lending Rate Grid (01.07.2026 Master Circular) | Chapter 5 | 37 |
+| **Table 6.1** | 5-Pillar Financial Ratio Diagnostics Framework & Benchmark Standards | Chapter 6 | 41 |
+| **Table 6.2** | Emerging Market Altman Z''-Score Variables & Parameter Coefficients | Chapter 6 | 43 |
+| **Table 6.3** | Beneish M-Score 5-Index Mathematical Formulations & Forensic Cutoffs | Chapter 6 | 44 |
+| **Table 6.4** | 3-Year Macroeconomic Stress Simulation Scenarios & Capital Impact | Chapter 6 | 46 |
+| **Table 7.1** | 23 Feature Preprocessing Schema for XGBoost Credit Risk Model | Chapter 7 | 50 |
+| **Table 7.2** | Confusion Matrix & Classification Metrics (Accuracy, Precision, Recall, F1) | Chapter 7 | 53 |
+| **Table 8.1** | Banking Ontology Metric Synonym Dictionary (`METRIC_ALIASES`) | Chapter 8 | 59 |
+| **Table 10.1** | End-to-End Test Verification Suite Results (5/5 Test Suites Passing) | Chapter 10 | 71 |
+| **Table 10.2** | 8 Standard Institutional Benchmark Profiles Simulation Results Matrix | Chapter 10 | 73 |
+| **Table 10.3** | LLM Token Consumption Economics & Operational Cost per Loan Dossier | Chapter 10 | 76 |
 
 ---
 <div style="page-break-after: always;"></div>
