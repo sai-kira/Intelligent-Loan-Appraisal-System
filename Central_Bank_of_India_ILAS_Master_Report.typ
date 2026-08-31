@@ -3171,3 +3171,386 @@ To prevent model degradation caused by shifting macroeconomic cycles, the platfo
 $ "PSI" = sum_(b=1)^B [ (P_b - Q_b) times ln(frac(P_b, Q_b)) ] $
 
 Where $P_b$ is the actual applicant distribution in decile $b$ and $Q_b$ is the baseline training distribution. A value of $"PSI" = 0.038 < 0.10$ confirms that the model maintains long-term structural stability without dataset drift.
+
+// ==============================================================================
+// CHAPTER 8: UNIVERSAL DOCUMENT INGESTION & COMPUTER VISION ENGINE (~10 PAGES)
+// ==============================================================================
+#pagebreak()
+
+// --- CHAPTER 8 TITLE SPLASH ---
+#align(center)[
+  #v(2.5cm)
+  #text(14pt, weight: "bold", fill: cboi-gold)[CHAPTER 8] \
+  #v(0.3cm)
+  #text(22pt, weight: "bold", fill: cboi-navy)[UNIVERSAL DOCUMENT INGESTION \ & COMPUTER VISION ENGINE] \
+  #v(0.4cm)
+  #line(length: 45%, stroke: 2pt + cboi-navy)
+  #v(0.8cm)
+  
+  #text(11pt, style: "italic", fill: rgb("334155"))[
+    "A comprehensive engineering exposition on multi-format document ingestion, \
+    deep learning Optical Character Recognition (EasyOCR CRAFT + CRNN architectures), \
+    fuzzy banking ontology synonym mapping, currency magnitude normalization, and robust fallback pipelines."
+  ]
+  
+  #v(1.2cm)
+  
+  #align(center)[
+    #rect(
+      width: 90%,
+      fill: rgb("f8fafc"),
+      stroke: (left: 4pt + cboi-navy, rest: 0.5pt + cboi-border),
+      radius: (right: 4pt),
+      inset: 16pt,
+      [
+        #align(left)[
+          #text(11pt, weight: "bold", fill: cboi-navy)[Chapter 8 Executive Outline & Roadmap:] \
+          #v(8pt)
+          #grid(
+            columns: (auto, 1fr),
+            row-gutter: 8pt,
+            column-gutter: 12pt,
+            [#text(weight: "bold", fill: cboi-gold)[Section 8.1:]], [#text(fill: rgb("1e293b"))[Multi-Format Ingestion Pipeline (PDF, DOCX, XLSX, CSV, JSON)]],
+            [#text(weight: "bold", fill: cboi-gold)[Section 8.2:]], [#text(fill: rgb("1e293b"))[Deep Learning OCR Architecture (EasyOCR: CRAFT + CRNN)]],
+            [#text(weight: "bold", fill: cboi-gold)[Section 8.3:]], [#text(fill: rgb("1e293b"))[Fuzzy Banking Ontology & Synonym Mapping (METRIC_ALIASES)]],
+            [#text(weight: "bold", fill: cboi-gold)[Section 8.4:]], [#text(fill: rgb("1e293b"))[Currency Magnitude & Unit Normalization Algorithm]],
+            [#text(weight: "bold", fill: cboi-gold)[Section 8.5:]], [#text(fill: rgb("1e293b"))[Error Recovery, Confidence Scoring & Fallback Mechanisms]],
+            [#text(weight: "bold", fill: cboi-gold)[Section 8.6:]], [#text(fill: rgb("1e293b"))[Integration with LangGraph DocumentOCRNode]]
+          )
+        ]
+      ]
+    )
+  ]
+]
+
+#pagebreak()
+
+// ==============================================================================
+// SECTION 8.1
+// ==============================================================================
+= Chapter 8: Universal Document Ingestion & Computer Vision Engine
+
+== 8.1 Multi-Format Ingestion Pipeline (PDF, DOCX, XLSX, CSV, JSON)
+
+A primary bottleneck in traditional commercial credit appraisal is the sheer heterogeneity of document formats submitted by loan applicants. Commercial borrowers submit audited financial statements in multi-tab Excel workbooks, physical scanned paper ledgers, digital PDF filings from the Ministry of Corporate Affairs (MCA), project feasibility reports in Microsoft Word format, and tax returns in structured CSV/JSON formats.
+
+To eliminate manual data entry and transcription latency, the ILAS platform implements a **Universal Document Ingestion Pipeline** capable of parsing, validating, and extracting financial data across all standard digital and physical document formats:
+
+#v(0.2cm)
+#figure(
+  rect(
+    width: 100%,
+    fill: rgb("f8fafc"),
+    stroke: 0.5pt + cboi-border,
+    radius: 6pt,
+    inset: 12pt,
+    [
+      #align(center)[
+        #text(9.5pt, weight: "bold", fill: cboi-navy)[Multi-Format Parsing Architecture] \
+        #v(6pt)
+        #grid(
+          columns: (1fr, 1fr, 1fr),
+          column-gutter: 10pt,
+          rect(
+            fill: rgb("eff6ff"),
+            stroke: 1pt + rgb("3b82f6"),
+            radius: 4pt,
+            inset: 8pt,
+            [
+              #text(9pt, weight: "bold", fill: cboi-navy)[1. VECTOR & TEXT PDF] \
+              #v(3pt)
+              #text(7.5pt, fill: rgb("334155"))[
+                • Direct stream extraction \
+                • Layout table parsing \
+                • Form 16 & Bank statements \
+                • MCA filings & tax receipts
+              ]
+            ]
+          ),
+          rect(
+            fill: rgb("eff6ff"),
+            stroke: 1pt + rgb("3b82f6"),
+            radius: 4pt,
+            inset: 8pt,
+            [
+              #text(9pt, weight: "bold", fill: cboi-navy)[2. SPREADSHEET XLSX/CSV] \
+              #v(3pt)
+              #text(7.5pt, fill: rgb("334155"))[
+                • Multi-tab CMA sheets \
+                • Automatic column alignment \
+                • Formula resolution to values \
+                • Trial balance normalization
+              ]
+            ]
+          ),
+          rect(
+            fill: rgb("eff6ff"),
+            stroke: 1pt + rgb("3b82f6"),
+            radius: 4pt,
+            inset: 8pt,
+            [
+              #text(9pt, weight: "bold", fill: cboi-navy)[3. PHYSICAL SCANS & OCR] \
+              #v(3pt)
+              #text(7.5pt, fill: rgb("334155"))[
+                • CRAFT character detection \
+                • Bi-LSTM CRNN recognition \
+                • Deskew & noise filters \
+                • Stamped paper ledgers
+              ]
+            ]
+          )
+        )
+      ]
+    ]
+  ),
+  caption: [Universal Document Ingestion & Multi-Format Parsing Architecture]
+)
+
+#v(0.3cm)
+
+*Format-Specific Ingestion Mechanics:*
+
+1. *PDF Document Ingestion Pipeline*:
+   The PDF handler operates via a dual-mode strategy. First, it probes the document for native digital text streams using `pdfplumber` and `PyPDF2`. If native text streams are detected, layout bounding boxes are parsed into tabular rows with spatial coordinates. If the document is identified as a scanned bitmap (zero text streams or raster images embedded in pages), the execution path routes to the Deep Learning OCR engine.
+
+2. *Spreadsheet & Tabular Data Ingestion (`openpyxl` / `pandas`)*:
+   For 3-year CMA financial models submitted in `.xlsx` or `.csv` format, the ingestion engine identifies individual worksheets corresponding to Balance Sheets, Profit & Loss Accounts, and Fund Flow Statements. It evaluates cached cell values (ignoring broken formula links), strips hidden metadata, and normalizes column headers.
+
+3. *Word Document Feasibility Parsing (`python-docx`)*:
+   For project appraisal reports and promoter profiles submitted in `.docx` format, the engine traverses document paragraph blocks, extracting headings, tables, and narrative project justifications while preserving hierarchy.
+
+4. *Structured Core Banking & GSTN Data Ingestion (`json` / `csv`)*:
+   Direct API payloads from the Goods and Services Tax Network (GSTN) and Core Banking System (CBS) transaction logs are ingested via strict Pydantic v2 data schemas, enforcing data types and range checks before ingestion into the state graph.
+
+== 8.2 Deep Learning OCR Architecture (EasyOCR: CRAFT + CRNN)
+
+For physical paper documents, branch loan application forms, stamped salary slips, and scanned audited balance sheets, ILAS incorporates an advanced deep-learning Optical Character Recognition (OCR) pipeline powered by **EasyOCR** (Jaided AI).
+
+The OCR architecture decouples text extraction into two specialized neural network stages: **Text Detection (CRAFT)** and **Text Recognition (CRNN + CTC)**:
+
+```
+  ┌─────────────────────────────────────────────────────────────────────────────┐
+  │         FIGURE 8.1: DEEP LEARNING OCR PIPELINE (CRAFT + CRNN ARCHITECTURE)  │
+  └─────────────────────────────────────────────────────────────────────────────┘
+
+  [Raw Scanned Image / Stamped Document]
+                     │
+                     ▼
+  ┌─────────────────────────────────────┐
+  │ PREPROCESSING & NOISE REDUCTION     │ ──► Grayscale, Otsu Threshold, Deskew
+  └──────────────────┬──────────────────┘
+                     │
+                     ▼
+  ┌─────────────────────────────────────┐
+  │ TEXT DETECTION: CRAFT NEURAL NET    │ ──► Character Region Score Heatmap
+  │ (VGG-16 Backbone + U-Net Skip)      │ ──► Affinity Score Linkage Vectors
+  └──────────────────┬──────────────────┘
+                     │ (Cropped Text Bounding Boxes)
+                     ▼
+  ┌─────────────────────────────────────┐
+  │ TEXT RECOGNITION: CRNN MODEL        │
+  │ • CNN Feature Map (ResNet Backbone) │
+  │ • Sequence Modeling (Bi-LSTM)       │ ──► Character Probability Matrix
+  │ • CTC Loss Transcription Layer      │
+  └──────────────────┬──────────────────┘
+                     │
+                     ▼
+  [Extracted Unicode Text with Spatial Bounding Boxes & Confidence Scores]
+```
+
+*1. Character Region Awareness for Text Detection (CRAFT):* \
+Standard object detection models (such as YOLO or Faster R-CNN) detect text at the coarse word or sentence bounding box level, frequently failing on dense banking tables and misaligned numerical entries. CRAFT (Baek et al., 2019) detects text by finding individual characters and linking them based on affinity:
+- *Region Score*: Predicts the probability that a pixel is the center of a character.
+- *Affinity Score*: Predicts the probability that two adjacent characters belong to the same word or numerical value.
+
+*2. Convolutional Recurrent Neural Network (CRNN) Recognition:* \
+Cropped text bounding boxes generated by CRAFT are normalized to fixed height ($32 "pixels"$) and fed into a CRNN architecture:
+- *Convolutional Layers*: Extract high-level visual features invariant to font style, scan artifacts, and ink variations.
+- *Recurrent Layers (Bidirectional LSTM)*: Capture contextual dependencies across character sequences.
+- *Connectionist Temporal Classification (CTC) Layer*: Decodes character label sequences without requiring pre-segmented character slices:
+  $ P(bold(l) mid bold(x)) = sum_(pi in cal(B)^(-1)(bold(l))) P(pi mid bold(x)) $
+
+*3. Image Enhancement & Preprocessing Filters:* \
+Before feeding scans into CRAFT, the image undergoes four algorithmic enhancements:
+- *Grayscale & Illumination Flattening*: Removes colored paper backgrounds and stamps.
+- *Otsu's Adaptive Binarization*: Dynamically computes optimal thresholding to separate ink pixels from paper texture.
+- *Deskewing via Radon Transform*: Detects dominant line orientations and rotates the image to $0.0^circle$ alignment.
+- *Median Denoising*: Eliminates salt-and-pepper scan noise while preserving thin decimal points.
+
+== 8.3 Fuzzy Banking Ontology & Synonym Mapping (METRIC_ALIASES)
+
+Financial statements prepared by different chartered accountants, auditors, and commercial enterprises utilize vastly differing terminologies for identical accounting line items. For example, total sales revenue may be designated as *"Revenue from Operations"*, *"Gross Turnover"*, *"Net Sales"*, *"Operating Revenue"*, or *"Gross Receipts"*.
+
+To ensure deterministic financial ratio calculation regardless of accounting nomenclature, ILAS implements a **Fuzzy Banking Ontology** powered by weighted Levenshtein distance and token sort matching:
+
+#v(0.2cm)
+#figure(
+  table(
+    columns: (1.5fr, 2.5fr, 1.8fr),
+    fill: (col, row) => if row == 0 { cboi-navy } else if calc.even(row) { cboi-bg-alt } else { white },
+    stroke: (col, row) => if row == 0 { none } else { 0.5pt + cboi-border },
+    inset: 5pt,
+    align: (col, row) => if row == 0 { center } else if col == 0 { center } else { left },
+    
+    [#text(weight: "bold", fill: white, size: 8pt)[STANDARDIZED METRIC]],
+    [#text(weight: "bold", fill: white, size: 8pt)[RECOGNIZED SYNONYMS (METRIC_ALIASES)]],
+    [#text(weight: "bold", fill: white, size: 8pt)[TARGET SCHEMA PROPERTY]],
+    
+    [`annual_revenue`], [Revenue from Operations, Gross Sales, Net Sales, Turnover, Total Income, Gross Receipts, Sales Revenue], [`P_L_Statement.gross_sales`],
+    [`cost_of_goods_sold`], [COGS, Cost of Materials Consumed, Direct Operating Expenses, Purchases of Stock-in-Trade, Production Cost], [`P_L_Statement.cogs`],
+    [`operating_profit`], [EBITDA, Operating Profit, PBDIT, Operating Earnings, Profit Before Depreciation Interest and Tax], [`P_L_Statement.ebitda`],
+    [`net_profit`], [Profit After Tax, PAT, Net Profit, Net Income, Surplus After Tax, Bottom Line Earnings], [`P_L_Statement.pat`],
+    [`current_assets`], [Total Current Assets, Gross Current Assets, TCA, Short Term Assets, Liquid Assets + Inventory + Debtors], [`BalanceSheet.current_assets`],
+    [`current_liabilities`], [Total Current Liabilities, TCL, Short Term Liabilities, Trade Payables + Short Term Bank Borrowings], [`BalanceSheet.current_liabilities`],
+    [`tangible_net_worth`], [TNW, Net Worth, Tangible Networth, Equity Capital + Reserves - Intangibles, Shareholder Funds], [`BalanceSheet.tangible_net_worth`],
+    [`total_term_debt`], [Long Term Debt, Long Term Borrowings, Secured Loans + Unsecured Term Loans, Non-Current Debt], [`BalanceSheet.term_debt`]
+  ),
+  caption: [Banking Ontology Metric Synonym Dictionary (METRIC_ALIASES)]
+)
+
+#v(0.3cm)
+
+*Fuzzy Matching Algorithm & Decision Threshold:* \
+When an unstructured line-item $s_1$ is extracted, the engine computes the similarity ratio against candidate canonical terms $s_2 in "METRIC_ALIASES"$:
+
+$ "Similarity Score"(s_1, s_2) = [ 1 - frac{"Levenshtein Distance"(s_1, s_2)}{max(|s_1|, |s_2|)} ] times 100% $
+
+If the fuzzy similarity score exceeds the calibrated threshold of **85.0%**, the extracted numerical value is mapped to the canonical schema property. If the score falls between $70.0%$ and $84.9%$, the line-item is assigned with a `CONFIDENCE_REVIEW` tag for credit officer verification.
+
+== 8.4 Currency Magnitude & Unit Normalization Algorithm
+
+In Indian commercial banking dossiers, figures are reported across diverse magnitude scales depending on enterprise size: small proprietorships report in *Rupees* or *Thousands*, MSMEs report in *Lakhs* ($10^5$), and corporate entities report in *Crores* ($10^7$) or *Millions* ($10^6$).
+
+If magnitude scales are not normalized, arithmetic calculations (such as DSCR, Current Ratio, or MPBF) would suffer catastrophic scaling errors. The ILAS engine executes an automated **Currency Magnitude Normalization Algorithm**:
+
+```python
+def normalize_currency_value(raw_text: str, detected_value: float) -> float:
+    """
+    Normalizes extracted financial numbers into base INR currency units
+    using regex magnitude pattern matching.
+    """
+    text_lower = raw_text.lower()
+    
+    # Scale Multipliers
+    if any(k in text_lower for k in ["crore", "cr", "in cr", "crores", "in crores"]):
+        return detected_value * 10_000_000.0  # 1 Crore = 10^7 INR
+    elif any(k in text_lower for k in ["lakh", "lacs", "lac", "in lakhs", "in lacs"]):
+        return detected_value * 100_000.0     # 1 Lakh = 10^5 INR
+    elif any(k in text_lower for k in ["million", "mn", "in millions"]):
+        return detected_value * 1_000_000.0   # 1 Million = 10^6 INR
+    elif any(k in text_lower for k in ["thousand", "k", "in thousands"]):
+        return detected_value * 1_000.0       # 1 Thousand = 10^3 INR
+    else:
+        return detected_value  # Exact base currency (INR)
+```
+
+== 8.5 Error Recovery, Confidence Scoring & Fallback Mechanisms
+
+To ensure zero silent data corruption in production underwriting, the ILAS ingestion engine enforces strict confidence scoring and multi-tier error recovery:
+
+#v(0.2cm)
+#figure(
+  rect(
+    width: 100%,
+    fill: rgb("f8fafc"),
+    stroke: 0.5pt + cboi-border,
+    radius: 6pt,
+    inset: 12pt,
+    [
+      #grid(
+        columns: (1fr, 1fr, 1fr),
+        column-gutter: 10pt,
+        rect(
+          fill: rgb("f0fdf4"),
+          stroke: 1pt + rgb("22c55e"),
+          radius: 4pt,
+          inset: 8pt,
+          align(center)[
+            #text(9pt, weight: "bold", fill: rgb("15803d"))[TIER 1: AUTO CONFIDENT] \
+            #v(3pt)
+            #text(12pt, weight: "bold", fill: rgb("15803d"))[Confidence >= 85%] \
+            #v(2pt)
+            #text(7.5pt, fill: rgb("334155"))[Zero human intervention \ Direct state injection \ 100% automated pass]
+          ]
+        ),
+        rect(
+          fill: rgb("fefce8"),
+          stroke: 1pt + rgb("eab308"),
+          radius: 4pt,
+          inset: 8pt,
+          align(center)[
+            #text(9pt, weight: "bold", fill: rgb("b45309"))[TIER 2: OFFICER REVIEW] \
+            #v(3pt)
+            #text(12pt, weight: "bold", fill: rgb("b45309"))[70% <= Conf < 85%] \
+            #v(2pt)
+            #text(7.5pt, fill: rgb("334155"))[Pre-populated in UI \ Highlighted in yellow \ 1-click officer sign-off]
+          ]
+        ),
+        rect(
+          fill: rgb("fef2f2"),
+          stroke: 1pt + rgb("ef4444"),
+          radius: 4pt,
+          inset: 8pt,
+          align(center)[
+            #text(9pt, weight: "bold", fill: rgb("b91c1c"))[TIER 3: FALLBACK] \
+            #v(3pt)
+            #text(12pt, weight: "bold", fill: rgb("b91c1c"))[Confidence < 70%] \
+            #v(2pt)
+            #text(7.5pt, fill: rgb("334155"))[Low image quality \ Prompts clean re-upload \ Manual spreading form]
+          ]
+        )
+      )
+    ]
+  ),
+  caption: [Three-Tier OCR Confidence Scoring & Automated Error Recovery Protocol]
+)
+
+#v(0.4cm)
+
+*1. Character-Level Confidence Aggregation:* \
+Each extracted text token is assigned an empirical confidence score $c_k in [0, 1]$ generated by the CRNN CTC transcription decoder. The aggregate document confidence is calculated as the length-weighted mean across all recognized financial tokens.
+
+*2. Balance Sheet Mathematical Invariant Validation:* \
+As an independent integrity check, the engine verifies fundamental accounting identities:
+- $"Total Assets" = "Total Liabilities" + "Net Worth"$ (Tolerance: $\le 1.0\%$).
+- $"Current Assets" >= "Net Working Capital"$.
+- $"EBITDA" >= "EBIT" >= "PAT"$.
+If an accounting identity fails, the engine flags the specific discrepancy for credit officer resolution.
+
+== 8.6 Integration with LangGraph DocumentOCRNode
+
+The document ingestion and computer vision capabilities are packaged into the `DocumentOCRNode` within the LangGraph multi-agent state graph:
+
+```python
+def document_ocr_node(state: LoanApplicationState) -> dict:
+    """
+    Autonomous LangGraph Node for Multi-Format Ingestion and OCR Extraction.
+    """
+    raw_files = state.get("uploaded_files", [])
+    extracted_text_corpus = []
+    structured_financials = {}
+    
+    for file_path in raw_files:
+        ext = os.path.splitext(file_path)[-1].lower()
+        
+        if ext in [".pdf"]:
+            text, tables = parse_pdf_stream_or_ocr(file_path)
+        elif ext in [".xlsx", ".xls", ".csv"]:
+            text, tables = parse_spreadsheet_cma(file_path)
+        elif ext in [".docx"]:
+            text, tables = parse_word_dossier(file_path)
+        elif ext in [".png", ".jpg", ".jpeg"]:
+            text, tables = execute_easyocr_deep_learning(file_path)
+        else:
+            text = f"Unsupported format: {ext}"
+            tables = {}
+            
+        extracted_text_corpus.append(text)
+        structured_financials.update(map_fuzzy_ontology(tables))
+        
+    return {
+        "extracted_text": "\n\n".join(extracted_text_corpus),
+        "structured_financials": structured_financials,
+        "ocr_processing_status": "COMPLETED_SUCCESSFULLY"
+    }
+```
