@@ -47,6 +47,31 @@
   )
 }
 
+// Heading styling
+#show heading.where(level: 1): it => {
+  v(0.6cm)
+  text(fill: cboi-navy, size: 15pt, weight: "bold")[#it.body]
+  v(0.3cm)
+}
+
+#show heading.where(level: 2): it => {
+  v(0.4cm)
+  text(fill: cboi-navy, size: 12pt, weight: "bold")[#it.body]
+  v(0.2cm)
+}
+
+#show heading.where(level: 3): it => {
+  v(0.3cm)
+  text(fill: cboi-gold, size: 10.5pt, weight: "bold")[#it.body]
+  v(0.15cm)
+}
+
+// Outline (TOC) styling
+#show outline.entry.where(level: 1): it => {
+  v(6pt)
+  text(weight: "bold", fill: cboi-navy)[#it]
+}
+
 // ==============================================================================
 // FRONT MATTER (ROMAN NUMBERING: i, ii, iii ...)
 // ==============================================================================
@@ -258,217 +283,42 @@ The system achieves a *99.2% reduction in end-to-end appraisal TAT* (from 7--14 
 
 #pagebreak()
 
-// --- 6. MASTER TABLE OF CONTENTS ---
-#align(center)[
-  #text(14pt, weight: "bold", fill: cboi-navy)[MASTER TABLE OF CONTENTS]
-]
-#v(0.3cm)
-
-#let toc-line(title, pg, bold: false, fill-clr: rgb("1e293b")) = [
-  #grid(
-    columns: (1fr, auto),
-    align(left)[#text(size: 9pt, weight: if bold { "bold" } else { "regular" }, fill: fill-clr)[#title]],
-    align(right)[#text(size: 9pt, weight: if bold { "bold" } else { "regular" }, fill: fill-clr)[#pg]]
-  )
-  #v(2pt)
-]
-
-#toc-line("PRELIMINARY PAGES", "", bold: true, fill-clr: cboi-navy)
-#toc-line("   Title & Cover Page", "i")
-#toc-line("   Certificate of Internship Completion", "ii")
-#toc-line("   Declaration of Originality by Author", "iii")
-#toc-line("   Acknowledgements", "iv")
-#toc-line("   Executive Summary", "v")
-#toc-line("   Master Table of Contents", "vii")
-#toc-line("   List of Figures", "ix")
-#toc-line("   List of Tables", "x")
-#toc-line("   Glossary of Banking & Technical Acronyms", "xi")
-
-#v(6pt)
-#toc-line("CHAPTER 1: INTRODUCTION & INSTITUTIONAL BACKGROUND", "1", bold: true, fill-clr: cboi-navy)
-#toc-line("   1.1 The Indian Commercial Banking Ecosystem & Underwriting Challenges", "2")
-#toc-line("   1.2 Central Bank of India: Institutional Heritage & Digital Strategy", "3")
-#toc-line("   1.3 Problem Statement & Turnaround Time (TAT) Friction", "4")
-#toc-line("   1.4 Objectives and Scope of the Intelligent Loan Appraisal System (ILAS)", "5")
-#toc-line("   1.5 Novelty and Institutional Value Proposition", "6")
-#toc-line("   1.6 Report Organization & Chapter Roadmap", "6")
-
-#v(6pt)
-#toc-line("CHAPTER 2: REGULATORY FRAMEWORK & LITERATURE SURVEY", "7", bold: true, fill-clr: cboi-navy)
-#toc-line("   2.1 Evolution of Credit Risk Assessment: From 5 Cs to Autonomous AI", "7")
-#toc-line("   2.2 Reserve Bank of India (RBI) Prudential Underwriting Directives", "8")
-#toc-line("   2.3 Basel II and Basel III Accords: Internal Ratings-Based (IRB) Approaches", "10")
-#toc-line("   2.4 Legal & Privacy Norms: DPDP Act 2023 & RBI IT Governance", "11")
-#toc-line("   2.5 Survey of Agentic AI, Multi-Agent State Machines & Hybrid RAG in Banking", "12")
-
-#v(6pt)
-#toc-line("CHAPTER 3: REQUIREMENTS ANALYSIS & SPECIFICATION (SRS)", "14", bold: true, fill-clr: cboi-navy)
-#toc-line("   3.1 Stakeholder Analysis & Institutional User Personas", "14")
-#toc-line("   3.2 Functional Requirements Specification (FR-1 to FR-12)", "15")
-#toc-line("   3.3 Non-Functional Requirements (Performance, Security, Explainability)", "17")
-#toc-line("   3.4 Infrastructure, Hardware & Software Dependencies", "18")
-#toc-line("   3.5 Unified Modeling Language (UML) Use Cases & Data Flow Diagrams (DFD)", "19")
-
-#v(6pt)
-#toc-line("CHAPTER 4: SYSTEM DESIGN & MULTI-AGENT ARCHITECTURE", "21", bold: true, fill-clr: cboi-navy)
-#toc-line("   4.1 Four-Tier Institutional Architecture Topology", "21")
-#toc-line("   4.2 Multi-Agent State Machine Orchestration (LangGraph StateGraph)", "23")
-#toc-line("   4.3 Comprehensive Deep-Dive into the 11 Autonomous Underwriting Nodes", "24")
-#toc-line("   4.4 PostgreSQL Relational & pgvector Vector Storage Design", "27")
-#toc-line("   4.5 GAHR-MSR Hybrid Search RAG (Vector + BM25 + RRF + Cross-Encoder)", "28")
-
-#v(6pt)
-#toc-line("CHAPTER 5: QUANTITATIVE FINANCIAL MODELING & UNDERWRITING ENGINES", "30", bold: true, fill-clr: cboi-navy)
-#toc-line("   5.1 Retail Debt Serviceability Models (Compounding EMI, FOIR, LTV)", "30")
-#toc-line("   5.2 MSME Form MSE 1 Rating Framework (Existing Units - 13 Parameters)", "32")
-#toc-line("   5.3 MSME Form MSE II Rating Framework (Greenfield Units - 9 Parameters)", "34")
-#toc-line("   5.4 Official 10-Tier Central Bank Risk Rating Framework (CBI 1 to CBI 10)", "35")
-#toc-line("   5.5 Statutory 50-Mark Hurdle Rate & Defaulter Override Rule Invariants", "36")
-#toc-line("   5.6 Dynamic RBLR Interest Rate Engine (01.07.2026 Master Circular)", "37")
-
-#v(6pt)
-#toc-line("CHAPTER 6: CORPORATE FINANCIAL INTELLIGENCE, FORENSICS & DCF SIZING", "39", bold: true, fill-clr: cboi-navy)
-#toc-line("   6.1 Multi-Year CMA Financial Spreading Engine (P&L and Balance Sheet)", "39")
-#toc-line("   6.2 5-Pillar Financial Ratio Diagnostics & Working Capital Sizing", "41")
-#toc-line("   6.3 Maximum Permissible Bank Finance (MPBF): Tandon Methods I & II, Nayak", "42")
-#toc-line("   6.4 Forensic Early Warning: Emerging Market Altman Z''-Score Model", "43")
-#toc-line("   6.5 Beneish M-Score (5 Forensic Earnings Manipulation Indices)", "44")
-#toc-line("   6.6 3-Year Macroeconomic Stress Testing Simulator", "45")
-#toc-line("   6.7 Discounted Cash Flow (DCF) Enterprise Valuation & Debt Sizing", "46")
-
-#v(6pt)
-#toc-line("CHAPTER 7: MACHINE LEARNING DEFAULT RISK & EXPLAINABILITY (XAI)", "48", bold: true, fill-clr: cboi-navy)
-#toc-line("   7.1 Synthetic Basel-Compliant Loan Book Dataset Generation & Schema", "48")
-#toc-line("   7.2 23-Parameter Feature Engineering & Preprocessing Pipeline", "49")
-#toc-line("   7.3 Extreme Gradient Boosting (XGBoost) Architecture & Training", "51")
-#toc-line("   7.4 Model Performance Validation Metrics (ROC-AUC 0.942, Confusion Matrix)", "52")
-#toc-line("   7.5 Shapley Additive exPlanations (SHAP) for Regulatory Explainability", "54")
-
-#v(6pt)
-#toc-line("CHAPTER 8: UNIVERSAL DOCUMENT INGESTION & COMPUTER VISION ENGINE", "56", bold: true, fill-clr: cboi-navy)
-#toc-line("   8.1 Multi-Format Ingestion Pipeline (PDF, DOCX, XLSX, CSV, JSON)", "56")
-#toc-line("   8.2 Deep Learning OCR Architecture (EasyOCR) for Physical Documents", "58")
-#toc-line("   8.3 Fuzzy Banking Ontology & Synonym Mapping (METRIC_ALIASES)", "59")
-#toc-line("   8.4 Currency Magnitude & Unit Normalization Algorithm", "60")
-
-#v(6pt)
-#toc-line("CHAPTER 9: USER INTERFACE & HUMAN-IN-THE-LOOP GOVERNANCE", "62", bold: true, fill-clr: cboi-navy)
-#toc-line("   9.1 Streamlit Frontend Architecture, Dark/Light Mode & Institutional Theme", "62")
-#toc-line("   9.2 Applicant Portal & 1-Click Institutional Demo Loaders", "64")
-#toc-line("   9.3 Corporate Financial Intelligence & Valuation Hub (6 Sub-Tabs)", "65")
-#toc-line("   9.4 Credit Manager Dashboard: Active Queue, Portfolio Analytics & Overrides", "66")
-#toc-line("   9.5 Publication-Grade Microsoft Word (.docx) CAM Dossier Synthesizer", "67")
-
-#v(6pt)
-#toc-line("CHAPTER 10: SYSTEM IMPLEMENTATION, VERIFICATION & BENCHMARK RESULTS", "69", bold: true, fill-clr: cboi-navy)
-#toc-line("   10.1 Codebase Structure & Component Integration", "69")
-#toc-line("   10.2 Automated Verification Test Suite (test_system_e2e_verification.py)", "71")
-#toc-line("   10.3 Walkthrough of 8 Institutional Benchmark Case Studies", "72")
-#toc-line("   10.4 Performance Benchmarking (TAT, Throughput, Token Consumption Economics)", "75")
-
-#v(6pt)
-#toc-line("CHAPTER 11: SECURITY, GOVERNANCE & REGULATORY COMPLIANCE", "77", bold: true, fill-clr: cboi-navy)
-#toc-line("   11.1 Zero Auto-Sanction Policy & State Interruption Mechanics", "77")
-#toc-line("   11.2 Data Protection & PII Token Masking under DPDP Act 2023", "78")
-#toc-line("   11.3 Immutable Audit Trail & Manager Override Governance", "80")
-#toc-line("   11.4 Disaster Recovery, ACID Compliance & Model Risk Management", "81")
-
-#v(6pt)
-#toc-line("CHAPTER 12: CONCLUSION, BUSINESS IMPACT & FUTURE SCOPE", "83", bold: true, fill-clr: cboi-navy)
-#toc-line("   12.1 Summary of Project Deliverables & Key Findings", "83")
-#toc-line("   12.2 Quantitative Business Impact on Central Bank Operations", "84")
-#toc-line("   12.3 System Limitations", "85")
-#toc-line("   12.4 Future Roadmap (CBS Core Banking Integration, GSTN API, Blockchain)", "86")
-
-#v(6pt)
-#toc-line("REFERENCES & BIBLIOGRAPHY", "88", bold: true, fill-clr: cboi-navy)
-
-#pagebreak()
-
-// --- 7. LIST OF FIGURES ---
-#align(center)[
-  #text(14pt, weight: "bold", fill: cboi-navy)[LIST OF FIGURES]
-]
-#v(0.3cm)
-
-#table(
-  columns: (1.2fr, 4.5fr, 1.3fr, 0.8fr),
-  fill: (col, row) => if row == 0 { cboi-navy } else if calc.even(row) { cboi-bg-alt } else { white },
-  stroke: (col, row) => if row == 0 { none } else { 0.5pt + cboi-border },
-  inset: 6pt,
-  align: (col, row) => if row == 0 { center } else if col == 0 or col == 2 or col == 3 { center } else { left },
-  
-  [#text(weight: "bold", fill: white, size: 8.5pt)[FIGURE No.]],
-  [#text(weight: "bold", fill: white, size: 8.5pt)[TITLE OF FIGURE]],
-  [#text(weight: "bold", fill: white, size: 8.5pt)[CHAPTER]],
-  [#text(weight: "bold", fill: white, size: 8.5pt)[PAGE]],
-  
-  [#text(weight: "bold", fill: cboi-navy, size: 8pt)[Fig 1.1]], [End-to-End Traditional vs. Automated Credit Underwriting Lifecycle], [Chapter 1], [4],
-  [#text(weight: "bold", fill: cboi-navy, size: 8pt)[Fig 3.1]], [UML Use Case Diagram for Borrower, Branch Officer, and Credit Manager], [Chapter 3], [19],
-  [#text(weight: "bold", fill: cboi-navy, size: 8pt)[Fig 3.2]], [Data Flow Diagram (DFD Level 0 & Level 1) for ILAS Underwriting Pipeline], [Chapter 3], [20],
-  [#text(weight: "bold", fill: cboi-navy, size: 8pt)[Fig 4.1]], [Four-Tier Institutional Architecture Topology of the ILAS Platform], [Chapter 4], [22],
-  [#text(weight: "bold", fill: cboi-navy, size: 8pt)[Fig 4.2]], [LangGraph StateGraph State Transition & Node Orchestration Map], [Chapter 4], [23],
-  [#text(weight: "bold", fill: cboi-navy, size: 8pt)[Fig 4.3]], [GAHR-MSR Hybrid Search Architecture (pgvector + BM25 + RRF + Cross-Encoder)], [Chapter 4], [29],
-  [#text(weight: "bold", fill: cboi-navy, size: 8pt)[Fig 5.1]], [RBI Loan-to-Value (LTV) Slabs and FOIR Ceiling Boundary Contours], [Chapter 5], [31],
-  [#text(weight: "bold", fill: cboi-navy, size: 8pt)[Fig 5.2]], [Form MSE 1 Parameter Weightage Distribution (13 Parameters / 100 Marks)], [Chapter 5], [33],
-  [#text(weight: "bold", fill: cboi-navy, size: 8pt)[Fig 5.3]], [Central Bank 10-Tier CBI Risk Grade Staircase & 50-Mark Hurdle Rate], [Chapter 5], [36],
-  [#text(weight: "bold", fill: cboi-navy, size: 8pt)[Fig 6.1]], [3-Year CMA Financial Spreading & Balance Sheet Normalization Pipeline], [Chapter 6], [40],
-  [#text(weight: "bold", fill: cboi-navy, size: 8pt)[Fig 6.2]], [Maximum Permissible Bank Finance (MPBF) Sizing Comparison (Tandon vs. Nayak)], [Chapter 6], [42],
-  [#text(weight: "bold", fill: cboi-navy, size: 8pt)[Fig 6.3]], [Emerging Market Altman Z''-Score Distress Zones (Safe, Grey, Distress)], [Chapter 6], [44],
-  [#text(weight: "bold", fill: cboi-navy, size: 8pt)[Fig 6.4]], [Beneish M-Score 5-Index Radar Profile for Financial Manipulation Auditing], [Chapter 6], [45],
-  [#text(weight: "bold", fill: cboi-navy, size: 8pt)[Fig 6.5]], [Free Cash Flow to Firm (FCFF) Waterfall and DCF Debt Capacity Sizing], [Chapter 6], [47],
-  [#text(weight: "bold", fill: cboi-navy, size: 8pt)[Fig 7.1]], [Synthetic Basel-Compliant Loan Book Feature Correlation Matrix Heatmap], [Chapter 7], [50],
-  [#text(weight: "bold", fill: cboi-navy, size: 8pt)[Fig 7.2]], [XGBoost Default Risk Model Receiver Operating Characteristic (ROC-AUC 0.942)], [Chapter 7], [53],
-  [#text(weight: "bold", fill: cboi-navy, size: 8pt)[Fig 7.3]], [SHAP Global Feature Importance Bar Plot (Top 10 Risk Drivers)], [Chapter 7], [54],
-  [#text(weight: "bold", fill: cboi-navy, size: 8pt)[Fig 7.4]], [SHAP Local Decision Waterfall Plot for Individual Borrower Default Forecast], [Chapter 7], [55],
-  [#text(weight: "bold", fill: cboi-navy, size: 8pt)[Fig 8.1]], [Universal Document Parsing Pipeline (PDF/DOCX/XLSX/CSV/JSON & EasyOCR)], [Chapter 8], [57],
-  [#text(weight: "bold", fill: cboi-navy, size: 8pt)[Fig 9.1]], [Streamlit UI Dark/Light Mode Adaptive Layout & Telemetry Dashboard], [Chapter 9], [63],
-  [#text(weight: "bold", fill: cboi-navy, size: 8pt)[Fig 9.2]], [Corporate Financial Intelligence & Valuation Hub Visual Analytics Suite], [Chapter 9], [65],
-  [#text(weight: "bold", fill: cboi-navy, size: 8pt)[Fig 9.3]], [Credit Manager HITL Active Review Pipeline and Decision Override Interface], [Chapter 9], [67],
-  [#text(weight: "bold", fill: cboi-navy, size: 8pt)[Fig 10.1]], [Underwriting Turnaround Time (TAT) Comparison (Manual vs. ILAS)], [Chapter 10], [75]
+// --- 6. DYNAMIC MASTER TABLE OF CONTENTS ---
+#outline(
+  title: [
+    #align(center)[
+      #text(14pt, weight: "bold", fill: cboi-navy)[MASTER TABLE OF CONTENTS]
+    ]
+    #v(0.3cm)
+  ],
+  depth: 2,
+  indent: auto
 )
 
 #pagebreak()
 
-// --- 8. LIST OF TABLES ---
-#align(center)[
-  #text(14pt, weight: "bold", fill: cboi-navy)[LIST OF TABLES]
-]
-#v(0.3cm)
+// --- 7. DYNAMIC LIST OF FIGURES ---
+#outline(
+  title: [
+    #align(center)[
+      #text(14pt, weight: "bold", fill: cboi-navy)[LIST OF FIGURES]
+    ]
+    #v(0.3cm)
+  ],
+  target: figure.where(kind: image)
+)
 
-#table(
-  columns: (1.2fr, 4.5fr, 1.3fr, 0.8fr),
-  fill: (col, row) => if row == 0 { cboi-navy } else if calc.even(row) { cboi-bg-alt } else { white },
-  stroke: (col, row) => if row == 0 { none } else { 0.5pt + cboi-border },
-  inset: 6pt,
-  align: (col, row) => if row == 0 { center } else if col == 0 or col == 2 or col == 3 { center } else { left },
-  
-  [#text(weight: "bold", fill: white, size: 8.5pt)[TABLE No.]],
-  [#text(weight: "bold", fill: white, size: 8.5pt)[TITLE OF TABLE]],
-  [#text(weight: "bold", fill: white, size: 8.5pt)[CHAPTER]],
-  [#text(weight: "bold", fill: white, size: 8.5pt)[PAGE]],
-  
-  [#text(weight: "bold", fill: cboi-navy, size: 8pt)[Table 1.1]], [Operational Turnaround Time (TAT) Breakdown Across Manual Credit Stages], [Chapter 1], [4],
-  [#text(weight: "bold", fill: cboi-navy, size: 8pt)[Table 2.1]], [Reserve Bank of India (RBI) Statutory LTV and Risk Weight Norms], [Chapter 2], [9],
-  [#text(weight: "bold", fill: cboi-navy, size: 8pt)[Table 2.2]], [Basel III Capital Adequacy Risk Weights for Retail & MSME Asset Classes], [Chapter 2], [11],
-  [#text(weight: "bold", fill: cboi-navy, size: 8pt)[Table 3.1]], [Functional Requirements Traceability Matrix (FR-1 through FR-12)], [Chapter 3], [16],
-  [#text(weight: "bold", fill: cboi-navy, size: 8pt)[Table 3.2]], [Non-Functional Requirements & Performance Quality SLA Benchmarks], [Chapter 3], [17],
-  [#text(weight: "bold", fill: cboi-navy, size: 8pt)[Table 4.1]], [The 11 Autonomous Underwriting Agents: Roles, Algorithms & State Outputs], [Chapter 4], [25],
-  [#text(weight: "bold", fill: cboi-navy, size: 8pt)[Table 4.2]], [PostgreSQL Relational Schema & pgvector Embedding Specifications], [Chapter 4], [28],
-  [#text(weight: "bold", fill: cboi-navy, size: 8pt)[Table 5.1]], [Form MSE 1 Quantitative Scoring Matrix (Existing Units - 13 Parameters)], [Chapter 5], [33],
-  [#text(weight: "bold", fill: cboi-navy, size: 8pt)[Table 5.2]], [Form MSE II Quantitative Scoring Matrix (Greenfield Units - 9 Parameters)], [Chapter 5], [34],
-  [#text(weight: "bold", fill: cboi-navy, size: 8pt)[Table 5.3]], [Official 10-Tier Central Bank Risk Rating Grid (CBI 1 to CBI 10)], [Chapter 5], [35],
-  [#text(weight: "bold", fill: cboi-navy, size: 8pt)[Table 5.4]], [Official Central Bank RBLR Lending Rate Grid (01.07.2026 Master Circular)], [Chapter 5], [37],
-  [#text(weight: "bold", fill: cboi-navy, size: 8pt)[Table 6.1]], [5-Pillar Financial Ratio Diagnostics Framework & Benchmark Standards], [Chapter 6], [41],
-  [#text(weight: "bold", fill: cboi-navy, size: 8pt)[Table 6.2]], [Emerging Market Altman Z''-Score Variables & Parameter Coefficients], [Chapter 6], [43],
-  [#text(weight: "bold", fill: cboi-navy, size: 8pt)[Table 6.3]], [Beneish M-Score 5-Index Mathematical Formulations & Forensic Cutoffs], [Chapter 6], [44],
-  [#text(weight: "bold", fill: cboi-navy, size: 8pt)[Table 6.4]], [3-Year Macroeconomic Stress Simulation Scenarios & Capital Impact], [Chapter 6], [46],
-  [#text(weight: "bold", fill: cboi-navy, size: 8pt)[Table 7.1]], [23 Feature Preprocessing Schema for XGBoost Credit Risk Model], [Chapter 7], [50],
-  [#text(weight: "bold", fill: cboi-navy, size: 8pt)[Table 7.2]], [Confusion Matrix & Classification Metrics (Accuracy, Precision, Recall, F1)], [Chapter 7], [53],
-  [#text(weight: "bold", fill: cboi-navy, size: 8pt)[Table 8.1]], [Banking Ontology Metric Synonym Dictionary (METRIC_ALIASES)], [Chapter 8], [59],
-  [#text(weight: "bold", fill: cboi-navy, size: 8pt)[Table 10.1]], [End-to-End Test Verification Suite Results (5/5 Test Suites Passing)], [Chapter 10], [71],
-  [#text(weight: "bold", fill: cboi-navy, size: 8pt)[Table 10.2]], [8 Standard Institutional Benchmark Profiles Simulation Results Matrix], [Chapter 10], [73],
-  [#text(weight: "bold", fill: cboi-navy, size: 8pt)[Table 10.3]], [LLM Token Consumption Economics & Operational Cost per Loan Dossier], [Chapter 10], [76]
+#pagebreak()
+
+// --- 8. DYNAMIC LIST OF TABLES ---
+#outline(
+  title: [
+    #align(center)[
+      #text(14pt, weight: "bold", fill: cboi-navy)[LIST OF TABLES]
+    ]
+    #v(0.3cm)
+  ],
+  target: figure.where(kind: table)
 )
 
 #pagebreak()
@@ -619,9 +469,11 @@ The system achieves a *99.2% reduction in end-to-end appraisal TAT* (from 7--14 
 // ==============================================================================
 // SECTION 1.1 (PAGE 2)
 // ==============================================================================
+= Chapter 1: Introduction & Institutional Background
+
 == 1.1 The Indian Commercial Banking Ecosystem & Underwriting Challenges
 
-The commercial banking sector in India constitutes the primary artery of the nation's macroeconomic architecture, mediating the allocation of capital across industrial conglomerates, infrastructure projects, micro, small, and medium enterprises (MSMEs), and retail households. As of the financial year 2025--2026, scheduled commercial banks (SCBs) manage a domestic loan book exceeding #sym.currency 170 lakh crore. Within this expansive credit ecosystem, Public Sector Banks (PSBs) occupy a uniquely critical position: they must maintain commercial profitability and robust asset quality while executing mandatory sovereign mandates, such as Priority Sector Lending (PSL) quotas, agricultural credit democratization, and socioeconomic inclusion.
+The commercial banking sector in India constitutes the primary artery of the nation's macroeconomic architecture, mediating the allocation of capital across industrial conglomerates, infrastructure projects, micro, small, and medium enterprises (MSMEs), and retail households. As of the financial year 2025--2026, scheduled commercial banks (SCBs) manage a domestic loan book exceeding #sym.currency 170 lakh crore. Within this credit ecosystem, Public Sector Banks (PSBs) occupy a uniquely critical position: they must maintain commercial profitability and robust asset quality while executing mandatory sovereign mandates, such as Priority Sector Lending (PSL) quotas, agricultural credit democratization, and socioeconomic inclusion.
 
 Despite landmark digital transformations across India's payment infrastructure---anchored by the Unified Payments Interface (UPI), Immediate Payment Service (IMPS), and National Automated Clearing House (NACH)---the *commercial credit underwriting and risk appraisal lifecycle* remains constrained by manual, paper-intensive procedures, unstructured multi-format data ingestion, and multi-tier committee hierarchies.
 
@@ -680,30 +532,29 @@ The development of the *Intelligent Loan Appraisal System (ILAS)* directly addre
 In the prevailing manual credit underwriting framework at commercial public sector bank branches, the appraisal of a loan application involves six distinct, disjointed operational phases. Each phase introduces structural latency, human transcription errors, and subjective variance.
 
 #v(0.3cm)
-#align(center)[
-  #text(weight: "bold", fill: cboi-navy, size: 9pt)[Table 1.1: Operational Turnaround Time (TAT) Breakdown Across Manual Credit Stages]
-]
-
-#table(
-  columns: (0.9fr, 1.8fr, 3fr, 1.1fr, 1.2fr),
-  fill: (col, row) => if row == 0 { cboi-navy } else if row == 7 { rgb("e2e8f0") } else if calc.even(row) { cboi-bg-alt } else { white },
-  stroke: (col, row) => if row == 0 { none } else { 0.5pt + cboi-border },
-  inset: 6pt,
-  align: (col, row) => if row == 0 { center } else if col == 0 or col == 3 or col == 4 { center } else { left },
-  
-  [#text(weight: "bold", fill: white, size: 8pt)[STAGE No.]],
-  [#text(weight: "bold", fill: white, size: 8pt)[OPERATIONAL STAGE]],
-  [#text(weight: "bold", fill: white, size: 8pt)[TASKS PERFORMED BY OFFICERS]],
-  [#text(weight: "bold", fill: white, size: 8pt)[MANUAL TAT]],
-  [#text(weight: "bold", fill: white, size: 8pt)[ILAS AUTO TAT]],
-  
-  [#text(weight: "bold", fill: cboi-navy, size: 7.5pt)[Stage 1]], [Ingestion & KYC Validation], [Physical scanning, PAN/Aadhaar/Penny Drop verification], [1 -- 2 Days], [#text(weight: "bold", fill: cboi-navy)[< 3.5 s]],
-  [#text(weight: "bold", fill: cboi-navy, size: 7.5pt)[Stage 2]], [CMA Spreading & Ratio Math], [3-year balance sheet ingestion, calculating CR, DER, DSCR, EMI], [2 -- 3 Days], [#text(weight: "bold", fill: cboi-navy)[< 2.1 s]],
-  [#text(weight: "bold", fill: cboi-navy, size: 7.5pt)[Stage 3]], [Regulatory & Policy Cross-Check], [Manual circular searches (LTV caps, FOIR limits, PSL rules)], [1 -- 2 Days], [#text(weight: "bold", fill: cboi-navy)[< 4.2 s]],
-  [#text(weight: "bold", fill: cboi-navy, size: 7.5pt)[Stage 4]], [Risk Grading & Scorecarding], [Form MSE 1/II (13 parameters) & CBI 1-10 risk grading], [1 -- 2 Days], [#text(weight: "bold", fill: cboi-navy)[< 1.8 s]],
-  [#text(weight: "bold", fill: cboi-navy, size: 7.5pt)[Stage 5]], [Forensic Audit & Debt Sizing], [Altman Z'' distress, Beneish manipulation, Tandon/Nayak MPBF], [1 -- 2 Days], [#text(weight: "bold", fill: cboi-navy)[< 2.4 s]],
-  [#text(weight: "bold", fill: cboi-navy, size: 7.5pt)[Stage 6]], [Appraisal Memo (CAM) Synthesis], [Drafting 7-chapter credit memo, formatting tables, manager review], [1 -- 3 Days], [#text(weight: "bold", fill: cboi-navy)[< 12.0 s]],
-  [#text(weight: "bold", fill: cboi-navy, size: 7.5pt)[TOTAL]], [#text(weight: "bold")[End-to-End Underwriting]], [#text(weight: "bold")[Complete Dossier Submission to Sanction Recommendation]], [#text(weight: "bold")[7 -- 14 Days]], [#text(weight: "bold", fill: rgb("15803d"))[< 45 Seconds]]
+#figure(
+  table(
+    columns: (0.9fr, 1.8fr, 3fr, 1.1fr, 1.2fr),
+    fill: (col, row) => if row == 0 { cboi-navy } else if row == 7 { rgb("e2e8f0") } else if calc.even(row) { cboi-bg-alt } else { white },
+    stroke: (col, row) => if row == 0 { none } else { 0.5pt + cboi-border },
+    inset: 6pt,
+    align: (col, row) => if row == 0 { center } else if col == 0 or col == 3 or col == 4 { center } else { left },
+    
+    [#text(weight: "bold", fill: white, size: 8pt)[STAGE No.]],
+    [#text(weight: "bold", fill: white, size: 8pt)[OPERATIONAL STAGE]],
+    [#text(weight: "bold", fill: white, size: 8pt)[TASKS PERFORMED BY OFFICERS]],
+    [#text(weight: "bold", fill: white, size: 8pt)[MANUAL TAT]],
+    [#text(weight: "bold", fill: white, size: 8pt)[ILAS AUTO TAT]],
+    
+    [#text(weight: "bold", fill: cboi-navy, size: 7.5pt)[Stage 1]], [Ingestion & KYC Validation], [Physical scanning, PAN/Aadhaar/Penny Drop verification], [1 -- 2 Days], [#text(weight: "bold", fill: cboi-navy)[< 3.5 s]],
+    [#text(weight: "bold", fill: cboi-navy, size: 7.5pt)[Stage 2]], [CMA Spreading & Ratio Math], [3-year balance sheet ingestion, calculating CR, DER, DSCR, EMI], [2 -- 3 Days], [#text(weight: "bold", fill: cboi-navy)[< 2.1 s]],
+    [#text(weight: "bold", fill: cboi-navy, size: 7.5pt)[Stage 3]], [Regulatory & Policy Cross-Check], [Manual circular searches (LTV caps, FOIR limits, PSL rules)], [1 -- 2 Days], [#text(weight: "bold", fill: cboi-navy)[< 4.2 s]],
+    [#text(weight: "bold", fill: cboi-navy, size: 7.5pt)[Stage 4]], [Risk Grading & Scorecarding], [Form MSE 1/II (13 parameters) & CBI 1-10 risk grading], [1 -- 2 Days], [#text(weight: "bold", fill: cboi-navy)[< 1.8 s]],
+    [#text(weight: "bold", fill: cboi-navy, size: 7.5pt)[Stage 5]], [Forensic Audit & Debt Sizing], [Altman Z'' distress, Beneish manipulation, Tandon/Nayak MPBF], [1 -- 2 Days], [#text(weight: "bold", fill: cboi-navy)[< 2.4 s]],
+    [#text(weight: "bold", fill: cboi-navy, size: 7.5pt)[Stage 6]], [Appraisal Memo (CAM) Synthesis], [Drafting 7-chapter credit memo, formatting tables, manager review], [1 -- 3 Days], [#text(weight: "bold", fill: cboi-navy)[< 12.0 s]],
+    [#text(weight: "bold", fill: cboi-navy, size: 7.5pt)[TOTAL]], [#text(weight: "bold")[End-to-End Underwriting]], [#text(weight: "bold")[Complete Dossier Submission to Sanction Recommendation]], [#text(weight: "bold")[7 -- 14 Days]], [#text(weight: "bold", fill: rgb("15803d"))[< 45 Seconds]]
+  ),
+  caption: [Operational Turnaround Time (TAT) Breakdown Across Manual Credit Stages]
 )
 #v(0.3cm)
 
