@@ -1812,7 +1812,7 @@ $ "LTV" = [ frac{"Sanctioned Loan Amount"}{"Documented Property / Asset Market V
 
 The *Form MSE 1* credit rating model is the official Central Bank of India quantitative scoring scorecard for *existing manufacturing, processing, and service enterprises* possessing at least two consecutive financial years of audited operational history.
 
-The scoring model evaluates **13 distinct parameters** grouped across three core institutional pillars totaling **100 maximum marks**:
+The scoring model evaluates *13 distinct parameters* grouped across three core institutional pillars totaling *100 maximum marks*:
 
 #v(0.3cm)
 #figure(
@@ -1978,7 +1978,7 @@ This model substitutes historical financial spreading with comprehensive techno-
 // ==============================================================================
 == 5.4 Official 10-Tier Central Bank Risk Rating Framework (CBI 1 to CBI 10)
 
-The total composite score $S in [0, 100]$ derived from Form MSE 1 or Form MSE II is mapped directly into the bank's official **10-Tier Risk Rating Grid (CBI 1 to CBI 10)**:
+The total composite score $S in [0, 100]$ derived from Form MSE 1 or Form MSE II is mapped directly into the bank's official *10-Tier Risk Rating Grid (CBI 1 to CBI 10)*:
 
 #v(0.3cm)
 #figure(
@@ -2092,17 +2092,17 @@ A Regional Credit Manager (Scale IV / Scale V) possesses the institutional autho
 // ==============================================================================
 == 5.6 Dynamic RBLR Interest Rate Engine (01.07.2026 Master Circular)
 
-Under the Central Bank of India *Master Circular on Rate of Interest* dated **01.07.2026**, all floating-rate MSME advances and retail facilities are priced against the Repo-Based Lending Rate (RBLR).
+Under the Central Bank of India *Master Circular on Rate of Interest* dated *01.07.2026*, all floating-rate MSME advances and retail facilities are priced against the Repo-Based Lending Rate (RBLR).
 
 *The Master Interest Rate Formulation:*
 
 $ "Effective Lending Rate" = "Base RBLR" + "Credit Risk Premium (CRP)" + "Business Strategy Premium (BSP)" - "CGTMSE Concession" $
 
 Where:
-- *Base RBLR*: **8.25% per annum** (pegged to the prevailing RBI Repo Rate of 6.50% + Bank Operating Spread of 1.75%).
+- *Base RBLR*: *8.25% per annum* (pegged to the prevailing RBI Repo Rate of 6.50% + Bank Operating Spread of 1.75%).
 - *Credit Risk Premium (CRP)*: Dynamic spread ($0.40%$ to $4.50%$) determined exclusively by the borrower's official 10-Tier CBI Risk Grade (`CBI 1` through `CBI 10`).
-- *Business Strategy Premium (BSP)*: Fixed at **0.25% per annum** across all commercial MSME advances as per ALCO guidelines.
-- *Credit Guarantee Concession (CGTMSE)*: Borrowers covered under the Credit Guarantee Fund Trust for Micro and Small Enterprises receive a **0.25% interest rate discount**.
+- *Business Strategy Premium (BSP)*: Fixed at *0.25% per annum* across all commercial MSME advances as per ALCO guidelines.
+- *Credit Guarantee Concession (CGTMSE)*: Borrowers covered under the Credit Guarantee Fund Trust for Micro and Small Enterprises receive a *0.25% interest rate discount*.
 
 #v(0.2cm)
 #figure(
@@ -2175,3 +2175,499 @@ def compute_dynamic_rblr_rate(cbi_grade: str, has_cgtmse_cover: bool = False) ->
         "circular_reference": "Master Circular on Rate of Interest (01.07.2026) - Section 4.2"
     }
 ```
+
+// ==============================================================================
+// CHAPTER 6: CORPORATE FINANCIAL INTELLIGENCE, FORENSICS & DCF SIZING (PAGES 39 - 47)
+// ==============================================================================
+#pagebreak()
+
+// --- CHAPTER 6 TITLE SPLASH (PAGE 39) ---
+#align(center)[
+  #v(2.5cm)
+  #text(14pt, weight: "bold", fill: cboi-gold)[CHAPTER 6] \
+  #v(0.3cm)
+  #text(22pt, weight: "bold", fill: cboi-navy)[CORPORATE FINANCIAL INTELLIGENCE, \ FORENSICS & DCF SIZING] \
+  #v(0.4cm)
+  #line(length: 45%, stroke: 2pt + cboi-navy)
+  #v(0.8cm)
+  
+  #text(11pt, style: "italic", fill: rgb("334155"))[
+    "An advanced corporate financial analytics suite integrating multi-year CMA balance sheet spreading, \
+    5-pillar ratio diagnostics, Tandon and Nayak MPBF working capital sizing, Emerging Market Altman Z''-Score distress forecasting, \
+    Beneish M-Score earnings manipulation auditing, 3-year macroeconomic stress simulation, and DCF debt capacity valuation."
+  ]
+  
+  #v(1.2cm)
+  
+  #align(center)[
+    #rect(
+      width: 90%,
+      fill: rgb("f8fafc"),
+      stroke: (left: 4pt + cboi-navy, rest: 0.5pt + cboi-border),
+      radius: (right: 4pt),
+      inset: 16pt,
+      [
+        #align(left)[
+          #text(11pt, weight: "bold", fill: cboi-navy)[Chapter 6 Executive Outline & Roadmap:] \
+          #v(8pt)
+          #grid(
+            columns: (auto, 1fr),
+            row-gutter: 8pt,
+            column-gutter: 12pt,
+            [#text(weight: "bold", fill: cboi-gold)[Section 6.1:]], [#text(fill: rgb("1e293b"))[Multi-Year CMA Financial Spreading Engine (P&L and Balance Sheet)]],
+            [#text(weight: "bold", fill: cboi-gold)[Section 6.2:]], [#text(fill: rgb("1e293b"))[5-Pillar Financial Ratio Diagnostics & Working Capital Sizing]],
+            [#text(weight: "bold", fill: cboi-gold)[Section 6.3:]], [#text(fill: rgb("1e293b"))[Maximum Permissible Bank Finance (MPBF): Tandon Methods I & II, Nayak]],
+            [#text(weight: "bold", fill: cboi-gold)[Section 6.4:]], [#text(fill: rgb("1e293b"))[Forensic Early Warning: Emerging Market Altman Z''-Score Model]],
+            [#text(weight: "bold", fill: cboi-gold)[Section 6.5:]], [#text(fill: rgb("1e293b"))[Beneish M-Score (5 Forensic Earnings Manipulation Indices)]],
+            [#text(weight: "bold", fill: cboi-gold)[Section 6.6:]], [#text(fill: rgb("1e293b"))[3-Year Macroeconomic Stress Testing Simulator]],
+            [#text(weight: "bold", fill: cboi-gold)[Section 6.7:]], [#text(fill: rgb("1e293b"))[Discounted Cash Flow (DCF) Enterprise Valuation & Debt Sizing]]
+          )
+        ]
+      ]
+    )
+  ]
+]
+
+#pagebreak()
+
+// ==============================================================================
+// SECTION 6.1 (PAGE 40)
+// ==============================================================================
+= Chapter 6: Corporate Financial Intelligence, Forensics & DCF Sizing
+
+== 6.1 Multi-Year CMA Financial Spreading Engine (P&L and Balance Sheet)
+
+In commercial credit underwriting for medium and large enterprises, credit officers must evaluate multi-year historical financial trends rather than isolated annual snapshots. The ILAS platform implements a robust *Credit Monitoring Arrangement (CMA)* spreading engine that ingests, cleanses, standardizes, and normalizes three consecutive financial years ($T_{-2}, T_{-1}, T_0$) of audited Profit & Loss accounts and Balance Sheets.
+
+#v(0.2cm)
+#figure(
+  rect(
+    width: 100%,
+    fill: rgb("f8fafc"),
+    stroke: 0.5pt + cboi-border,
+    radius: 6pt,
+    inset: 12pt,
+    [
+      #grid(
+        columns: (1.2fr, 1.4fr, 1.4fr),
+        column-gutter: 10pt,
+        rect(
+          fill: rgb("eff6ff"),
+          stroke: 1pt + rgb("3b82f6"),
+          radius: 4pt,
+          inset: 8pt,
+          [
+            #text(9pt, weight: "bold", fill: cboi-navy)[1. INGESTION & PARSING] \
+            #v(3pt)
+            #text(7.5pt, fill: rgb("334155"))[
+              • Multi-format ingestion (PDF, Excel, Scanned P&L) \
+              • Fuzzy metric alias mapping (METRIC_ALIASES) \
+              • Automatic currency unit scaling (Lakhs vs Crores)
+            ]
+          ]
+        ),
+        rect(
+          fill: rgb("eff6ff"),
+          stroke: 1pt + rgb("3b82f6"),
+          radius: 4pt,
+          inset: 8pt,
+          [
+            #text(9pt, weight: "bold", fill: cboi-navy)[2. 3-YEAR CMA SPREAD] \
+            #v(3pt)
+            #text(7.5pt, fill: rgb("334155"))[
+              • Normalization across $T_{-2}, T_{-1}, T_0$ \
+              • P&L: Sales, COGS, EBITDA, Interest, PAT \
+              • Balance Sheet: CA, CL, Net Worth, Total Debt
+            ]
+          ]
+        ),
+        rect(
+          fill: rgb("eff6ff"),
+          stroke: 1pt + rgb("3b82f6"),
+          radius: 4pt,
+          inset: 8pt,
+          [
+            #text(9pt, weight: "bold", fill: cboi-navy)[3. DIAGNOSTICS & RATIOS] \
+            #v(3pt)
+            #text(7.5pt, fill: rgb("334155"))[
+              • 5-Pillar diagnostic ratios (CR, DER, DSCR) \
+              • Working capital cash cycle (DSO, DIH, DPO) \
+              • Automated variance & trend slope tracking
+            ]
+          ]
+        )
+      )
+    ]
+  ),
+  caption: [3-Year CMA Financial Spreading & Balance Sheet Normalization Pipeline]
+)
+
+#v(0.3cm)
+
+*Core Financial Line-Item Spreading Definitions:*
+1. *Operating Profitability Lineage*:
+   $ "Gross Revenue" - "Sales Returns / GST" = "Net Sales" $
+   $ "Net Sales" - "Cost of Goods Sold (COGS)" = "Gross Profit" $
+   $ "Gross Profit" - "Selling, General & Administrative Expenses (SG&A)" = "EBITDA" $
+   $ "EBITDA" - "Depreciation & Amortization" = "EBIT (Operating Profit)" $
+   $ "EBIT" - "Finance Costs (Interest on Term Debt & CC)" = "EBT" $
+   $ "EBT" - "Provision for Corporate Income Tax" = "PAT (Net Profit After Tax)" $
+
+2. *Balance Sheet Structural Capitalization*:
+   $ "Tangible Net Worth (TNW)" = "Paid-Up Equity Capital" + "Free Reserves & Surplus" - "Intangible Assets" - "Accumulated Losses" $
+   $ "Net Working Capital (NWC)" = "Current Assets (CA)" - "Current Liabilities (CL)" $
+   $ "Total Outside Liabilities (TOL)" = "Short-Term Bank Borrowings" + "Trade Payables" + "Long-Term Term Debt" $
+
+#pagebreak()
+
+// ==============================================================================
+// SECTION 6.2 (PAGE 41)
+// ==============================================================================
+== 6.2 5-Pillar Financial Ratio Diagnostics & Working Capital Sizing
+
+The ILAS Corporate Diagnostics engine calculates 18 foundational financial ratios categorized into *Five Institutional Risk Pillars*, providing credit managers with holistic diagnostic insights into corporate health:
+
+#v(0.2cm)
+#figure(
+  table(
+    columns: (1.2fr, 1.8fr, 1.5fr, 1.5fr),
+    fill: (col, row) => if row == 0 { cboi-navy } else if calc.even(row) { cboi-bg-alt } else { white },
+    stroke: (col, row) => if row == 0 { none } else { 0.5pt + cboi-border },
+    inset: 5pt,
+    align: (col, row) => if row == 0 { center } else if col == 0 or col == 2 { center } else { left },
+    
+    [#text(weight: "bold", fill: white, size: 8pt)[DIAGNOSTIC PILLAR]],
+    [#text(weight: "bold", fill: white, size: 8pt)[CORE FINANCIAL RATIO]],
+    [#text(weight: "bold", fill: white, size: 8pt)[MATHEMATICAL FORMULATION]],
+    [#text(weight: "bold", fill: white, size: 8pt)[INSTITUTIONAL BENCHMARK]],
+    
+    [#text(weight: "bold", fill: cboi-navy, size: 7.5pt)[1. Liquidity]], [Current Ratio (CR)], [$"CA" / "CL"$], [Benchmark: CR >= 1.33],
+    [#text(weight: "bold", fill: cboi-navy, size: 7.5pt)[1. Liquidity]], [Quick / Acid Test Ratio (QR)], [$("CA" - "Inventory") / "CL"$], [Benchmark: QR >= 1.00],
+    [#text(weight: "bold", fill: cboi-navy, size: 7.5pt)[2. Solvency]], [Debt-Equity Ratio (DER)], [$"Term Debt" / "TNW"$], [Benchmark: DER <= 2.00],
+    [#text(weight: "bold", fill: cboi-navy, size: 7.5pt)[2. Solvency]], [Total Outside Liabilities (TOL/TNW)], [$"TOL" / "TNW"$], [Benchmark: TOL/TNW <= 3.00],
+    [#text(weight: "bold", fill: cboi-navy, size: 7.5pt)[3. Efficiency]], [Debtor Days (DSO)], [$("Receivables" / "Sales") times 365$], [Benchmark: DSO <= 90 Days],
+    [#text(weight: "bold", fill: cboi-navy, size: 7.5pt)[3. Efficiency]], [Inventory Days (DIH)], [$("Inventory" / "COGS") times 365$], [Benchmark: DIH <= 90 Days],
+    [#text(weight: "bold", fill: cboi-navy, size: 7.5pt)[3. Efficiency]], [Creditor Days (DPO)], [$("Payables" / "Purchases") times 365$], [Benchmark: DPO <= 60 Days],
+    [#text(weight: "bold", fill: cboi-navy, size: 7.5pt)[3. Efficiency]], [Cash Conversion Cycle (CCC)], [$"DSO" + "DIH" - "DPO"$], [Benchmark: CCC <= 120 Days],
+    [#text(weight: "bold", fill: cboi-navy, size: 7.5pt)[4. Profitability]], [EBITDA Margin %], [$("EBITDA" / "Net Sales") times 100%$], [Benchmark: EBITDA >= 12.0%],
+    [#text(weight: "bold", fill: cboi-navy, size: 7.5pt)[4. Profitability]], [PAT Net Profit Margin %], [$("PAT" / "Net Sales") times 100%$], [Benchmark: PAT >= 5.0%],
+    [#text(weight: "bold", fill: cboi-navy, size: 7.5pt)[4. Profitability]], [Return on Capital (ROCE %)], [$("EBIT" / ("TNW" + "Debt")) times 100%$], [Benchmark: ROCE >= 15.0%],
+    [#text(weight: "bold", fill: cboi-navy, size: 7.5pt)[5. Debt Coverage]], [Debt Service Coverage (DSCR)], [$("PAT" + "Dep" + "Int") / ("Int" + "Prin")$,], [Benchmark: DSCR >= 1.50],
+    [#text(weight: "bold", fill: cboi-navy, size: 7.5pt)[5. Debt Coverage]], [Interest Coverage Ratio (ICR)], [$"EBIT" / "Interest Expense"$], [Benchmark: ICR >= 2.50]
+  ),
+  caption: [5-Pillar Financial Ratio Diagnostics Framework & Benchmark Standards]
+)
+
+#v(0.3cm)
+
+*The Operating Working Capital Cash Conversion Cycle (CCC):* \
+The Cash Conversion Cycle measures the time lag (in days) between cash outlay for raw materials and cash realization from finished goods sales. A compressed cycle indicates superior operational liquidity, whereas an expanding cycle ($"CCC" > 150 "days"$) serves as an early warning of working capital blockage or uncollectible receivables.
+
+#pagebreak()
+
+// ==============================================================================
+// SECTION 6.3 (PAGE 42)
+// ==============================================================================
+== 6.3 Maximum Permissible Bank Finance (MPBF): Tandon Methods I & II, Nayak
+
+Working capital debt sizing within Indian commercial banking is governed by statutory frameworks established by the Reserve Bank of India, specifically the *Tandon Committee* and *Nayak Committee* recommendations.
+
+#v(0.2cm)
+#figure(
+  rect(
+    width: 100%,
+    fill: rgb("f8fafc"),
+    stroke: 0.5pt + cboi-border,
+    radius: 6pt,
+    inset: 12pt,
+    [
+      #grid(
+        columns: (1fr, 1fr, 1fr),
+        column-gutter: 10pt,
+        rect(
+          fill: rgb("f1f5f9"),
+          stroke: 1pt + cboi-navy,
+          radius: 4pt,
+          inset: 8pt,
+          [
+            #text(9pt, weight: "bold", fill: cboi-navy)[TANDON METHOD I] \
+            #v(2pt)
+            #text(8pt, fill: cboi-gold, weight: "bold")[25% Margin on WCG] \
+            #v(4pt)
+            #text(7.5pt, fill: rgb("334155"))[
+              $"WCG" = "CA" - "CL"$ \
+              $"MPBF"_1 = 0.75 times "WCG"$ \
+              Borrower Margin: 25% of Working Capital Gap.
+            ]
+          ]
+        ),
+        rect(
+          fill: rgb("f1f5f9"),
+          stroke: 1pt + cboi-navy,
+          radius: 4pt,
+          inset: 8pt,
+          [
+            #text(9pt, weight: "bold", fill: cboi-navy)[TANDON METHOD II] \
+            #v(2pt)
+            #text(8pt, fill: cboi-gold, weight: "bold")[25% Margin on Total CA] \
+            #v(4pt)
+            #text(7.5pt, fill: rgb("334155"))[
+              $"MPBF"_2 = (0.75 times "CA") - "CL"$ \
+              Stricter liquidity test; ensures minimum $"CR" >= 1.33$.
+            ]
+          ]
+        ),
+        rect(
+          fill: rgb("f1f5f9"),
+          stroke: 1pt + cboi-navy,
+          radius: 4pt,
+          inset: 8pt,
+          [
+            #text(9pt, weight: "bold", fill: cboi-navy)[NAYAK TURNOVER METHOD] \
+            #v(2pt)
+            #text(8pt, fill: cboi-gold, weight: "bold")[For Limits Up to #sym.currency 5.00 Cr] \
+            #v(4pt)
+            #text(7.5pt, fill: rgb("334155"))[
+              Total WC = $0.25 times "Turnover"$ \
+              Margin = $0.05 times "Turnover"$ \
+              $"MPBF"_"Nayak" = 0.20 times "Turnover"$
+            ]
+          ]
+        )
+      )
+    ]
+  ),
+  caption: [Maximum Permissible Bank Finance (MPBF) Sizing Models (Tandon vs. Nayak)]
+)
+
+#v(0.3cm)
+
+*Mathematical Formulations & Applicability Rules in ILAS:*
+
+1. *Tandon Committee Method I*:
+   Applicable for micro enterprises and small manufacturing units. It mandates that the borrower finance at least 25% of the Working Capital Gap ($"WCG" = "CA" - "CL"$) from long-term equity funds:
+   $ "MPBF"_1 = 0.75 times ("Current Assets" - "Current Liabilities other than Bank Borrowings") $
+
+2. *Tandon Committee Method II*:
+   Statutorily required for corporate advances and MSME credit limits exceeding #sym.currency 2.00 Crore. It mandates that the borrower contribute at least 25% of *Total Current Assets* from long-term capital, mathematically ensuring a minimum Current Ratio of 1.33:
+   $ "MPBF"_2 = (0.75 times "Current Assets") - "Current Liabilities other than Bank Borrowings" $
+
+3. *Nayak Committee Turnover Method*:
+   Mandated by the RBI for MSME credit limits up to #sym.currency 5.00 Crore. The working capital requirement is estimated at 25% of projected annual sales turnover, with the bank providing 20% as working capital bank finance and the borrower contributing 5% as margin equity:
+   $ "MPBF"_"Nayak" = 0.20 times "Projected Annual Turnover" $
+
+#pagebreak()
+
+// ==============================================================================
+// SECTION 6.4 (PAGES 43 - 44)
+// ==============================================================================
+== 6.4 Forensic Early Warning: Emerging Market Altman Z''-Score Model
+
+To predict corporate financial distress and insolvency risk up to 24 months in advance, the ILAS platform implements the *Emerging Market Altman Z''-Score* model developed by Professor Edward Altman.
+
+Unlike the original 1968 Z-Score model (which was parameterized on publicly traded US manufacturing firms), the 4-variable $Z''$-Score model eliminates the market value of equity ($X_4$) and asset turnover ($X_5$), making it universally applicable to private unlisted commercial entities, MSMEs, and service enterprises across emerging economies.
+
+*The 4-Variable Emerging Market Formulation:*
+
+$ Z'' = 6.56 X_1 + 3.26 X_2 + 6.72 X_3 + 1.05 X_4 $
+
+#v(0.2cm)
+#figure(
+  table(
+    columns: (1.2fr, 2.2fr, 2.6fr),
+    fill: (col, row) => if row == 0 { cboi-navy } else if calc.even(row) { cboi-bg-alt } else { white },
+    stroke: (col, row) => if row == 0 { none } else { 0.5pt + cboi-border },
+    inset: 6pt,
+    align: (col, row) => if row == 0 { center } else if col == 0 { center } else { left },
+    
+    [#text(weight: "bold", fill: white, size: 8.5pt)[VARIABLE]],
+    [#text(weight: "bold", fill: white, size: 8.5pt)[RATIO FORMULATION]],
+    [#text(weight: "bold", fill: white, size: 8.5pt)[ECONOMIC & FINANCIAL SIGNIFICANCE]],
+    
+    [$X_1$], [$"Working Capital" / "Total Assets"$], [Measures net liquid assets relative to firm size; cushion against immediate cash shocks.],
+    [$X_2$], [$"Retained Earnings" / "Total Assets"$], [Measures cumulative profitability and financial age of the enterprise.],
+    [$X_3$], [$"Operating Profit (EBIT)" / "Total Assets"$], [Measures true asset productivity and earning power independent of leverage and tax.],
+    [$X_4$], [$"Book Value of Equity (TNW)" / "Total Liabilities"$], [Measures long-term solvency cushion available before liabilities exceed assets.]
+  ),
+  caption: [Emerging Market Altman Z''-Score Variables & Parameter Coefficients]
+)
+
+#pagebreak()
+
+#v(0.3cm)
+#figure(
+  rect(
+    width: 100%,
+    fill: rgb("f8fafc"),
+    stroke: 0.5pt + cboi-border,
+    radius: 6pt,
+    inset: 12pt,
+    [
+      #grid(
+        columns: (1fr, 1fr, 1fr),
+        column-gutter: 10pt,
+        rect(
+          fill: rgb("f0fdf4"),
+          stroke: 1.5pt + rgb("22c55e"),
+          radius: 4pt,
+          inset: 8pt,
+          align(center)[
+            #text(9pt, weight: "bold", fill: rgb("15803d"))[SAFE ZONE] \
+            #v(4pt)
+            #text(16pt, weight: "bold", fill: rgb("15803d"))[Z'' > 2.60] \
+            #v(2pt)
+            #text(7.5pt, fill: rgb("334155"))[Negligible default probability \ Robust financial cushion \ Auto-sanction eligible]
+          ]
+        ),
+        rect(
+          fill: rgb("fefce8"),
+          stroke: 1.5pt + rgb("eab308"),
+          radius: 4pt,
+          inset: 8pt,
+          align(center)[
+            #text(9pt, weight: "bold", fill: rgb("b45309"))[GREY ZONE] \
+            #v(4pt)
+            #text(16pt, weight: "bold", fill: rgb("b45309"))[1.10 <= Z'' <= 2.60] \
+            #v(2pt)
+            #text(7.5pt, fill: rgb("334155"))[Moderate default vulnerability \ Closer monitoring required \ Additional collateral needed]
+          ]
+        ),
+        rect(
+          fill: rgb("fef2f2"),
+          stroke: 1.5pt + rgb("ef4444"),
+          radius: 4pt,
+          inset: 8pt,
+          align(center)[
+            #text(9pt, weight: "bold", fill: rgb("b91c1c"))[DISTRESS ZONE] \
+            #v(4pt)
+            #text(16pt, weight: "bold", fill: rgb("b91c1c"))[Z'' < 1.10] \
+            #v(2pt)
+            #text(7.5pt, fill: rgb("334155"))[Imminent bankruptcy risk \ High default probability \ Mandatory credit flag]
+          ]
+        )
+      )
+    ]
+  ),
+  caption: [Emerging Market Altman Z''-Score Distress Zones]
+)
+
+#v(0.4cm)
+
+*Interpretation & Underwriting Action Rules:*
+- *$Z'' > 2.60$ (Safe Zone)*: The borrower exhibits robust balance sheet capitalization, positive working capital liquidity, and healthy operating earnings. No distress flags are raised.
+- *$1.10 <= Z'' <= 2.60$ (Grey Zone)*: The borrower possesses moderate vulnerability to cash flow volatility. The ILAS engine generates a supervisory warning recommending enhanced stock monitoring or additional collateral coverage.
+- *$Z'' < 1.10$ (Distress Zone)*: The enterprise faces acute insolvency risk. The system automatically tags the dossier with a `FORENSIC_DISTRESS_ALERT`, requiring Chief Manager sign-off and enhanced credit committee review.
+
+#pagebreak()
+
+// ==============================================================================
+// SECTION 6.5 (PAGE 45)
+// ==============================================================================
+== 6.5 Beneish M-Score (5 Forensic Earnings Manipulation Indices)
+
+To safeguard the bank against accounting fraud, aggressive revenue recognition, and earnings manipulation in audited financial statements, the ILAS platform incorporates the *Beneish M-Score* forensic audit model.
+
+For private commercial enterprises and unlisted MSMEs, ILAS deploys the *5-Index Beneish Model*, combining five forensic metrics into an aggregate manipulation score:
+
+$ M = -4.84 + 0.920 times "DSRI" + 0.528 times "GMI" + 0.404 times "AQI" + 0.892 times "SGI" + 0.115 times "TATA" $
+
+#v(0.2cm)
+#figure(
+  table(
+    columns: (1fr, 1.8fr, 3.2fr),
+    fill: (col, row) => if row == 0 { cboi-navy } else if calc.even(row) { cboi-bg-alt } else { white },
+    stroke: (col, row) => if row == 0 { none } else { 0.5pt + cboi-border },
+    inset: 5pt,
+    align: (col, row) => if row == 0 { center } else if col == 0 { center } else { left },
+    
+    [#text(weight: "bold", fill: white, size: 8pt)[INDEX]],
+    [#text(weight: "bold", fill: white, size: 8pt)[FORENSIC METRIC]],
+    [#text(weight: "bold", fill: white, size: 8pt)[MATHEMATICAL FORMULATION & AUDIT IMPLICATION]],
+    
+    [#text(weight: "bold", fill: cboi-navy, size: 7.5pt)[DSRI]], [Days Sales in Receivables Index], [$("Receivables"_t / "Sales"_t) / ("Receivables"_{t-1} / "Sales"_{t-1})$. Large increase indicates aggressive revenue booking before cash collection.],
+    [#text(weight: "bold", fill: cboi-navy, size: 7.5pt)[GMI]], [Gross Margin Index], [$("Gross Margin"_{t-1}) / ("Gross Margin"_t)$. Ratio $> 1.0$ indicates deteriorating margins, increasing pressure to manipulate.],
+    [#text(weight: "bold", fill: cboi-navy, size: 7.5pt)[AQI]], [Asset Quality Index], [Ratio of non-current assets other than PPE to Total Assets. Ratio $> 1.0$ indicates capitalization of operating costs.],
+    [#text(weight: "bold", fill: cboi-navy, size: 7.5pt)[SGI]], [Sales Growth Index], [$"Sales"_t / "Sales"_{t-1}$. High growth firms face market pressure to maintain artificial growth trajectory.],
+    [#text(weight: "bold", fill: cboi-navy, size: 7.5pt)[TATA]], [Total Accruals to Total Assets], [$("Operating Profit"_t - "Cash Flow from Operations (CFO)"_t) / "Total Assets"_t$. High accruals reflect accounting profit without cash.]
+  ),
+  caption: [Beneish M-Score 5-Index Mathematical Formulations & Forensic Cutoffs]
+)
+
+#v(0.3cm)
+
+*Forensic Manipulation Decision Boundary:*
+- *$M > -1.78$ (High Manipulation Probability)*: Indicates a high probability that financial statements have been manipulated or aggressively inflated. The system raises an immediate `FORENSIC_FRAUD_ALERT`.
+- *$M <= -1.78$ (Clean Accounting Profile)*: Indicates normal, verifiable accounting practices with low probability of earnings distortion.
+
+#pagebreak()
+
+// ==============================================================================
+// SECTION 6.6 (PAGE 46)
+// ==============================================================================
+== 6.6 3-Year Macroeconomic Stress Testing Simulator
+
+Under RBI Basel III Pillar 2 guidelines, commercial banks must stress-test borrower balance sheets against adverse macroeconomic headwinds. The ILAS simulator subjects financial statements to *three macro stress scenarios* over a 3-year projection horizon:
+
+#v(0.2cm)
+#figure(
+  table(
+    columns: (1.2fr, 1.5fr, 1.8fr, 1.5fr),
+    fill: (col, row) => if row == 0 { cboi-navy } else if calc.even(row) { cboi-bg-alt } else { white },
+    stroke: (col, row) => if row == 0 { none } else { 0.5pt + cboi-border },
+    inset: 6pt,
+    align: (col, row) => if row == 0 { center } else if col == 0 { center } else { left },
+    
+    [#text(weight: "bold", fill: white, size: 8.5pt)[SCENARIO]],
+    [#text(weight: "bold", fill: white, size: 8.5pt)[REVENUE SHOCK]],
+    [#text(weight: "bold", fill: white, size: 8.5pt)[COST & INTEREST SHOCK]],
+    [#text(weight: "bold", fill: white, size: 8.5pt)[UNDERWRITING CRITERIA]],
+    
+    [#text(weight: "bold", fill: rgb("15803d"))[1. Baseline]], [Projected +10% to +15% Growth], [Normal Input Costs, Repo @ 6.50%], [Standard Debt Sizing (DSCR >= 1.50)],
+    [#text(weight: "bold", fill: rgb("b45309"))[2. Moderate Stress]], [15.0% Revenue Contraction], [+10% Input Costs, +200 bps Repo Hike], [Stressed DSCR must remain >= 1.15],
+    [#text(weight: "bold", fill: rgb("b91c1c"))[3. Severe Stress]], [30.0% Revenue Contraction], [+25% Input Costs, +350 bps Repo Hike], [Identify Break-Even Revenue Point]
+  ),
+  caption: [3-Year Macroeconomic Stress Simulation Scenarios & Capital Impact]
+)
+#v(0.4cm)
+
+*Dynamic Simulation Mechanics:* \
+The simulator recalculates operating cash flows, interest burden, and DSCR under stressed conditions. If the borrower's stressed DSCR under Scenario 2 drops below $1.15$, the system automatically resizes the maximum permissible term loan to preserve capital solvency.
+
+#pagebreak()
+
+// ==============================================================================
+// SECTION 6.7 (PAGE 47)
+// ==============================================================================
+== 6.7 Discounted Cash Flow (DCF) Enterprise Valuation & Debt Sizing
+
+For term loan proposals and structured capital facilities, the ILAS engine performs *Discounted Cash Flow (DCF)* enterprise valuation to determine the borrower's maximum sustainable debt capacity.
+
+*1. Free Cash Flow to Firm (FCFF) Waterfall:* \
+Free Cash Flow to Firm represents unencumbered operational cash flow available to service all capital providers (both debt and equity):
+
+$ "FCFF" = "EBIT" times (1 - tau) + "Depreciation & Amortization" - "Capital Expenditures (CapEx)" - Delta "Net Working Capital (NWC)" $
+
+Where $tau$ is the effective corporate income tax rate ($25.17%$).
+
+*2. Weighted Average Cost of Capital (WACC):*
+
+$ "WACC" = [ frac{E}{E+D} ] times K_e + [ frac{D}{E+D} ] times K_d times (1 - tau) $
+
+Where $K_e$ is the cost of equity (derived via CAPM: $K_e = R_f + beta (R_m - R_f)$), $K_d$ is the gross cost of debt (RBLR rate), $E$ is Tangible Net Worth, and $D$ is Total Debt.
+
+*3. Enterprise Value (EV) & Sustainable Debt Capacity Sizing:* \
+The Enterprise Value is computed as the present value of projected FCFF over a 5-year discrete horizon plus the terminal value:
+
+$ "Enterprise Value (EV)" = sum_(t=1)^5 frac{"FCFF"_t}{(1+"WACC")^t} + frac{"FCFF"_5 times (1+g)}{("WACC" - g) times (1+"WACC")^5} $
+
+#v(0.2cm)
+#align(center)[
+  #rect(fill: rgb("f1f5f9"), stroke: 0.5pt + cboi-navy, inset: 10pt, radius: 4pt)[
+    #text(9.5pt, weight: "bold", fill: cboi-navy)[Maximum Sustainable Debt Capacity Rule:] \
+    #v(2pt)
+    #text(8.5pt, fill: rgb("334155"))[
+      $"Max Sustainable Debt" = min (0.60 times "Enterprise Value", 3.50 times "EBITDA") - "Existing Debt"$ \
+      This ensures the sanctioned term facility never exceeds 60% of enterprise valuation or $3.5 times$ leverage.
+    ]
+  ]
+]
