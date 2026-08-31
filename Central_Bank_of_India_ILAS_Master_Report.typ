@@ -1187,3 +1187,474 @@ The structural interactions between system actors and underwriting pipeline node
   │ 8.0 Manager Sign-Off & CAM Gen│ ──► [7-Chapter Word/PDF Credit Appraisal Memo]
   └───────────────────────────────┘
 ```
+
+// ==============================================================================
+// CHAPTER 4: SYSTEM DESIGN & MULTI-AGENT ARCHITECTURE (PAGES 21 - 29)
+// ==============================================================================
+#pagebreak()
+
+// --- CHAPTER 4 TITLE SPLASH (PAGE 21) ---
+#align(center)[
+  #v(2.5cm)
+  #text(14pt, weight: "bold", fill: cboi-gold)[CHAPTER 4] \
+  #v(0.3cm)
+  #text(22pt, weight: "bold", fill: cboi-navy)[SYSTEM DESIGN & \ MULTI-AGENT ARCHITECTURE] \
+  #v(0.4cm)
+  #line(length: 45%, stroke: 2pt + cboi-navy)
+  #v(0.8cm)
+  
+  #text(11pt, style: "italic", fill: rgb("334155"))[
+    "A comprehensive engineering treatise on the four-tier institutional topology, \
+    deterministic LangGraph state machine orchestration, deep-dive specifications for the \
+    11 autonomous underwriting nodes, PostgreSQL pgvector storage, and the GAHR-MSR hybrid RAG pipeline."
+  ]
+  
+  #v(1.2cm)
+  
+  #align(center)[
+    #rect(
+      width: 90%,
+      fill: rgb("f8fafc"),
+      stroke: (left: 4pt + cboi-navy, rest: 0.5pt + cboi-border),
+      radius: (right: 4pt),
+      inset: 16pt,
+      [
+        #align(left)[
+          #text(11pt, weight: "bold", fill: cboi-navy)[Chapter 4 Executive Outline & Roadmap:] \
+          #v(8pt)
+          #grid(
+            columns: (auto, 1fr),
+            row-gutter: 8pt,
+            column-gutter: 12pt,
+            [#text(weight: "bold", fill: cboi-gold)[Section 4.1:]], [#text(fill: rgb("1e293b"))[Four-Tier Institutional Architecture Topology]],
+            [#text(weight: "bold", fill: cboi-gold)[Section 4.2:]], [#text(fill: rgb("1e293b"))[Multi-Agent State Machine Orchestration (LangGraph StateGraph)]],
+            [#text(weight: "bold", fill: cboi-gold)[Section 4.3:]], [#text(fill: rgb("1e293b"))[Comprehensive Deep-Dive into the 11 Autonomous Underwriting Nodes]],
+            [#text(weight: "bold", fill: cboi-gold)[Section 4.4:]], [#text(fill: rgb("1e293b"))[PostgreSQL Relational & pgvector Vector Storage Design]],
+            [#text(weight: "bold", fill: cboi-gold)[Section 4.5:]], [#text(fill: rgb("1e293b"))[GAHR-MSR Hybrid Search RAG (Vector + BM25 + RRF + Cross-Encoder)]]
+          )
+        ]
+      ]
+    )
+  ]
+]
+
+#pagebreak()
+
+// ==============================================================================
+// SECTION 4.1 (PAGE 22)
+// ==============================================================================
+= Chapter 4: System Design & Multi-Agent Architecture
+
+== 4.1 Four-Tier Institutional Architecture Topology
+
+The Intelligent Loan Appraisal System (ILAS) is engineered upon a high-availability, modular four-tier architecture designed to decouple user interactions, API routing, deterministic AI computation, and persistent storage:
+
+```
+  ┌─────────────────────────────────────────────────────────────────────────────┐
+  │         FIGURE 4.1: FOUR-TIER INSTITUTIONAL ARCHITECTURE TOPOLOGY           │
+  └─────────────────────────────────────────────────────────────────────────────┘
+
+  ┌───────────────────────────────────────────────────────────────────────────┐
+  │ TIER 1: PRESENTATION & CLIENT LAYER                                       │
+  │ • Applicant Self-Service Portal (Loan Ingestion & 1-Click Demo Profiles)  │
+  │ • Corporate Financial Intelligence & Forensic Hub (6 Diagnostic Tabs)    │
+  │ • Credit Manager HITL Dashboard (Queue, Visual SHAP, Decision Overrides)  │
+  │ • Automated Microsoft Word (.docx) & Typst PDF Dossier Exporters          │
+  └─────────────────────────────────────┬─────────────────────────────────────┘
+                                        │ (HTTP / WebSocket / JSON)
+                                        ▼
+  ┌───────────────────────────────────────────────────────────────────────────┐
+  │ TIER 2: API GATEWAY & MICROSERVICES LAYER (FastAPI / ASGI)                │
+  │ • OAuth2 / Passcode Authentication & Role-Based Access Control (RBAC)     │
+  │ • DPDP Act 2023 Cryptographic PII Masking Gateway                         │
+  │ • Asynchronous Request Dispatcher & Health Telemetry                      │
+  └─────────────────────────────────────┬─────────────────────────────────────┘
+                                        │
+                                        ▼
+  ┌───────────────────────────────────────────────────────────────────────────┐
+  │ TIER 3: AUTONOMOUS MULTI-AGENT STATE ENGINE (LangGraph StateGraph)        │
+  │ ┌───────────────┐ ┌───────────────┐ ┌───────────────┐ ┌─────────────────┐ │
+  │ │ Customer Node │ │ Document OCR  │ │KYC Validation │ │ Bank Penny Drop │ │
+  │ └───────┬───────┘ └───────┬───────┘ └───────┬───────┘ └────────┬────────┘ │
+  │ ┌───────▼───────┐ ┌───────▼───────┐ ┌───────▼───────┐ ┌────────▼────────┐ │
+  │ │ Financial Math│ │  XGBoost/SHAP │ │ GAHR-MSR RAG  │ │ Corporate Foren │ │
+  │ └───────┬───────┘ └───────┬───────┘ └───────┬───────┘ └────────┬────────┘ │
+  │ ┌───────▼─────────────────▼─────────────────▼──────────────────▼────────┐ │
+  │ │ Sanction Compliance (Form MSE 1/II + 10-Tier CBI + RBLR Rate Engine)   │ │
+  │ └───────────────────────────────────┬───────────────────────────────────┘ │
+  │ ┌───────────────────────────────────▼───────────────────────────────────┐ │
+  │ │ Decision Synthesis Node (HITL Interruption: WAITING_FOR_MANAGER)      │ │
+  │ └───────────────────────────────────┬───────────────────────────────────┘ │
+  │ ┌───────────────────────────────────▼───────────────────────────────────┐ │
+  │ │ Report Writing Node (7-Chapter Publication-Grade CAM Dossier)         │ │
+  │ └───────────────────────────────────────────────────────────────────────┘ │
+  └─────────────────────────────────────┬─────────────────────────────────────┘
+                                        │
+                                        ▼
+  ┌───────────────────────────────────────────────────────────────────────────┐
+  │ TIER 4: PERSISTENT STORAGE & KNOWLEDGE BASE LAYER                         │
+  │ • PostgreSQL 16 Relational Storage (ACID Applications & Immutable Logs)   │
+  │ • pgvector 3072-Dimensional Vector Index (HNSW Policy Embeddings)         │
+  │ • PostgreSQL Checkpointer (LangGraph State Persistence Across Interrupts) │
+  │ • Local / S3 Encrypted Document Dossier Blob Storage                      │
+  └───────────────────────────────────────────────────────────────────────────┘
+```
+
+#pagebreak()
+
+// ==============================================================================
+// SECTION 4.2 (PAGE 23)
+// ==============================================================================
+== 4.2 Multi-Agent State Machine Orchestration (LangGraph StateGraph)
+
+Unlike unstructured multi-agent chat networks where agents communicate through non-deterministic free-form messaging, ILAS deploys a *strictly typed, deterministic Finite State Machine (FSM)* governed by LangGraph's `StateGraph`.
+
+Global application state is encapsulated in a unified typed dictionary (`LoanApplicationState`):
+
+```python
+class LoanApplicationState(TypedDict):
+    # Application & Demographic Identifiers (PII-Masked)
+    application_id: str
+    borrower_name_masked: str
+    facility_type: str  # RETAIL_HOME, RETAIL_VEHICLE, MSME_WC, MSME_TERM
+    loan_amount_requested: float
+    
+    # Extracted & Verified Ingestion Data
+    extracted_text: str
+    kyc_verified: bool
+    bank_statement_metrics: dict
+    
+    # Deterministic Financial & Corporate Ratios (0-Token Math)
+    calculated_ratios: dict  # EMI, FOIR, LTV, CR, DER, DSCR
+    cma_spreading_3yr: dict
+    forensic_audit_results: dict  # Altman Z'', Beneish M-Score, Tandon MPBF
+    
+    # Official Central Bank Rating & Pricing
+    form_mse_score: float  # 0 to 100 marks
+    cbi_risk_grade: str    # CBI 1 through CBI 10
+    hurdle_rate_passed: bool
+    dynamic_rblr_rate: float
+    
+    # Machine Learning Default Risk & Explainability
+    ml_probability_of_default: float  # PD %
+    shap_feature_importance: dict
+    
+    # Legal Policy Citations & Decision Synthesis
+    rag_statutory_citations: list[dict]
+    system_recommendation: str  # RECOMMEND_SANCTION / RECOMMEND_REJECTION
+    status: str  # IN_PROGRESS, WAITING_FOR_MANAGER, APPROVED, REJECTED
+    manager_override_notes: str
+    generated_cam_dossier: str
+```
+
+```
+  ┌─────────────────────────────────────────────────────────────────────────────┐
+  │           FIGURE 4.2: LANGGRAPH STATE TRANSITION & ORCHESTRATION MAP        │
+  └─────────────────────────────────────────────────────────────────────────────┘
+
+       [START]
+          │
+          ▼
+   [1. Customer Node] (DPDP Masking)
+          │
+          ▼
+   [2. Document OCR Node] (Multi-Format + EasyOCR)
+          │
+          ▼
+   [3. KYC Validation Node] ──(Failed KYC)──► [REJECT: Invalid Identity] ──► [END]
+          │ (Passed)
+          ▼
+   [4. Bank Statement Node] (Penny Drop & Cash Flow)
+          │
+          ▼
+   [5. Financial Ratio Node] (Deterministic EMI / FOIR / LTV / CR / DSCR)
+          │
+          ▼
+   [6. ML Risk Assessment Node] (XGBoost PD % + Local SHAP Waterfall)
+          │
+          ▼
+   [7. Hybrid RAG Policy Node] (GAHR-MSR Circular Retrieval)
+          │
+          ▼
+   [8. Corporate Forensics Node] (CMA Spreading + Altman Z'' + Beneish M + MPBF)
+          │
+          ▼
+   [9. Sanction Compliance Node] (Form MSE 1/II + CBI 1-10 + RBLR Rate Engine)
+          │
+          ▼
+   [10. Decision Synthesis Node]
+          │
+          ▼
+   ╔══════════════════════════════════════════════════════════════════════════╗
+   ║  STATE INTERRUPTION: interrupt() ──► [STATUS: WAITING_FOR_MANAGER]        ║
+   ║  (Mandatory Credit Manager HITL Sign-off / Discretionary Override)       ║
+   ╚══════════════════════════════════════════════════════════════════════════╝
+          │ (Manager Resume Action: APPROVED / REJECTED)
+          ▼
+   [11. Report Writing Node] (7-Chapter CAM Dossier Synthesis - Word / Typst PDF)
+          │
+          ▼
+        [END]
+```
+
+#pagebreak()
+
+// ==============================================================================
+// SECTION 4.3 (PAGES 24 - 26)
+// ==============================================================================
+== 4.3 Comprehensive Deep-Dive into the 11 Autonomous Underwriting Nodes
+
+Each of the 11 nodes within the LangGraph state machine operates as an isolated functional unit with strict input contracts, deterministic execution algorithms, and type-safe state mutations:
+
+#v(0.2cm)
+#figure(
+  table(
+    columns: (0.8fr, 1.8fr, 3.4fr),
+    fill: (col, row) => if row == 0 { cboi-navy } else if calc.even(row) { cboi-bg-alt } else { white },
+    stroke: (col, row) => if row == 0 { none } else { 0.5pt + cboi-border },
+    inset: 5pt,
+    align: (col, row) => if row == 0 { center } else if col == 0 { center } else { left },
+    
+    [#text(weight: "bold", fill: white, size: 8pt)[NODE No.]],
+    [#text(weight: "bold", fill: white, size: 8pt)[AGENT NODE NAME]],
+    [#text(weight: "bold", fill: white, size: 8pt)[ALGORITHMIC RESPONSIBILITY & STATE MUTATION]],
+    
+    [#text(weight: "bold", fill: cboi-navy, size: 7.5pt)[N-01]], [CustomerNode], [Ingests customer demographic profiles, categorizes facility type (Retail vs MSME), and executes DPDP Act 2023 cryptographic PII token masking.],
+    [#text(weight: "bold", fill: cboi-navy, size: 7.5pt)[N-02]], [DocumentOCRNode], [Parses heterogeneous document dossiers (PDF/DOCX/XLSX/CSV/JSON) and executes deep-learning EasyOCR extraction on physical image scans.],
+    [#text(weight: "bold", fill: cboi-navy, size: 7.5pt)[N-03]], [KYCValidationNode], [Validates PAN and Aadhaar format structures, executes AML fraud registry queries, and validates applicant identity invariants.],
+    [#text(weight: "bold", fill: cboi-navy, size: 7.5pt)[N-04]], [BankStatementNode], [Simulates penny-drop account verification, validates name matching, and computes average monthly bank balances and cheque bounce frequency.],
+    [#text(weight: "bold", fill: cboi-navy, size: 7.5pt)[N-05]], [FinancialRatioNode], [Executes deterministic Python math (0 LLM tokens) for EMI, FOIR (<=50%), LTV (75-90%), Current Ratio (CR), Debt-Equity (DER), and DSCR.],
+    [#text(weight: "bold", fill: cboi-navy, size: 7.5pt)[N-06]], [MLRiskAssessmentNode], [Builds 23-feature vector, generates XGBoost Probability of Default (PD %), and computes local SHAP feature importance waterfalls.],
+    [#text(weight: "bold", fill: cboi-navy, size: 7.5pt)[N-07]], [HybridRAGPolicyNode], [Executes GAHR-MSR search (pgvector + BM25 + RRF + Cross-Encoder) over RBI and Central Bank circulars to extract verifiable legal citations.],
+    [#text(weight: "bold", fill: cboi-navy, size: 7.5pt)[N-08]], [CorporateForensicsNode], [Performs 3-Year CMA spreading, 5-Pillar diagnostics, Tandon/Nayak MPBF sizing, Altman Z'' distress scoring, and Beneish M earnings manipulation audits.],
+    [#text(weight: "bold", fill: cboi-navy, size: 7.5pt)[N-09]], [SanctionComplianceNode], [Scores Form MSE 1 (13 params) or Form MSE II (9 params), maps to 10-Tier CBI Risk Grade, enforces 50-mark Hurdle Rate, and calculates dynamic RBLR rates.],
+    [#text(weight: "bold", fill: cboi-navy, size: 7.5pt)[N-10]], [DecisionSynthesisNode], [Synthesizes multi-node evidence into preliminary sanction recommendations and triggers mandatory state interruption (WAITING_FOR_MANAGER).],
+    [#text(weight: "bold", fill: cboi-navy, size: 7.5pt)[N-11]], [ReportWritingNode], [Compiles the full 7-chapter Credit Appraisal Memorandum (CAM) in download-ready Microsoft Word (.docx) and publication-grade Typst PDF formats.]
+  ),
+  caption: [The 11 Autonomous Underwriting Agents: Roles, Algorithms & State Outputs]
+)
+
+#pagebreak()
+
+*Detailed Operational Specifications for Critical Nodes:*
+
+*1. Node 05: Financial Ratio Node (Deterministic Mathematics)* \
+This node executes zero-token mathematical models for all debt serviceability and leverage metrics:
+- *Retail Equated Monthly Installment (EMI)*:
+  $ "EMI" = P times r times frac((1+r)^n, (1+r)^n - 1) $
+  where $P$ is the principal loan amount, $r$ is the monthly interest rate ($"Annual Rate" / 1200$), and $n$ is tenure in months.
+- *Fixed Obligation to Income Ratio (FOIR)*:
+  $ "FOIR" = frac("Existing Monthly EMIs" + "Proposed EMI", "Net Monthly Income (NMI)") times 100% $
+- *Loan-to-Value (LTV) Ratio*:
+  $ "LTV" = frac("Sanctioned Loan Amount", "Documented Property / Asset Value") times 100% $
+- *Debt Service Coverage Ratio (DSCR)*:
+  $ "DSCR" = frac("PAT" + "Depreciation" + "Interest on Term Debt", "Interest on Term Debt" + "Principal Repayment") $
+
+*2. Node 06: Machine Learning Risk Assessment Node* \
+Transforms borrower demographics and financial spreading metrics into a 23-dimensional normalized feature vector. Passes the vector into the serialized Extreme Gradient Boosting (`XGBClassifier`) model to predict the 1-year forward Probability of Default (PD %). Concurrently initializes a `shap.TreeExplainer` instance to compute exact Shapley feature attributions:
+
+$ phi_i (v) = sum_(S subset.eq N without {i}) frac(|S|! (|N| - |S| - 1)!, |N|!) (v(S union {i}) - v(S)) $
+
+This ensures full compliance with statutory Explainable AI (XAI) mandates.
+
+*3. Node 08: Corporate Financial Intelligence & Forensic Audit Node* \
+For commercial MSME facilities, Node 08 ingests 3 consecutive years of audited balance sheet and P&L data:
+- *3-Year CMA Spreading*: Standardizes revenue, COGS, operating profit, depreciation, tax, net worth, and current liabilities across historical periods $T_{-2}, T_{-1}, T_0$.
+- *5-Pillar Diagnostics*: Computes Liquidity (CR), Solvency (DER), Operating Efficiency (Working Capital Cycle in Days), Profitability (PAT Margin %), and Coverage (DSCR).
+- *Maximum Permissible Bank Finance (MPBF)*: Calculates Tandon Committee Method I ($"MPBF"_1 = 0.75 times ("CA" - "CL")$), Tandon Method II ($"MPBF"_2 = (0.75 times "CA") - "CL"$), and Nayak Committee Turnover Method ($"MPBF"_"Nayak" = 0.20 times "Projected Turnover"$).
+- *Forensic Early Warning Models*: Executes the 4-variable Emerging Market Altman Z''-Score to assess insolvency risk and the 5-index Beneish M-Score to detect financial statement manipulation.
+
+#pagebreak()
+
+*4. Node 09: Sanction Compliance & Rating Node* \
+Applies the official Central Bank of India MSE Credit Rating Model matrices:
+- For *Existing Units*, evaluates *Form MSE 1* across 13 quantitative parameters totaling 100 maximum marks (Financial Performance: 40 marks, Operational Conduct: 35 marks, Management & External Factors: 25 marks).
+- For *Greenfield Units*, evaluates *Form MSE II* across 9 parameters totaling 100 marks.
+- Maps total score $S$ to the official *10-Tier CBI Risk Rating Grid*:
+
+#align(center)[
+  #rect(fill: rgb("f1f5f9"), stroke: 0.5pt + cboi-navy, inset: 10pt, radius: 4pt)[
+    #text(9pt, weight: "bold", fill: cboi-navy)[
+      Score $>= 90$: *CBI 1* (Prime Low Risk) | Score 80--89: *CBI 2* | Score 70--79: *CBI 3* \
+      Score 60--69: *CBI 4* | Score 50--59: *CBI 5* (Minimum Sanction Hurdle) \
+      Score 45--49: *CBI 6* (Sub-Hurdle) | Score 40--44: *CBI 7* | Score 35--39: *CBI 8* \
+      Score 30--34: *CBI 9* | Score $< 30$: *CBI 10* (Substantial Default Risk)
+    ]
+  ]
+]
+
+- *Statutory 50-Mark Hurdle Rate Enforcement*: If $S < 50$, the system automatically flags the application as a policy breach, requiring executive override approval.
+- *Dynamic RBLR Pricing*: Queries the *01.07.2026 Master Circular on Rate of Interest* table and dynamically prices the facility:
+  $ "Lending Rate" = "Base RBLR (8.25%)" + "Credit Risk Premium (CRP)" + "Business Strategy Premium (BSP)" - "CGTMSE Concession" $
+
+*5. Node 10: Decision Synthesis Node & HITL State Interruption* \
+Node 10 synthesizes output metrics from Nodes 01 through 09. If KYC fails or a hard regulatory limit (such as LTV $> 90\%$ or CIBIL Defaulter list) is breached, it assigns `RECOMMEND_REJECTION`. Otherwise, it assigns `RECOMMEND_SANCTION`.
+
+Crucially, rather than terminating autonomously, Node 10 invokes:
+
+```python
+# LangGraph Native Human-in-the-Loop Interruption
+interrupt({
+    "status": "WAITING_FOR_MANAGER",
+    "application_id": state["application_id"],
+    "borrower": state["borrower_name_masked"],
+    "cbi_risk_grade": state["cbi_risk_grade"],
+    "form_mse_score": state["form_mse_score"],
+    "recommended_rate": state["dynamic_rblr_rate"],
+    "preliminary_decision": state["system_recommendation"],
+    "message": "Loan Dossier ready for Credit Manager Review & Sanction Sign-off"
+})
+```
+
+The application execution state is serialized into PostgreSQL and suspended until an authenticated Credit Manager (`CBOI_ADMIN`) submits an approval, rejection, or discretionary override with mandatory text justification.
+
+#pagebreak()
+
+// ==============================================================================
+// SECTION 4.4 (PAGES 27 - 28)
+// ==============================================================================
+== 4.4 PostgreSQL Relational & pgvector Vector Storage Design
+
+The ILAS data architecture utilizes an enterprise *PostgreSQL 16* relational database enhanced with the *`pgvector`* extension, providing ACID transaction guarantees for loan ledger states alongside sub-millisecond vector similarity search over regulatory policy corpora.
+
+```
+  ┌─────────────────────────────────────────────────────────────────────────────┐
+  │                 FIGURE 4.4: POSTGRESQL RELATIONAL & VECTOR SCHEMA           │
+  └─────────────────────────────────────────────────────────────────────────────┘
+
+  ┌─────────────────────────┐           ┌─────────────────────────┐
+  │      applications       │ 1       * │   financial_records     │
+  ├─────────────────────────┤───────────├─────────────────────────┤
+  │ PK id (UUID)            │           │ PK id (UUID)            │
+  │    facility_type        │           │ FK application_id       │
+  │    amount_requested     │           │    annual_revenue       │
+  │    cbi_risk_grade       │           │    tangible_net_worth   │
+  │    rblr_interest_rate   │           │    current_ratio        │
+  │    status               │           │    debt_equity_ratio    │
+  │    created_at           │           │    dscr_ratio           │
+  └───────────┬─────────────┘           └─────────────────────────┘
+              │ 1
+              │
+              │ 1
+  ┌───────────▼─────────────┐           ┌─────────────────────────┐
+  │    risk_evaluations     │ 1       * │    manager_overrides    │
+  ├─────────────────────────┤───────────├─────────────────────────┤
+  │ PK id (UUID)            │           │ PK id (UUID)            │
+  │ FK application_id       │           │ FK application_id       │
+  │    form_mse_score       │           │    manager_employee_id  │
+  │    hurdle_passed (BOOL) │           │    original_decision    │
+  │    xgb_pd_percentage    │           │    override_decision    │
+  │    shap_attributions    │           │    justification_text   │
+  │    altman_z_score       │           │    timestamp            │
+  │    beneish_m_score      │           └─────────────────────────┘
+  └─────────────────────────┘
+
+  ┌───────────────────────────────────────────────────────────────────────────┐
+  │                      rag_policy_documents (pgvector)                      │
+  ├───────────────────────────────────────────────────────────────────────────┤
+  │ PK id (UUID)                                                              │
+  │    circular_title (VARCHAR)   [e.g., 'Master Circular on Rate of Interest']│
+  │    statutory_clause (VARCHAR) [e.g., 'Section 4.2 - MSME RBLR Spread']    │
+  │    content_text (TEXT)                                                    │
+  │    embedding (vector(3072))   [HNSW Cosine Similarity Index]              │
+  │    search_vector (tsvector)   [PostgreSQL GIN Full-Text Search Index]     │
+  └───────────────────────────────────────────────────────────────────────────┘
+```
+
+#pagebreak()
+
+#v(0.2cm)
+#figure(
+  table(
+    columns: (1.5fr, 1.5fr, 3fr),
+    fill: (col, row) => if row == 0 { cboi-navy } else if calc.even(row) { cboi-bg-alt } else { white },
+    stroke: (col, row) => if row == 0 { none } else { 0.5pt + cboi-border },
+    inset: 6pt,
+    align: (col, row) => if row == 0 { center } else if col == 0 or col == 1 { center } else { left },
+    
+    [#text(weight: "bold", fill: white, size: 8.5pt)[DATABASE TABLE]],
+    [#text(weight: "bold", fill: white, size: 8.5pt)[STORAGE ENGINE]],
+    [#text(weight: "bold", fill: white, size: 8.5pt)[TABLE PURPOSE & STATUTORY INTEGRITY]],
+    
+    [`applications`], [PostgreSQL Relational], [Maintains master loan metadata, facility classification, requested exposure, and lifecycle status.],
+    [`financial_records`], [PostgreSQL Relational], [Stores normalized 3-year CMA balance sheet figures and deterministic financial ratios.],
+    [`risk_evaluations`], [PostgreSQL Relational], [Records Form MSE scorecard marks, XGBoost PD %, SHAP feature JSON, and forensic scores.],
+    [`manager_overrides`], [PostgreSQL Relational], [Provides an immutable, tamper-proof audit trail of manager overrides with mandatory justifications.],
+    [`rag_policy_documents`], [pgvector + GIN Index], [Stores RBI Master Directions and Central Bank circulars with 3072d dense embeddings and BM25 tsvector.],
+    [`checkpoints`], [LangGraph Checkpointer], [Stores serialized state graph snapshots, enabling seamless HITL pause and resume capabilities.]
+  ),
+  caption: [PostgreSQL Relational Schema & pgvector Embedding Specifications]
+)
+#v(0.4cm)
+
+*LangGraph State Checkpointing Architecture:* \
+When an application reaches the `WAITING_FOR_MANAGER` interruption state, the complete runtime thread state is persisted to the `checkpoints` table. The thread state contains the complete historical execution trajectory, node outputs, and intermediate scoring matrices.
+
+This architecture ensures:
+1. *Zero Session Loss*: Even in the event of an unexpected server reboot or network interruption, the underwriting state is preserved in persistent storage without requiring re-ingestion.
+2. *Statutory Concurrency*: Hundreds of concurrent loan files can remain suspended in `WAITING_FOR_MANAGER` status across branch networks without consuming server CPU cycles.
+3. *Cryptographic Reproducibility*: Any past credit sanction can be reconstructed state-for-state for regulatory inspection.
+
+#pagebreak()
+
+// ==============================================================================
+// SECTION 4.5 (PAGE 29)
+// ==============================================================================
+== 4.5 GAHR-MSR Hybrid Search RAG (Vector + BM25 + RRF + Cross-Encoder)
+
+To guarantee that generated Credit Appraisal Memorandums cite exact, legally verifiable statutory paragraphs without hallucinations, ILAS implements the *Graph-Agentic Hybrid RAG with Multi-Stage Re-ranking (GAHR-MSR)* pipeline:
+
+```
+  ┌─────────────────────────────────────────────────────────────────────────────┐
+  │       FIGURE 4.3: GAHR-MSR HYBRID SEARCH & MULTI-STAGE RE-RANKING PIPELINE  │
+  └─────────────────────────────────────────────────────────────────────────────┘
+
+  [Credit Query / Policy Context]
+                 │
+        ┌────────┴────────┐
+        ▼                 ▼
+  ┌───────────┐     ┌───────────┐
+  │   DENSE   │     │  SPARSE   │
+  │ EMBEDDING │     │   BM25    │
+  │ (3072-dim)│     │(tsvector) │
+  └─────┬─────┘     └─────┬─────┘
+        │                 │
+        ▼                 ▼
+  ┌───────────┐     ┌───────────┐
+  │ pgvector  │     │PostgreSQL │
+  │ Top-20    │     │  Top-20   │
+  └─────┬─────┘     └─────┬─────┘
+        └────────┬────────┘
+                 │
+                 ▼
+  ┌─────────────────────────────┐
+  │ RECIPROCAL RANK FUSION (RRF)│ ──► [Combined Top-10 Candidate Chunks]
+  │ Score = Sum 1 / (60 + Rank) │
+  └──────────────┬──────────────┘
+                 │
+                 ▼
+  ┌─────────────────────────────┐
+  │ CROSS-ENCODER RE-RANKER     │ ──► [Top-3 Verifiable Policy Paragraphs]
+  │ (ms-marco-MiniLM-L-6-v2)    │
+  └──────────────┬──────────────┘
+                 │
+                 ▼
+  [Exact Circular Paragraphs Injected into Credit Appraisal Memorandum (CAM)]
+```
+
+*Mathematical Formulation of the 4-Stage GAHR-MSR Pipeline:*
+
+1. *Stage 1: Dense Semantic Vector Retrieval (`pgvector`)*:
+   Computes cosine distance across high-dimensional sentence embeddings:
+   $ S_{"dense"}(q, d) = frac(bold(e)_q dot bold(e)_d, ||bold(e)_q|| ||bold(e)_d||) $
+   Retrieves the top 20 conceptually relevant policy chunks.
+
+2. *Stage 2: Sparse Keyword Retrieval (PostgreSQL `tsvector` BM25)*:
+   Matches exact statutory clause numbers (e.g., "Section 4.2", "Circular 01.07.2026", "Form MSE 1") via BM25 full-text indexing, retrieving 20 exact-match chunks.
+
+3. *Stage 3: Reciprocal Rank Fusion (RRF)*:
+   Fuses the dense and sparse candidate lists using rank reciprocal weighting with constant $k=60$:
+   $ "RRF Score"(d) = sum_{m in \{"dense", "sparse"\}} frac{1}{60 + r_m(d)} $
+
+4. *Stage 4: Deep Cross-Encoder Neural Re-Ranking*:
+   Passes the top 10 fused candidate pairs $(q, d)$ through `ms-marco-MiniLM-L-6-v2`, performing full cross-attention between query and policy tokens to produce a normalized relevance score. The top 3 ranked clauses are injected directly into the Credit Appraisal Memorandum.
