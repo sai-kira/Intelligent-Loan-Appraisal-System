@@ -1,13 +1,14 @@
 import psycopg
 from psycopg import sql
+import os
 
-db_url = "postgresql://postgres:1424@localhost:5432/CentralBankDB"
+db_url = os.getenv("DATABASE_URL", "postgresql://postgres:postgres@localhost:5432/CentralBankDB")
 
 def test_db():
     try:
         # First, connect to default postgres DB to create the CentralBankDB if it doesn't exist
         print("Testing connection...")
-        conn = psycopg.connect("postgresql://postgres:1424@localhost:5432/postgres")
+        conn = psycopg.connect(os.getenv("POSTGRES_BASE_URL", "postgresql://postgres:postgres@localhost:5432/postgres"))
         conn.autocommit = True
         cur = conn.cursor()
         

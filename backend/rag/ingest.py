@@ -2,7 +2,7 @@ import os
 import psycopg
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
 
-DB_URL = "postgresql://postgres:1424@localhost:5432/CentralBankDB"
+DB_URL = os.getenv("DATABASE_URL", "postgresql://postgres:postgres@localhost:5432/CentralBankDB")
 
 def setup_database():
     """Create the hybrid search table if it doesn't exist."""

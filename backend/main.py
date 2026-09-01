@@ -22,7 +22,7 @@ from langgraph.checkpoint.postgres import PostgresSaver
 from langgraph.types import Command
 from workflow import build_workflow
 
-DB_URL = "postgresql://postgres:1424@localhost:5432/CentralBankDB"
+DB_URL = os.getenv("DATABASE_URL", "postgresql://postgres:postgres@localhost:5432/CentralBankDB")
 pool = ConnectionPool(conninfo=DB_URL, max_size=20)
 
 @asynccontextmanager

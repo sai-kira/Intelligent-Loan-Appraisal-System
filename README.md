@@ -577,7 +577,7 @@ cp .env.example .env
 Edit `.env` with your actual credentials:
 ```env
 # Google Gemini API Key
-GOOGLE_API_KEY=AIzaSyYourActualGeminiAPIKeyHere
+GOOGLE_API_KEY=your_gemini_api_key_here
 
 # PostgreSQL Connection URL (Ensure database 'CentralBankDB' exists)
 DATABASE_URL=postgresql://postgres:your_password@localhost:5432/CentralBankDB

@@ -10,7 +10,7 @@ from sentence_transformers import CrossEncoder
 # Load environment variables
 load_dotenv(os.path.join(os.path.dirname(__file__), '..', '.env'))
 
-DB_URL = "postgresql://postgres:1424@localhost:5432/CentralBankDB"
+DB_URL = os.getenv("DATABASE_URL", "postgresql://postgres:postgres@localhost:5432/CentralBankDB")
 
 class PolicyRetriever:
     def __init__(self):
