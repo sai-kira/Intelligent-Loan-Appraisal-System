@@ -4842,3 +4842,305 @@ The conceptualization and successful implementation of the *Intelligent Loan App
 51. PostgreSQL Global Development Group. (2024). *PostgreSQL 16 Database Management System & pgvector Extension*. https://www.postgresql.org
 52. Jaided AI. (2024). *EasyOCR: Ready-to-Use OCR with 80+ Supported Languages and All Popular Writing Scripts*. https://github.com/JaidedAI/EasyOCR
 53. Typst GmbH. (2024). *Typst: A New Markup-Based Typesetting System That Is Powerful and Easy to Learn*. Version 0.11+. https://typst.app
+
+
+// ==============================================================================
+// APPENDIX A: ENTERPRISE INSTALLATION & IT DEPLOYMENT GUIDE
+// ==============================================================================
+#pagebreak()
+
+#align(center)[
+  #v(2.0cm)
+  #text(14pt, weight: "bold", fill: cboi-gold)[APPENDIX A] \
+  #v(0.3cm)
+  #text(22pt, weight: "bold", fill: cboi-navy)[ENTERPRISE INSTALLATION & \ IT DEPLOYMENT GUIDE] \
+  #v(0.4cm)
+  #line(length: 45%, stroke: 2pt + cboi-navy)
+  #v(0.8cm)
+  
+  #text(11pt, style: "italic", fill: rgb("334155"))[
+    "A formal standard operating procedure and technical implementation manual for Central Bank of India \
+    IT infrastructure teams, system administrators, and DevOps personnel detailing system prerequisites, \
+    environment configuration, PostgreSQL vector database provisioning, and production microservice orchestration."
+  ]
+  #v(1.0cm)
+]
+
+= Appendix A: Enterprise Installation & IT Deployment Guide
+
+== A.1 Hardware, Operating System & Infrastructure Baseline
+
+The Intelligent Loan Appraisal System (ILAS) is engineered for enterprise-grade, on-premises deployment within Central Bank of India sovereign data centers (e.g., Belapur, Navi Mumbai) or dedicated private cloud infrastructure. The baseline hardware and software specifications are detailed below:
+
+#v(0.2cm)
+#figure(
+  table(
+    columns: (1.8fr, 2.2fr, 2fr),
+    fill: (col, row) => if row == 0 { cboi-navy } else if calc.even(row) { cboi-bg-alt } else { white },
+    stroke: (col, row) => if row == 0 { none } else { 0.5pt + cboi-border },
+    inset: 5.5pt,
+    align: (col, row) => if row == 0 { center } else if col == 0 { center } else { left },
+    table.header(
+      [#text(weight: "bold", fill: white, size: 8pt)[INFRASTRUCTURE LAYER]],
+      [#text(weight: "bold", fill: white, size: 8pt)[MINIMUM SPECIFICATION]],
+      [#text(weight: "bold", fill: white, size: 8pt)[RECOMMENDED PRODUCTION CLUSTER]]
+    ),
+    [Server Compute (CPU)], [8-Core x86_64 Processor (Intel Xeon / AMD EPYC)], [16 to 32 Cores (Multi-Worker Execution)],
+    [System Memory (RAM)], [16 GB DDR4/DDR5 ECC RAM], [32 to 64 GB DDR5 ECC RAM],
+    [Storage Subsystem], [100 GB NVMe PCIe 4.0 SSD Storage], [500 GB NVMe SSD (RAID-10 Array)],
+    [Hardware Acceleration], [Optional (CPU-only execution fully supported)], [NVIDIA RTX 4000 / T4 GPU for Batch OCR],
+    [Operating System], [Windows Server 2022 / Windows 11 Enterprise / Ubuntu 22.04 LTS], [Red Hat Enterprise Linux (RHEL 9) / Ubuntu 24.04 LTS],
+    [Database Management], [PostgreSQL 16 with pgvector extension (v0.6.0+)], [PostgreSQL 16 High-Availability Cluster with Patroni],
+    [Python Runtime], [Python 3.10.x to 3.12.x (64-bit)], [Python 3.11.x 64-bit Enterprise Distribution]
+  ),
+  caption: [Hardware & System Infrastructure Baseline for ILAS Deployment]
+)
+
+== A.2 Repository Checkout & Python Virtual Environment Setup
+
+1. *Clone the Official Repository*:
+   Execute Git checkout from the designated bank internal repository:
+   ```bash
+   git clone https://github.com/sai-kira/Intelligent-Loan-Appraisal-System.git
+   cd Intelligent-Loan-Appraisal-System
+   ```
+
+2. *Create and Activate Isolated Python Virtual Environment*:
+   Isolate dependencies to prevent library collisions across system-level packages:
+   ```powershell
+   # Windows PowerShell Execution
+   python -m venv venv
+   .\venv\Scripts\Activate.ps1
+   ```
+   ```bash
+   # Linux / Unix Bash Execution
+   python3 -m venv venv
+   source venv/bin/activate
+   ```
+
+3. *Install Enterprise Dependencies*:
+   Install production packages pinned to immutable versions:
+   ```bash
+   python -m pip install --upgrade pip setuptools wheel
+   pip install -r requirements.txt
+   pip install -r backend/requirements.txt
+   pip install -r frontend/requirements.txt
+   ```
+
+== A.3 Secure Environment Variables Configuration (.env)
+
+The ILAS platform adheres to Twelve-Factor App principles, separating configuration from code. Copy the provided `.env.example` template to `.env`:
+
+```bash
+cp .env.example .env
+```
+
+Configure the environment parameters using internal bank infrastructure credentials:
+
+#v(0.2cm)
+#figure(
+  table(
+    columns: (1.8fr, 2.2fr, 2fr),
+    fill: (col, row) => if row == 0 { cboi-navy } else if calc.even(row) { cboi-bg-alt } else { white },
+    stroke: (col, row) => if row == 0 { none } else { 0.5pt + cboi-border },
+    inset: 5.5pt,
+    align: (col, row) => if row == 0 { center } else if col == 0 { center } else { left },
+    table.header(
+      [#text(weight: "bold", fill: white, size: 8pt)[ENVIRONMENT VARIABLE]],
+      [#text(weight: "bold", fill: white, size: 8pt)[PRODUCTION VALUE / PATTERN]],
+      [#text(weight: "bold", fill: white, size: 8pt)[OPERATIONAL PURPOSE]]
+    ),
+    [`DATABASE_URL`], [`postgresql://postgres:pwd@localhost:5432/CentralBankDB`], [Primary PostgreSQL connection string with pgvector.],
+    [`GOOGLE_API_KEY`], [`AIzaSy...` (Enterprise Gemini API Key)], [Powers policy document RAG embeddings & CAM narrative.],
+    [`CREDIT_MANAGER_PASSCODE`], [`CBOI_ADMIN` (Customizable in Vault)], [Passcode gatekeeping the Credit Manager HITL Dashboard.],
+    [`BACKEND_PORT`], [`8000`], [FastAPI asynchronous microservice binding port.],
+    [`FRONTEND_PORT`], [`8501`], [Streamlit reactive user interface binding port.],
+    [`APP_ENV`], [`production`], [Enforces strict audit logging and disables dev tracebacks.]
+  ),
+  caption: [Environment Configuration Variables & Operational Parameter Definitions]
+)
+
+== A.4 PostgreSQL 16 Database & pgvector Knowledgebase Initialization
+
+1. *Database Provisioning & Vector Extension*:
+   Access the PostgreSQL server via `psql` and initialize the target database and the `vector` extension:
+   ```sql
+   CREATE DATABASE "CentralBankDB";
+   \c "CentralBankDB";
+   CREATE EXTENSION IF NOT EXISTS vector;
+   ```
+
+2. *Statutory Policy Knowledgebase Ingestion (GAHR-MSR RAG)*:
+   Execute the automated knowledgebase ingestion pipeline to parse, chunk, embed, and index RBI Master Directions and Central Bank of India lending rate policies:
+   ```bash
+   python backend/rag/ingest.py
+   ```
+   *Expected Output Telemetry:*
+   ```
+   Setting up PostgreSQL table 'policy_knowledge' with 768-dim vector embeddings...
+   Processing: RBI_Master_Circular_Retail_Loans.txt (Chunked: 42 documents)
+   Processing: CBoI_Appraisal_Guidelines.txt (Chunked: 38 documents)
+   Processing: CBoI_MSE_Scoring_Models.txt (Chunked: 29 documents)
+   Processing: ROI_Retail_MSME.txt (Chunked: 18 documents)
+   Ingested 127 policy chunks into PostgreSQL pgvector successfully!
+   ```
+
+== A.5 Service Orchestration & Production Launch
+
+The ILAS platform operates as a decoupled two-tier microservice architecture:
+
+*Terminal 1: Launch FastAPI Asynchronous Backend Service*:
+```bash
+python backend/main.py
+```
+- *Operational Endpoint*: `http://127.0.0.1:8000`
+- *Interactive Swagger API Documentation*: `http://127.0.0.1:8000/docs`
+- *Health Probe Endpoint*: `http://127.0.0.1:8000/status/health`
+
+*Terminal 2: Launch Streamlit Reactive User & Manager Portal*:
+```bash
+streamlit run frontend/app.py --server.port 8501 --server.address 0.0.0.0
+```
+- *Web Application Gateway*: `http://localhost:8501`
+- *Intranet Access*: `http://<bank-server-ip>:8501`
+
+== A.6 Automated Regression Testing & Health Monitoring
+
+To verify system integrity prior to opening underwriting pipelines to branch officers, run the automated verification suite:
+
+```bash
+python backend/test_system_e2e_verification.py
+```
+
+*Validation Benchmark:* Execution must complete with *Ran 5 tests in \<0.05s — OK (100% Passed)*, confirming mathematical precision across all 10 agent nodes, 10 CBI risk grades, Hurdle Rate boundaries, and RBLR interest pricing grids.
+
+// ==============================================================================
+// APPENDIX B: BANK OFFICER STANDARD OPERATING PROCEDURE (SOP) & USER MANUAL
+// ==============================================================================
+#pagebreak()
+
+#align(center)[
+  #v(2.0cm)
+  #text(14pt, weight: "bold", fill: cboi-gold)[APPENDIX B] \
+  #v(0.3cm)
+  #text(22pt, weight: "bold", fill: cboi-navy)[BANK OFFICER STANDARD OPERATING \ PROCEDURE (SOP) & USER MANUAL] \
+  #v(0.4cm)
+  #line(length: 45%, stroke: 2pt + cboi-navy)
+  #v(0.8cm)
+  
+  #text(11pt, style: "italic", fill: rgb("334155"))[
+    "A comprehensive, step-by-step institutional user manual and operational workflow guide \
+    for Branch Credit Officers, Regional Underwriters, Chief Managers, and Vigilance Auditors \
+    navigating the Applicant Portal, Corporate Diagnostics Hub, HITL Review Queue, and CAM Memo Generation."
+  ]
+  #v(1.0cm)
+]
+
+= Appendix B: Bank Officer Standard Operating Procedure (SOP) & User Manual
+
+== B.1 System Access, Role Allocation & Navigation Topology
+
+Bank officers and applicants access the ILAS platform via standard web browsers (Google Chrome, Microsoft Edge, Mozilla Firefox) at `http://localhost:8501` (or the regional intranet URL `https://ilas.centralbankofindia.co.in`).
+
+The interface features three core navigational panels:
+
+#v(0.2cm)
+#figure(
+  table(
+    columns: (1.5fr, 1.8fr, 2.7fr),
+    fill: (col, row) => if row == 0 { cboi-navy } else if calc.even(row) { cboi-bg-alt } else { white },
+    stroke: (col, row) => if row == 0 { none } else { 0.5pt + cboi-border },
+    inset: 5.5pt,
+    align: (col, row) => if row == 0 { center } else if col == 0 { center } else { left },
+    table.header(
+      [#text(weight: "bold", fill: white, size: 8pt)[NAVIGATIONAL PANEL]],
+      [#text(weight: "bold", fill: white, size: 8pt)[TARGET AUDIENCE / ROLE]],
+      [#text(weight: "bold", fill: white, size: 8pt)[CORE OPERATIONAL CAPABILITIES]]
+    ),
+    [1. Loan Application Portal], [Retail Borrowers & Branch Desks], [Applicant onboarding, document drag-and-drop, 1-click benchmark testing, instant pre-qualification.],
+    [2. Corporate Financial Hub], [Branch & Regional Credit Officers], [3-Year CMA spreading, 5-pillar ratio diagnostics, Altman Z'' & Beneish M forensics, DCF valuation.],
+    [3. Credit Manager Dashboard], [Chief Managers & Risk Auditors], [Passcode authentication (`CBOI_ADMIN`), active HITL review queue, SHAP explainability, discretionary overrides, CAM generation.]
+  ),
+  caption: [ILAS User Interface Navigational Panels & Operational Roles]
+)
+
+== B.2 Step-by-Step SOP: Loan Applicant Onboarding & Ingestion
+
+1. *Access Application Form*: Navigate to the primary tab: `📝 Retail & MSME Loan Application Form`.
+2. *Select Facility Scheme*: Choose the target credit product from the dropdown:
+   - *Retail Facilities*: Cent Home Loan, Cent Vehicle Loan, Cent Personal Loan, Cent Education Loan.
+   - *MSME Commercial*: Cent MSME Working Capital (Cash Credit), Cent MSME Term Loan.
+3. *Enter Counterparty Details*: Fill out mandatory applicant metadata: Full Name, PAN Number, Aadhaar Number, Category (General / SC-ST / Women Entrepreneur), Employment Type, and Verified Net Monthly Income.
+4. *Enter Facility Quantum & Property Valuation*:
+   - Specify *Loan Quantum Requested* (#sym.currency) and *Tenure* (Months).
+   - For secured asset loans (Home / Vehicle), input *Estimated Collateral Valuation*.
+5. *Attach Verification Documents*: Drag and drop applicant files (PDF bank statements, Word project reports, Excel balance sheets, or scanned JPG/PNG documents).
+6. *Utilizing 1-Click Institutional Demo Profiles*:
+   To evaluate benchmark profiles without manual entry, click any demo loader button:
+   - `Load Dr. Rajesh Sharma (Prime Home Loan)`: Tests retail pre-qualification and 8.90% RBLR rate.
+   - `Load Apex Precision Engineering (MSME Form 1)`: Tests commercial CMA spreading and CBI 1 rating.
+   - `Load M/s Devi Engineering (Stressed Unit)`: Tests forensic detection of earnings manipulation.
+7. *Submit Application*: Click `🚀 Process Loan Application`. The autonomous LangGraph pipeline executes in under 45 seconds, rendering immediate pre-qualification feedback.
+
+== B.3 Step-by-Step SOP: Branch Credit Officer Diagnostics Workflow
+
+When processing complex commercial advance proposals, branch officers utilize the *Corporate Financial Intelligence & Valuation Hub*:
+
+1. *Access Corporate Diagnostics*: Click on the `🏢 Corporate Financial Intelligence & Valuation Hub` tab.
+2. *Navigate Sub-Tab 1 (3-Year CMA Financial Spreading)*:
+   - Inspect comparative Profit & Loss accounts across $T_{-2}, T_{-1}, T_0$.
+   - Verify balance sheet line items: Current Assets, Current Liabilities, Net Worth, Total Outside Liabilities.
+   - Review Plotly visual revenue and EBITDA margin trajectories.
+3. *Navigate Sub-Tab 2 (5-Pillar Ratio Diagnostics & MPBF)*:
+   - Audit the four primary KPI cards: Current Ratio (Benchmark: $>= 1.33$), Debt-Equity Ratio ($<= 2.00$), ROCE ($>= 15.0\%$), and DSCR ($>= 1.50$).
+   - Review Maximum Permissible Bank Finance (MPBF) sizing comparing Tandon Method I, Tandon Method II, and Nayak Turnover limits.
+4. *Navigate Sub-Tab 3 (Forensic Early Warning Audit)*:
+   - Audit the *Emerging Market Altman Z''-Score Gauge*: Confirm whether the borrower sits in the *Safe Zone* ($Z'' > 2.60$), *Grey Zone* ($1.10 <= Z'' <= 2.60$), or *Distress Zone* ($Z'' < 1.10$).
+   - Audit the *Beneish M-Score 5-Index Radar*: Check for abnormal spikes in DSRI, GMI, AQI, SGI, or TATA exceeding the $-1.78$ fraud threshold.
+5. *Navigate Sub-Tab 4 (Macroeconomic Stress Testing Simulator)*:
+   - Adjust interactive sliders to simulate macro stress: Revenue Contraction (up to $-40\%$) and Repo Rate Hikes (up to $+400 "bps"$).
+   - Confirm that stressed DSCR remains above the bank's survival threshold ($1.15$).
+6. *Navigate Sub-Tab 5 & 6 (DCF Valuation & Form MSE Scorecard)*:
+   - Review Free Cash Flow to Firm (FCFF) and sustainable debt capacity.
+   - Audit marks assigned across all 13 parameters of Form MSE 1 (or 9 parameters of Form MSE II).
+   - Click `Push Dossier to Regional Credit Manager Queue` to route the file to the regional office.
+
+== B.4 Step-by-Step SOP: Chief Credit Manager HITL Underwriting & Override Gate
+
+To satisfy statutory Reserve Bank of India four-eyes underwriting governance, final credit sanctions must be executed by an authorized Chief Credit Manager (*Shri Ajeet Kumar*):
+
+1. *Authenticate as Manager*:
+   - Navigate to `🛡️ Credit Manager Dashboard & HITL Queue`.
+   - In the sidebar passcode input, enter `CBOI_ADMIN` and press Enter.
+2. *Open Active Underwriting Pipeline*:
+   - View all loan applications currently paused in `WAITING_FOR_MANAGER` status.
+   - Select the target application ID from the dropdown table and click `Load Application Dossier`.
+3. *Inspect Comprehensive Underwriting Telemetry*:
+   - *Verification Timeline*: Confirm that KYC verification, Document OCR, Financial Spreading, and Rule Engine stages passed.
+   - *Financial Snapshot*: Review Gross Revenue, Tangible Net Worth, FOIR/LTV, and assigned CBI Risk Grade.
+   - *ML Risk Assessment & Probability of Default*: Inspect the XGBoost PD bar and risk tier.
+4. *Audit the TreeSHAP Explainability Waterfall*:
+   - Review the top positive and negative risk contributors.
+   - For sub-hurdle borrowers, identify specific financial drivers (e.g., high debt-equity, low liquidity) that impacted the score.
+5. *Execute Sanction Decision*:
+   - *Standard Sanction*: If all parameters satisfy bank policy, click `✅ APPROVE APPLICATION`.
+   - *Policy Rejection*: If unmitigated risks exist, click `❌ REJECT APPLICATION`.
+   - *Discretionary Manager Override*: If an advance fails statutory hurdle marks (e.g., Form MSE score of 48/100, `CBI 6`) but merits sanction due to strong collateral or strategic importance:
+     - Select radio option `APPROVED (Discretionary Override)`.
+     - Enter mandatory justification remarks in the text area (e.g., *"Sanction approved based on unencumbered prime commercial property collateral valued at #sym.currency 3.00 Crore offering 150% asset coverage"*).
+     - Click `Submit Decision Override`. The action is signed, timestamped, and committed to PostgreSQL with SHA-256 hash chaining.
+6. *Synthesize & Download Credit Appraisal Memorandum (CAM)*:
+   - Click `📄 Generate 7-Chapter Credit Appraisal Memorandum`.
+   - Download the finalized, publication-grade CAM dossier in editable *Microsoft Word (`.docx`)* or vector *Typst PDF* format for physical file records.
+
+== B.5 Executive Portfolio Analytics & Vigilance Audit Workflow
+
+1. *Access Executive Analytics Panel*: Click on the `📊 Executive Portfolio Analytics & Risk Intelligence` tab within the Credit Manager Dashboard.
+2. *Review Portfolio Risk Metrics*:
+   - *Risk Grade Distribution*: Interactive bar chart tracking portfolio volume across `CBI 1` to `CBI 10`.
+   - *Product Exposure*: Donut chart illustrating credit allocation across Home, Vehicle, Personal, and MSME facilities.
+   - *Risk Frontier Scatter Plot*: Scatter plot evaluating borrower Probability of Default (PD) against assigned lending rate margins.
+   - *Underwriting Conversion Funnel*: Funnel tracking drop-off rates across Ingestion, Rule Checking, ML Scoring, and Final Sanction.
+3. *Vigilance & Audit Trail Verification*:
+   - Navigate to `📂 Complete Application History & Overrides`.
+   - Inspect historical transaction logs, verifying that every discretionary override contains authorized manager remarks, officer ID, and immutable cryptographic block hashes.
