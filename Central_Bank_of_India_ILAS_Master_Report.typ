@@ -3,7 +3,7 @@
 // CENTRAL BANK OF INDIA — INTELLIGENT LOAN APPRAISAL SYSTEM (ILAS)
 // INSTITUTIONAL INTERNSHIP PROJECT REPORT
 // Author: Chalumuru Venkata Sai Kiran (Risk Management Intern)
-// Guide & Mentor: Shri Ajeet Kumar (Chief Manager, Credit & Risk Management)
+// Guide & Mentor: Shri Ajeet Kumar (Chief Manager, Credit Monitoring & Risk Management)
 // Host Entity: Central Bank of India, Regional Office, Visakhapatnam
 // ==============================================================================
 
@@ -111,29 +111,28 @@
 
 // --- 1. COVER / TITLE PAGE ---
 #align(center)[
-  #v(0.5cm)
-  #image("frontend/Logo_clean.png", width: 4.2cm)
-  #v(0.4cm)
+  #v(0.2cm)
+  #image("frontend/Logo_clean.png", width: 6.3cm)
+  #v(0.3cm)
   
   #text(17pt, weight: "bold", fill: cboi-navy)[CENTRAL BANK OF INDIA] \
-  #text(10pt, weight: "bold", fill: cboi-gold)[REGIONAL OFFICE, VISAKHAPATNAM | ANDHRA PRADESH] \
-  #text(9pt, fill: cboi-muted)[Human Capital Management & Credit Risk Management Divisions]
+  #text(10pt, weight: "bold", fill: cboi-gold)[REGIONAL OFFICE, VISAKHAPATNAM | ANDHRA PRADESH]
   
-  #v(0.5cm)
-  #line(length: 100%, stroke: 1.5pt + cboi-navy)
   #v(0.4cm)
+  #line(length: 100%, stroke: 1.5pt + cboi-navy)
+  #v(0.3cm)
   
   #text(11pt, weight: "bold", fill: cboi-gold)[INSTITUTIONAL INTERNSHIP PROJECT REPORT] \
   #v(0.2cm)
   #text(20pt, weight: "bold", fill: cboi-navy)[INTELLIGENT LOAN APPRAISAL \ SYSTEM (ILAS)] \
-  #v(0.3cm)
+  #v(0.25cm)
   #text(10pt, style: "italic", fill: rgb("334155"))[An Autonomous, Regulatory-Compliant Multi-Agent AI Underwriting Platform \ for Retail and MSME Credit Facilities]
   
-  #v(0.4cm)
+  #v(0.35cm)
   #text(9pt, fill: cboi-muted)[Submitted in Partial Fulfillment of the Professional Risk Management Internship \
   Tenure: 22nd June 2026 -- 25th August 2026 (8 Weeks)]
   
-  #v(0.8cm)
+  #v(0.5cm)
   
   #align(center)[
     #rect(
@@ -141,16 +140,16 @@
       fill: rgb("f8fafc"),
       stroke: 0.5pt + cboi-border,
       radius: 4pt,
-      inset: (x: 16pt, y: 12pt),
+      inset: (x: 16pt, y: 11pt),
       [
         #grid(
           columns: (1.8fr, 3.2fr),
-          row-gutter: 10pt,
+          row-gutter: 9pt,
           align(right)[#text(9pt, weight: "bold", fill: cboi-navy)[AUTHOR & INTERN:]],
           align(left)[#text(9.5pt, weight: "bold", fill: rgb("0f172a"))[CHALUMURU VENKATA SAI KIRAN \ #text(8.5pt, weight: "regular", fill: cboi-muted)[Risk Management Intern | Central Bank of India]]],
           
           align(right)[#text(9pt, weight: "bold", fill: cboi-navy)[PROJECT GUIDE & MENTOR:]],
-          align(left)[#text(9.5pt, weight: "bold", fill: rgb("0f172a"))[SHRI AJEET KUMAR \ #text(8.5pt, weight: "regular", fill: cboi-muted)[Chief Manager, Credit & Risk Management | Visakhapatnam RO]]],
+          align(left)[#text(9.5pt, weight: "bold", fill: rgb("0f172a"))[SHRI AJEET KUMAR \ #text(8.5pt, weight: "regular", fill: cboi-muted)[Chief Manager, Credit Monitoring & Risk Management | Visakhapatnam RO]]],
           
           align(right)[#text(9pt, weight: "bold", fill: cboi-navy)[INTERNSHIP PERIOD:]],
           align(left)[#text(9pt, fill: rgb("0f172a"))[22nd June 2026 -- 25th August 2026 (8 Weeks)]],
@@ -195,7 +194,7 @@ His conduct, diligence, and technical contribution throughout the internship ten
 #align(right)[
   #line(length: 6cm, stroke: 0.5pt + cboi-navy) \
   *SHRI AJEET KUMAR* \
-  Chief Manager, Credit & Risk Management \
+  Chief Manager, Credit Monitoring & Risk Management \
   Project Guide & Credit Mentor \
   Central Bank of India, Regional Office \
   Visakhapatnam, Andhra Pradesh \
@@ -244,7 +243,7 @@ I confirm that:
 
 The successful completion of this institutional project report and the development of the Intelligent Loan Appraisal System (ILAS) would not have been possible without the invaluable guidance, administrative enablement, and professional encouragement provided by the leadership and officers of the *Central Bank of India, Regional Office, Visakhapatnam*.
 
-I extend my deepest gratitude and sincere respect to my project guide and mentor, *Shri Ajeet Kumar*, Chief Manager, Credit & Risk Management, Central Bank of India, Visakhapatnam. His deep domain expertise in commercial banking, incisive insights into micro and small enterprise (MSME) balance sheet dynamics, and rigorous standards regarding statutory regulatory compliance have shaped this project from inception to deployment. His continuous mentorship in formalizing the 13-parameter Form MSE 1 scorecard, the 10-tier CBI risk rating framework, and the 50-mark hurdle rate invariants provided the institutional grounding for the multi-agent architecture.
+I extend my deepest gratitude and sincere respect to my project guide and mentor, *Shri Ajeet Kumar*, Chief Manager, Credit Monitoring & Risk Management, Central Bank of India, Visakhapatnam. His deep domain expertise in commercial banking, incisive insights into micro and small enterprise (MSME) balance sheet dynamics, and rigorous standards regarding statutory regulatory compliance have shaped this project from inception to deployment. His continuous mentorship in formalizing the 13-parameter Form MSE 1 scorecard, the 10-tier CBI risk rating framework, and the 50-mark hurdle rate invariants provided the institutional grounding for the multi-agent architecture.
 
 I express my heartfelt gratitude to *Smt. Jyothi Imandi*, Human Capital Management (HCM) Department, Central Bank of India, Regional Office, Visakhapatnam, for granting me this prestigious 8-week internship opportunity. Her seamless administrative facilitation, proactive support, and continuous encouragement throughout the internship tenure have provided an environment of professional excellence and academic rigor.
 
@@ -508,7 +507,7 @@ Throughout its 115-year history of nation-building, Central Bank of India has in
         #text(10pt, weight: "bold", fill: cboi-navy)[Institutional Profile of the Visakhapatnam Regional Office:] \
         #v(4pt)
         The *Regional Office at Visakhapatnam, Andhra Pradesh*, oversees an extensive network of commercial branches across coastal Andhra Pradesh. Operating in one of India's major industrial and port hubs, the Visakhapatnam Regional Office processes a high volume of credit applications spanning maritime logistics, manufacturing enterprises, pharmaceutical ancillaries, real estate, and retail priority advances. \ \
-        Under the leadership of the Regional Management and the Credit & Risk Management Division (headed by *Shri Ajeet Kumar*, Chief Manager), the region has prioritized:
+        Under the leadership of the Regional Management and the Credit Monitoring & Risk Management Division (headed by *Shri Ajeet Kumar*, Chief Manager), the region has prioritized:
         - Accelerating MSME credit delivery while maintaining zero-tolerance for non-performing asset (NPA) slippages.
         - Standardizing credit appraisal formats across branches using the bank's official *Form MSE 1* (for existing units) and *Form MSE II* (for greenfield units).
         - Ensuring dynamic interest rate compliance with the bank's *Master Circular on Rate of Interest (RBLR)* dated *01.07.2026*.
@@ -4522,7 +4521,7 @@ To ensure uninterrupted credit appraisal operations across Central Bank of India
 
 == 12.1 Comprehensive Synthesis of Technical Contributions & Architectural Novelties
 
-The 8-week Risk Management Internship executed at the *Central Bank of India, Regional Office, Visakhapatnam* (under the guidance of *Shri Ajeet Kumar*, Chief Manager, Credit & Risk Management) resulted in the conceptualization, mathematical formulation, software engineering, and empirical validation of the *Intelligent Loan Appraisal System (ILAS)*.
+The 8-week Risk Management Internship executed at the *Central Bank of India, Regional Office, Visakhapatnam* (under the guidance of *Shri Ajeet Kumar*, Chief Manager, Credit Monitoring & Risk Management) resulted in the conceptualization, mathematical formulation, software engineering, and empirical validation of the *Intelligent Loan Appraisal System (ILAS)*.
 
 Traditional commercial bank lending has long suffered from a structural trade-off between underwriting velocity and credit diligence. Manual credit appraisal of retail dossiers and commercial MSME advances requires 7 to 14 business days, involves fragmented paper ledgers, manual spreadsheet spreading, and subjective scoring, leading to operational friction, elevated turnaround times, and vulnerability to fraudulent financial manipulation.
 
