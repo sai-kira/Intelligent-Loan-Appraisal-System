@@ -21,6 +21,9 @@ from psycopg_pool import ConnectionPool
 from langgraph.checkpoint.postgres import PostgresSaver
 from langgraph.types import Command
 from workflow import build_workflow
+from dotenv import load_dotenv
+load_dotenv()
+load_dotenv(os.path.join(BACKEND_DIR, ".env"))
 
 DB_URL = os.getenv("DATABASE_URL", "postgresql://postgres:postgres@localhost:5432/CentralBankDB")
 pool = ConnectionPool(conninfo=DB_URL, max_size=20)

@@ -24,14 +24,43 @@ def extract_ocr_data(image_bytes):
     text = " ".join(results)
     
     extracted = {}
-    name_match = re.search(r'Name[:\s]+([A-Za-z\s]+)(?:Age|Gender|$)', text, re.IGNORECASE)
-    if name_match: extracted['name'] = name_match.group(1).strip()
     
-    income_match = re.search(r'(?:Income|Salary)[:\s]+(?:Rs\.?|INR|₹)?\s*([\d,]+)', text, re.IGNORECASE)
-    if income_match: extracted['gross_monthly_income'] = int(income_match.group(1).replace(',', ''))
+    # Clean OCR common typo artifacts
+    norm_text = re.sub(r'\blcan\b', 'loan', text, flags=re.IGNORECASE)
+    norm_text = re.sub(r'\bgrccs\b', 'gross', norm_text, flags=re.IGNORECASE)
     
-    loan_match = re.search(r'(?:Loan|Amount)[:\s]+(?:Rs\.?|INR|₹)?\s*([\d,]+)', text, re.IGNORECASE)
-    if loan_match: extracted['loan_amount'] = int(loan_match.group(1).replace(',', ''))
+    # Name extraction
+    name_match = re.search(r'(?:Employee\s+)?Name[:\s]+([A-Za-z\.\:\s]+?)(?=\s*(?:Age|Gender|Designation|Employee|PAN|Bank|$))', norm_text, re.IGNORECASE)
+    if name_match:
+        raw_name = name_match.group(1).replace(':', '.').strip()
+        # Clean up possible prefix noise
+        extracted['name'] = re.sub(r'\s+', ' ', raw_name)
+    
+    # Helper to clean numbers with OCR 'O' / 'o' confusion
+    def parse_amount(val_str):
+        clean_str = val_str.replace(',', '').replace('O', '0').replace('o', '0').strip()
+        digits = re.findall(r'\d+', clean_str)
+        return int("".join(digits)) if digits else 0
+
+    # Income / Salary
+    income_match = re.search(r'(?:Gross\s+Monthly\s+Salary|Gross\s+Income|Salary|Income)[:\s]+(?:Rs\.?|INR|₹)?\s*([0-9Oo,]+)', norm_text, re.IGNORECASE)
+    if income_match:
+        extracted['gross_monthly_income'] = parse_amount(income_match.group(1))
+    
+    # Net Monthly Income
+    net_match = re.search(r'(?:Net\s+Monthly\s+Salary|Net\s+Income|Net\s+Salary)[:\s]+(?:Rs\.?|INR|₹)?\s*([0-9Oo,]+)', norm_text, re.IGNORECASE)
+    if net_match:
+        extracted['net_monthly_income'] = parse_amount(net_match.group(1))
+    
+    # Loan Amount
+    loan_match = re.search(r'(?:Requested\s+Loan\s+Amount|Loan\s+Amount|Amount)[:\s]+(?:Rs\.?|INR|₹)?\s*([0-9Oo,]+)', norm_text, re.IGNORECASE)
+    if loan_match:
+        extracted['loan_amount'] = parse_amount(loan_match.group(1))
+        
+    # PAN Number
+    pan_match = re.search(r'\b([A-Z]{5}[0-9]{4}[A-Z])\b', norm_text)
+    if pan_match:
+        extracted['pan_number'] = pan_match.group(1)
     
     return extracted
 
