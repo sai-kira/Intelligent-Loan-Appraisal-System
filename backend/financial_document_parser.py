@@ -45,7 +45,9 @@ class FinancialDocumentParser:
         "short_term_borrowings": ["short term", "working capital loan", "cash credit", "overdraft", "cc limit", "od limit", "short-term debt", "bank borrowing"],
         "long_term_debt": ["long term", "term loan", "secured loan", "unsecured loan", "debenture", "mortgage loan", "non-current liabilities"],
         "paid_up_capital": ["capital", "equity share capital", "shareholders fund", "share capital", "promoter capital"],
-        "reserves_and_surplus": ["reserve", "surplus", "retained earnings", "general reserve", "p&l balance", "accumulated profit"]
+        "reserves_and_surplus": ["reserve", "surplus", "retained earnings", "general reserve", "p&l balance", "accumulated profit"],
+        "other_income": ["other income", "non-operating income", "treasury income", "interest income"],
+        "pat": ["net profit", "pat", "profit after tax", "profit for the year", "net income", "earnings after tax"]
     }
 
     @staticmethod
@@ -68,6 +70,7 @@ class FinancialDocumentParser:
             "operating_expenses": [float(x) for x in data.get("operating_expenses", [1500000, 1800000, 2200000])],
             "depreciation": [float(x) for x in data.get("depreciation", [500000, 600000, 700000])],
             "interest_expense": [float(x) for x in data.get("interest_expense", [400000, 450000, 500000])],
+            "other_income": [float(x) for x in data.get("other_income", [0.0, 0.0, 0.0])],
             "tax_rate": float(data.get("tax_rate", 0.25)),
             "cash_and_bank": [float(x) for x in data.get("cash_and_bank", [500000, 700000, 1200000])],
             "sundry_debtors": [float(x) for x in data.get("sundry_debtors", [1800000, 2200000, 2600000])],
@@ -93,6 +96,9 @@ class FinancialDocumentParser:
                 "ancillary_relationship": "Substantial"
             })
         }
+        if "pat" in data and data["pat"]:
+            normalized["pat"] = [float(x) for x in data["pat"]]
+        normalized["_extracted_keys"] = [k for k in data.keys() if k not in ["years", "operational_flags"]]
         return normalized
 
     @staticmethod
@@ -221,13 +227,12 @@ class FinancialDocumentParser:
         if cibil_match:
             lookup["credit_score"] = int(cibil_match.group(1))
 
-        lines = text.splitlines()
-        for line in lines:
-            line_clean = line.strip()
-            if not line_clean:
-                continue
+        lines = [l.strip() for l in text.splitlines() if l.strip()]
+        i = 0
+        while i < len(lines):
+            line_clean = lines[i]
 
-            # Look for line items followed by 1 to 4 numeric values
+            # Case 1: Look for line items followed by numeric values on the SAME line
             nums = re.findall(r'[-+]?\s*₹?\s*\d+(?:,\d+)*(?:\.\d+)?(?:\s*(?:Cr|Crore|Crores|Lakh|Lakhs|L|K))?', line_clean, re.IGNORECASE)
             
             clean_nums = []
@@ -252,6 +257,31 @@ class FinancialDocumentParser:
             if clean_nums:
                 metric_name = re.sub(r'[-+]?\s*₹?\s*\d+(?:,\d+)*(?:\.\d+)?.*', '', line_clean).lower().strip()
                 FinancialDocumentParser._map_line_item(metric_name, clean_nums, lookup)
+            else:
+                # Case 2: Metric label on this line, and 1-3 numeric values on subsequent lines (stacked table cells)
+                metric_name = line_clean.lower().strip()
+                stacked_nums = []
+                j = i + 1
+                while j < len(lines) and len(stacked_nums) < 3:
+                    cand_str = lines[j].replace('₹', '').replace(',', '').strip()
+                    mult = 1.0
+                    if re.search(r'cr(?:ore)?s?', cand_str, re.IGNORECASE):
+                        mult = 1e7
+                        cand_str = re.sub(r'cr(?:ore)?s?', '', cand_str, flags=re.IGNORECASE).strip()
+                    elif re.search(r'l(?:akh)?s?', cand_str, re.IGNORECASE):
+                        mult = 1e5
+                        cand_str = re.sub(r'l(?:akh)?s?', '', cand_str, flags=re.IGNORECASE).strip()
+                    try:
+                        f_val = float(cand_str) * mult
+                        stacked_nums.append(f_val)
+                        j += 1
+                    except ValueError:
+                        break
+                if stacked_nums:
+                    FinancialDocumentParser._map_line_item(metric_name, stacked_nums, lookup)
+                    i = j - 1
+
+            i += 1
 
         return FinancialDocumentParser.parse_json_or_dict(lookup)
 
@@ -274,3 +304,57 @@ class FinancialDocumentParser:
             if any(alias in metric_lower for alias in aliases):
                 lookup[standard_key] = values
                 break
+
+    @staticmethod
+    def parse_any_file(file_name: str, file_bytes: bytes) -> Dict[str, Any]:
+        """Parses any supported file type (PDF, Word DOCX, Excel XLSX/XLS, CSV, or JSON)."""
+        fname = file_name.lower()
+        if fname.endswith(".pdf"):
+            return FinancialDocumentParser.parse_pdf_file(file_bytes)
+        elif fname.endswith(".docx"):
+            return FinancialDocumentParser.parse_docx_file(file_bytes)
+        elif fname.endswith(".xlsx") or fname.endswith(".xls"):
+            return FinancialDocumentParser.parse_excel_file(file_bytes)
+        elif fname.endswith(".csv"):
+            return FinancialDocumentParser.parse_csv_file(file_bytes)
+        else:
+            return FinancialDocumentParser.parse_json_or_dict(file_bytes)
+
+    @staticmethod
+    def merge_multiple_documents(doc_list: List[Dict[str, Any]]) -> Dict[str, Any]:
+        """Merges multiple parsed financial documents into a unified multi-year corporate profile."""
+        if not doc_list:
+            return FinancialDocumentParser.parse_json_or_dict({})
+        if len(doc_list) == 1:
+            return doc_list[0]
+
+        # Use the latest document as base
+        merged = dict(doc_list[-1])
+        company_name = next(
+            (d.get("company_name") for d in doc_list if d.get("company_name") and d.get("company_name") not in ["Uploaded Corporate Borrower", "Applicant"]),
+            merged.get("company_name", "Uploaded Corporate Borrower")
+        )
+        merged["company_name"] = company_name
+
+        # Financial keys to merge
+        financial_keys = [
+            "revenue", "cogs", "operating_expenses", "other_income", "depreciation", "interest_expense", "pat",
+            "cash_and_bank", "sundry_debtors", "inventory", "other_current_assets",
+            "net_fixed_assets", "other_non_current_assets", "sundry_creditors",
+            "short_term_borrowings", "other_current_liabilities", "long_term_debt",
+            "paid_up_capital", "reserves_and_surplus"
+        ]
+
+        # Check if documents have complementary statements or newer year figures
+        for key in financial_keys:
+            # First priority: find a document that actually extracted this key from its source file
+            found_doc = next((doc for doc in reversed(doc_list) if key in doc.get("_extracted_keys", [])), None)
+            if found_doc and found_doc.get(key) and found_doc[key] != [0.0, 0.0, 0.0]:
+                merged[key] = found_doc[key]
+            else:
+                for doc in reversed(doc_list):
+                    if key in doc and doc[key] and doc[key] != [0.0, 0.0, 0.0]:
+                        merged[key] = doc[key]
+                        break
+
+        return merged

@@ -66,15 +66,19 @@ class FinancialStatementSpreader:
         operating_expenses = [float(x) for x in raw_data.get("operating_expenses", [1500000, 1800000, 2200000])]
         depreciation = [float(x) for x in raw_data.get("depreciation", [500000, 600000, 700000])]
         interest_expense = [float(x) for x in raw_data.get("interest_expense", [400000, 450000, 500000])]
+        other_income = [float(x) for x in raw_data.get("other_income", [0.0, 0.0, 0.0])]
         tax_rate = float(raw_data.get("tax_rate", 0.25))
 
         # Computed P&L
         gross_profit = [rev - c for rev, c in zip(revenue, cogs)]
-        ebitda = [gp - opex for gp, opex in zip(gross_profit, operating_expenses)]
+        ebitda = [gp - opex + oi for gp, opex, oi in zip(gross_profit, operating_expenses, other_income)]
         ebit = [eb - dep for eb, dep in zip(ebitda, depreciation)]
         ebt = [eb - int_exp for eb, int_exp in zip(ebit, interest_expense)]
         tax = [max(0.0, e * tax_rate) for e in ebt]
-        pat = [e - t for e, t in zip(ebt, tax)]
+        if "pat" in raw_data and raw_data["pat"] and raw_data["pat"] != [0.0, 0.0, 0.0]:
+            pat = [float(x) for x in raw_data["pat"]]
+        else:
+            pat = [e - t for e, t in zip(ebt, tax)]
         cash_accruals = [p + d for p, d in zip(pat, depreciation)]
 
         # Balance Sheet line items
