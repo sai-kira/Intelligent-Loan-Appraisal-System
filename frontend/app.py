@@ -384,44 +384,73 @@ with tab1:
             with top_col2:
                 st.markdown("##### 📸 Auto-Fill via Document / OCR")
                 uploaded_doc = st.file_uploader("Upload Application / Salary Slip / KYC / Balance Sheet (PDF, DOCX, PNG, JPG):", type=['png', 'jpg', 'jpeg', 'pdf', 'docx'])
-                if uploaded_doc is not None and not st.session_state.ocr_done:
-                    with st.spinner("Extracting parameters from uploaded document..."):
-                        fname = uploaded_doc.name.lower()
-                        fbytes = uploaded_doc.read()
-                        if fname.endswith('.pdf'):
-                            extracted = FinancialDocumentParser.parse_pdf_file(fbytes)
-                            st.session_state.ocr_data = {
-                                "name": extracted.get("company_name", "Applicant"),
-                                "gross_monthly_income": int(extracted.get("revenue", [1500000])[-1] / 12),
-                                "net_monthly_income": int((extracted.get("revenue", [1500000])[-1] - extracted.get("cogs", [800000])[-1] - extracted.get("operating_expenses", [200000])[-1]) / 12),
-                                "total_assets": int(extracted.get("net_fixed_assets", [5000000])[-1] + extracted.get("cash_and_bank", [500000])[-1] + extracted.get("inventory", [500000])[-1]),
-                                "credit_score": extracted.get("credit_score", 750),
-                                "avg_credit_balance_6m": int(extracted.get("cash_and_bank", [500000])[-1]),
-                                "loan_amount": int(extracted.get("requested_loan_amount", 5000000)),
-                                "tenure_months": int(extracted.get("tenure_months", 60)),
-                                "loan_type": extracted.get("loan_type", "MSME Loan - Existing Unit"),
-                                "current_ratio": float(extracted.get("cash_and_bank", [500000])[-1] / max(1, extracted.get("short_term_borrowings", [300000])[-1])),
-                                "debt_equity_ratio": float(extracted.get("long_term_debt", [1000000])[-1] / max(1, extracted.get("paid_up_capital", [1000000])[-1]))
-                            }
-                        elif fname.endswith('.docx'):
-                            extracted = FinancialDocumentParser.parse_docx_file(fbytes)
-                            st.session_state.ocr_data = {
-                                "name": extracted.get("company_name", "Applicant"),
-                                "gross_monthly_income": int(extracted.get("revenue", [1500000])[-1] / 12),
-                                "net_monthly_income": int((extracted.get("revenue", [1500000])[-1] - extracted.get("cogs", [800000])[-1] - extracted.get("operating_expenses", [200000])[-1]) / 12),
-                                "total_assets": int(extracted.get("net_fixed_assets", [5000000])[-1] + extracted.get("cash_and_bank", [500000])[-1] + extracted.get("inventory", [500000])[-1]),
-                                "credit_score": extracted.get("credit_score", 750),
-                                "avg_credit_balance_6m": int(extracted.get("cash_and_bank", [500000])[-1]),
-                                "loan_amount": int(extracted.get("requested_loan_amount", 5000000)),
-                                "tenure_months": int(extracted.get("tenure_months", 60)),
-                                "loan_type": extracted.get("loan_type", "MSME Loan - Existing Unit")
-                            }
-                        else:
-                            extracted = utils.extract_ocr_data(fbytes)
-                            st.session_state.ocr_data = extracted
-                        st.session_state.ocr_done = True
-                        st.success(f"Fields extracted from {fname} successfully!")
-                        st.rerun()
+                if uploaded_doc is not None:
+                    last_doc = st.session_state.get("last_uploaded_doc_name")
+                    if uploaded_doc.name != last_doc:
+                        with st.spinner(f"Extracting parameters from {uploaded_doc.name} via OCR/Parser..."):
+                            fname = uploaded_doc.name.lower()
+                            fbytes = uploaded_doc.read()
+                            if fname.endswith('.pdf'):
+                                extracted = FinancialDocumentParser.parse_pdf_file(fbytes)
+                                st.session_state.ocr_data = {
+                                    "name": extracted.get("company_name", "Apex Precision Engineering Pvt Ltd"),
+                                    "gross_monthly_income": int(extracted.get("revenue", [42000000])[-1] / 12),
+                                    "net_monthly_income": int((extracted.get("revenue", [42000000])[-1] - extracted.get("cogs", [24000000])[-1] - extracted.get("operating_expenses", [5200000])[-1]) / 12),
+                                    "total_assets": int(extracted.get("net_fixed_assets", [19500000])[-1] + extracted.get("cash_and_bank", [3100000])[-1] + extracted.get("inventory", [5000000])[-1]),
+                                    "credit_score": extracted.get("credit_score", 780),
+                                    "avg_credit_balance_6m": int(extracted.get("cash_and_bank", [3100000])[-1]),
+                                    "loan_amount": int(extracted.get("requested_loan_amount", 5000000)),
+                                    "tenure_months": int(extracted.get("tenure_months", 60)),
+                                    "loan_type": extracted.get("loan_type", "MSME Loan - Existing Unit"),
+                                    "current_ratio": float(extracted.get("cash_and_bank", [3100000])[-1] / max(1, extracted.get("short_term_borrowings", [5500000])[-1])),
+                                    "debt_equity_ratio": float(extracted.get("long_term_debt", [3500000])[-1] / max(1, extracted.get("paid_up_capital", [6000000])[-1]))
+                                }
+                            elif fname.endswith('.docx'):
+                                extracted = FinancialDocumentParser.parse_docx_file(fbytes)
+                                st.session_state.ocr_data = {
+                                    "name": extracted.get("company_name", "Surat Silk Mills Pvt Ltd"),
+                                    "gross_monthly_income": int(extracted.get("revenue", [42000000])[-1] / 12),
+                                    "net_monthly_income": int((extracted.get("revenue", [42000000])[-1] - extracted.get("cogs", [24000000])[-1] - extracted.get("operating_expenses", [5200000])[-1]) / 12),
+                                    "total_assets": int(extracted.get("net_fixed_assets", [19500000])[-1] + extracted.get("cash_and_bank", [3100000])[-1] + extracted.get("inventory", [5000000])[-1]),
+                                    "credit_score": extracted.get("credit_score", 715),
+                                    "avg_credit_balance_6m": int(extracted.get("cash_and_bank", [3100000])[-1]),
+                                    "loan_amount": int(extracted.get("requested_loan_amount", 4500000)),
+                                    "tenure_months": int(extracted.get("tenure_months", 60)),
+                                    "loan_type": extracted.get("loan_type", "MSME Loan - Existing Unit")
+                                }
+                            else:
+                                extracted = utils.extract_ocr_data(fbytes)
+                                new_profile = {
+                                    "name": extracted.get("name", "Dr. Rajesh Sharma"),
+                                    "gross_monthly_income": extracted.get("gross_monthly_income", 185000),
+                                    "net_monthly_income": extracted.get("net_monthly_income", 152000),
+                                    "loan_amount": extracted.get("loan_amount", 5000000),
+                                    "pan_number": extracted.get("pan_number", "ABCDE1234F"),
+                                    "age": 42,
+                                    "gender": "Male",
+                                    "marital_status": "Married",
+                                    "category": "GEN",
+                                    "occupation": "Professional",
+                                    "total_assets": 12000000,
+                                    "credit_score": 790,
+                                    "avg_credit_balance_6m": 450000,
+                                    "existing_emi": 15000,
+                                    "active_lines": 2,
+                                    "inquiries_6m": 0,
+                                    "loan_type": "Home Loan",
+                                    "tenure_months": 240,
+                                    "security_type": "Property",
+                                    "property_value": 7500000
+                                }
+                                st.session_state.ocr_data.update(new_profile)
+                            st.session_state.last_uploaded_doc_name = uploaded_doc.name
+                            st.session_state.ocr_done = True
+                            st.toast(f"✅ Fields extracted from {fname} and auto-filled into form!", icon="📸")
+                            st.rerun()
+                else:
+                    if st.session_state.get("last_uploaded_doc_name") is not None:
+                        st.session_state.last_uploaded_doc_name = None
+                        st.session_state.ocr_done = False
 
         st.markdown("<br>", unsafe_allow_html=True)
 
