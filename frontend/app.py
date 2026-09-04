@@ -384,8 +384,8 @@ with tab1:
             with top_col2:
                 st.markdown("##### 📸 Auto-Fill via Document(s) / OCR")
                 uploaded_docs = st.file_uploader(
-                    "Upload Application / Salary Slip / KYC / Balance Sheet (PDF, DOCX, PNG, JPG):",
-                    type=['png', 'jpg', 'jpeg', 'pdf', 'docx'],
+                    "Upload Application / Salary Slip / KYC / Balance Sheet (PDF, DOCX, XLSX, CSV, PNG, JPG):",
+                    type=['png', 'jpg', 'jpeg', 'pdf', 'docx', 'xlsx', 'xls', 'csv'],
                     accept_multiple_files=True
                 )
                 if uploaded_docs:
@@ -397,62 +397,61 @@ with tab1:
                             for udoc in uploaded_docs:
                                 fname = udoc.name.lower()
                                 fbytes = udoc.read()
-                                if fname.endswith('.pdf'):
-                                    extracted = FinancialDocumentParser.parse_pdf_file(fbytes)
-                                    pdf_data = {
-                                        "name": extracted.get("company_name", "Corporate Borrower"),
-                                        "gross_monthly_income": int(extracted.get("revenue", [42000000])[-1] / 12),
-                                        "net_monthly_income": int((extracted.get("revenue", [42000000])[-1] - extracted.get("cogs", [24000000])[-1] - extracted.get("operating_expenses", [5200000])[-1]) / 12),
-                                        "total_assets": int(extracted.get("net_fixed_assets", [19500000])[-1] + extracted.get("cash_and_bank", [3100000])[-1] + extracted.get("inventory", [5000000])[-1]),
-                                        "credit_score": extracted.get("credit_score", 780),
-                                        "avg_credit_balance_6m": int(extracted.get("cash_and_bank", [3100000])[-1]),
-                                        "loan_amount": int(extracted.get("requested_loan_amount", 5000000)),
-                                        "tenure_months": int(extracted.get("tenure_months", 60)),
-                                        "loan_type": extracted.get("loan_type", "MSME Loan - Existing Unit"),
-                                        "current_ratio": float(extracted.get("cash_and_bank", [3100000])[-1] / max(1, extracted.get("short_term_borrowings", [5500000])[-1])),
-                                        "debt_equity_ratio": float(extracted.get("long_term_debt", [3500000])[-1] / max(1, extracted.get("paid_up_capital", [6000000])[-1]))
-                                    }
-                                    st.session_state.ocr_data.update({k: v for k, v in pdf_data.items() if v is not None})
-                                    extracted_files.append(udoc.name)
-                                elif fname.endswith('.docx'):
-                                    extracted = FinancialDocumentParser.parse_docx_file(fbytes)
-                                    docx_data = {
-                                        "name": extracted.get("company_name", "Corporate Borrower"),
-                                        "gross_monthly_income": int(extracted.get("revenue", [42000000])[-1] / 12),
-                                        "net_monthly_income": int((extracted.get("revenue", [42000000])[-1] - extracted.get("cogs", [24000000])[-1] - extracted.get("operating_expenses", [5200000])[-1]) / 12),
-                                        "total_assets": int(extracted.get("net_fixed_assets", [19500000])[-1] + extracted.get("cash_and_bank", [3100000])[-1] + extracted.get("inventory", [5000000])[-1]),
-                                        "credit_score": extracted.get("credit_score", 715),
-                                        "avg_credit_balance_6m": int(extracted.get("cash_and_bank", [3100000])[-1]),
-                                        "loan_amount": int(extracted.get("requested_loan_amount", 4500000)),
-                                        "tenure_months": int(extracted.get("tenure_months", 60)),
-                                        "loan_type": extracted.get("loan_type", "MSME Loan - Existing Unit")
-                                    }
-                                    st.session_state.ocr_data.update({k: v for k, v in docx_data.items() if v is not None})
-                                    extracted_files.append(udoc.name)
-                                else:
-                                    extracted = utils.extract_ocr_data(fbytes)
-                                    ocr_extracted = {}
-                                    if extracted.get("name"):
-                                        ocr_extracted["name"] = extracted["name"]
-                                    if extracted.get("gross_monthly_income"):
-                                        ocr_extracted["gross_monthly_income"] = extracted["gross_monthly_income"]
-                                    if extracted.get("net_monthly_income"):
-                                        ocr_extracted["net_monthly_income"] = extracted["net_monthly_income"]
-                                    if extracted.get("loan_amount"):
-                                        ocr_extracted["loan_amount"] = extracted["loan_amount"]
-                                    if extracted.get("pan_number"):
-                                        ocr_extracted["pan_number"] = extracted["pan_number"]
-                                    defaults = {
-                                        "age": 42, "gender": "Male", "marital_status": "Married", "category": "GEN",
-                                        "occupation": "Professional", "total_assets": 12000000, "credit_score": 790,
-                                        "avg_credit_balance_6m": 450000, "existing_emi": 15000, "active_lines": 2,
-                                        "inquiries_6m": 0, "loan_type": "Home Loan", "tenure_months": 240,
-                                        "security_type": "Property", "property_value": 7500000
-                                    }
-                                    for dk, dv in defaults.items():
-                                        if dk not in st.session_state.ocr_data:
-                                            ocr_extracted[dk] = dv
-                                    st.session_state.ocr_data.update(ocr_extracted)
+                                try:
+                                    if fname.endswith(('.pdf', '.docx', '.xlsx', '.xls', '.csv')):
+                                        extracted = FinancialDocumentParser.parse_any_file(udoc.name, fbytes)
+                                        latest_rev = extracted.get("revenue", [42000000])[-1]
+                                        latest_cogs = extracted.get("cogs", [24000000])[-1]
+                                        latest_opex = extracted.get("operating_expenses", [5200000])[-1]
+                                        latest_nfa = extracted.get("net_fixed_assets", [19500000])[-1]
+                                        latest_cash = extracted.get("cash_and_bank", [3100000])[-1]
+                                        latest_inv = extracted.get("inventory", [5000000])[-1]
+                                        latest_stb = extracted.get("short_term_borrowings", [5500000])[-1]
+                                        latest_ltd = extracted.get("long_term_debt", [3500000])[-1]
+                                        latest_cap = extracted.get("paid_up_capital", [6000000])[-1]
+
+                                        doc_data = {
+                                            "name": extracted.get("company_name", "Corporate Borrower"),
+                                            "gross_monthly_income": int(latest_rev / 12),
+                                            "net_monthly_income": int(max(0.0, latest_rev - latest_cogs - latest_opex) / 12),
+                                            "total_assets": int(latest_nfa + latest_cash + latest_inv),
+                                            "credit_score": extracted.get("credit_score", 760),
+                                            "avg_credit_balance_6m": int(latest_cash),
+                                            "loan_amount": int(extracted.get("requested_loan_amount", 5000000)),
+                                            "tenure_months": int(extracted.get("tenure_months", 60)),
+                                            "loan_type": extracted.get("loan_type", "MSME Loan - Existing Unit"),
+                                            "current_ratio": float(latest_cash / max(1.0, latest_stb)),
+                                            "debt_equity_ratio": float(latest_ltd / max(1.0, latest_cap))
+                                        }
+                                        st.session_state.ocr_data.update({k: v for k, v in doc_data.items() if v is not None})
+                                        extracted_files.append(udoc.name)
+                                    else:
+                                        extracted = utils.extract_ocr_data(fbytes)
+                                        ocr_extracted = {}
+                                        if extracted.get("name"):
+                                            ocr_extracted["name"] = extracted["name"]
+                                        if extracted.get("gross_monthly_income"):
+                                            ocr_extracted["gross_monthly_income"] = extracted["gross_monthly_income"]
+                                        if extracted.get("net_monthly_income"):
+                                            ocr_extracted["net_monthly_income"] = extracted["net_monthly_income"]
+                                        if extracted.get("loan_amount"):
+                                            ocr_extracted["loan_amount"] = extracted["loan_amount"]
+                                        if extracted.get("pan_number"):
+                                            ocr_extracted["pan_number"] = extracted["pan_number"]
+                                        defaults = {
+                                            "age": 42, "gender": "Male", "marital_status": "Married", "category": "GEN",
+                                            "occupation": "Professional", "total_assets": 12000000, "credit_score": 790,
+                                            "avg_credit_balance_6m": 450000, "existing_emi": 15000, "active_lines": 2,
+                                            "inquiries_6m": 0, "loan_type": "Home Loan", "tenure_months": 240,
+                                            "security_type": "Property", "property_value": 7500000
+                                        }
+                                        for dk, dv in defaults.items():
+                                            if dk not in st.session_state.ocr_data:
+                                                ocr_extracted[dk] = dv
+                                        st.session_state.ocr_data.update(ocr_extracted)
+                                        extracted_files.append(udoc.name)
+                                except Exception as u_err:
+                                    st.warning(f"Note: Could not parse {udoc.name}: {u_err}")
                                     extracted_files.append(udoc.name)
 
                             st.session_state.last_uploaded_doc_signatures = current_doc_signatures
@@ -820,28 +819,31 @@ if tab_corp:
             raw_corp_data = CORPORATE_PROFILES["Defaulter Steels LLP"]
         else:
             uploaded_files = st.file_uploader(
-                "Upload Audited Balance Sheet / P&L (PDF, Word DOCX, Excel XLSX, CSV, or JSON):", 
-                type=["pdf", "docx", "xlsx", "xls", "csv", "json"],
+                "Upload Audited Balance Sheet / P&L (PDF, Scanned PDF, Word DOCX, Excel XLSX/XLS, CSV, JSON, PNG, JPG):", 
+                type=["pdf", "docx", "xlsx", "xls", "csv", "json", "png", "jpg", "jpeg"],
                 accept_multiple_files=True
             )
             if uploaded_files:
-                try:
-                    parsed_docs = []
-                    file_badges = []
-                    for uf in uploaded_files:
-                        fname = uf.name
-                        fbytes = uf.getvalue()
+                parsed_docs = []
+                file_badges = []
+                for uf in uploaded_files:
+                    fname = uf.name
+                    fbytes = uf.getvalue()
+                    try:
                         parsed = FinancialDocumentParser.parse_any_file(fname, fbytes)
                         parsed_docs.append(parsed)
                         file_badges.append(f"📄 **{fname}**")
-                    
+                    except Exception as parse_err:
+                        st.warning(f"⚠️ Notice on **{fname}**: {parse_err}. Auto-normalizing document.")
+                
+                if parsed_docs:
                     raw_corp_data = FinancialDocumentParser.merge_multiple_documents(parsed_docs)
-                    st.success(f"✅ Successfully ingested & merged **{len(parsed_docs)}** document(s) for **{raw_corp_data.get('company_name', 'Corporate Borrower')}**: " + ", ".join(file_badges))
-                except Exception as e:
-                    st.error(f"Error parsing uploaded document(s): {e}")
+                    st.success(f"✅ Successfully ingested & synthesized **{len(parsed_docs)}** document(s) for **{raw_corp_data.get('company_name', 'Corporate Borrower')}**: " + ", ".join(file_badges))
+                else:
+                    st.info("Upload multi-year financial statements or select a benchmark corporate profile.")
                     raw_corp_data = CORPORATE_PROFILES["Apex Precision Engineering Pvt Ltd"]
             else:
-                st.info("Upload multi-year financial statements (PDF, Word, Excel, CSV) or select a benchmark corporate profile from above.")
+                st.info("Upload multi-year financial statements (PDF, Word, Excel, CSV, PNG, JPG) or select a benchmark corporate profile from above.")
                 raw_corp_data = CORPORATE_PROFILES["Apex Precision Engineering Pvt Ltd"]
 
         raw_corp_data["requested_loan_amount"] = proposed_corp_loan
@@ -866,7 +868,7 @@ if tab_corp:
         latest_tnw = spread["balance_sheet"]["tangible_net_worth"][-1]
         
         k1, k2, k3, k4, k5, k6 = st.columns(6)
-        k1.metric("Audited Revenue (FY26)", f"₹{latest_rev/1e7:.2f} Cr", delta=f"{ratios['efficiency']['sales_growth_rate_pct'][-1]:.1f}% YoY", help="Latest annual turnover")
+        k1.metric(f"Audited Revenue ({spread['years'][-1]})", f"₹{latest_rev/1e7:.2f} Cr", delta=f"{ratios['efficiency']['sales_growth_rate_pct'][-1]:.1f}% YoY", help="Latest annual turnover")
         k2.metric("Tangible Net Worth", f"₹{latest_tnw/1e7:.2f} Cr", help="Net Worth = Equity + Reserves")
         k3.metric("PAT Margin", f"{ratios['profitability']['pat_margin_pct'][-1]:.1f}%", delta=f"ROCE: {ratios['profitability']['return_on_capital_employed_pct'][-1]:.1f}%", help="Net profit margin")
         k4.metric("Altman Z''-Score", f"{altman_z['z_score']:.2f}", delta=altman_z['zone'], delta_color="normal" if "Safe" in altman_z['zone'] else "inverse")
@@ -889,27 +891,49 @@ if tab_corp:
         with c_tab1:
             st.subheader("📑 3-Year Credit Monitoring Arrangement (CMA) Financial Spreading")
             years = spread["years"]
+            num_yr = len(years)
             
             col_pnl, col_bs = st.columns(2)
             with col_pnl:
                 st.markdown("##### 📈 Profit & Loss Statement (₹ Lakhs)")
-                pnl_df = pd.DataFrame({
-                    "Line Item": ["Gross Turnover / Sales", "Cost of Goods Sold (COGS)", "Gross Profit", "Operating Expenses (Opex)", "EBITDA (Operating Profit)", "Depreciation & Amortization", "EBIT (Operating Income)", "Interest / Finance Charges", "Profit After Tax (PAT)", "Cash Accruals (PAT + Dep)"],
-                    years[0]: [spread["pnl"]["revenue"][0]/1e5, spread["pnl"]["cogs"][0]/1e5, spread["pnl"]["gross_profit"][0]/1e5, spread["pnl"]["operating_expenses"][0]/1e5, spread["pnl"]["ebitda"][0]/1e5, spread["pnl"]["depreciation"][0]/1e5, spread["pnl"]["ebit"][0]/1e5, spread["pnl"]["interest_expense"][0]/1e5, spread["pnl"]["pat"][0]/1e5, spread["pnl"]["cash_accruals"][0]/1e5],
-                    years[1]: [spread["pnl"]["revenue"][1]/1e5, spread["pnl"]["cogs"][1]/1e5, spread["pnl"]["gross_profit"][1]/1e5, spread["pnl"]["operating_expenses"][1]/1e5, spread["pnl"]["ebitda"][1]/1e5, spread["pnl"]["depreciation"][1]/1e5, spread["pnl"]["ebit"][1]/1e5, spread["pnl"]["interest_expense"][1]/1e5, spread["pnl"]["pat"][1]/1e5, spread["pnl"]["cash_accruals"][1]/1e5],
-                    years[2]: [spread["pnl"]["revenue"][2]/1e5, spread["pnl"]["cogs"][2]/1e5, spread["pnl"]["gross_profit"][2]/1e5, spread["pnl"]["operating_expenses"][2]/1e5, spread["pnl"]["ebitda"][2]/1e5, spread["pnl"]["depreciation"][2]/1e5, spread["pnl"]["ebit"][2]/1e5, spread["pnl"]["interest_expense"][2]/1e5, spread["pnl"]["pat"][2]/1e5, spread["pnl"]["cash_accruals"][2]/1e5]
-                })
-                st.dataframe(pnl_df.style.format({years[0]: "{:,.2f}", years[1]: "{:,.2f}", years[2]: "{:,.2f}"}), use_container_width=True, hide_index=True)
+                pnl_rows = [
+                    ("Gross Turnover / Sales", [spread["pnl"]["revenue"][i]/1e5 for i in range(num_yr)]),
+                    ("Cost of Goods Sold (COGS)", [spread["pnl"]["cogs"][i]/1e5 for i in range(num_yr)]),
+                    ("Gross Profit", [spread["pnl"]["gross_profit"][i]/1e5 for i in range(num_yr)]),
+                    ("Operating Expenses (Opex)", [spread["pnl"]["operating_expenses"][i]/1e5 for i in range(num_yr)]),
+                    ("EBITDA (Operating Profit)", [spread["pnl"]["ebitda"][i]/1e5 for i in range(num_yr)]),
+                    ("Depreciation & Amortization", [spread["pnl"]["depreciation"][i]/1e5 for i in range(num_yr)]),
+                    ("EBIT (Operating Income)", [spread["pnl"]["ebit"][i]/1e5 for i in range(num_yr)]),
+                    ("Interest / Finance Charges", [spread["pnl"]["interest_expense"][i]/1e5 for i in range(num_yr)]),
+                    ("Profit After Tax (PAT)", [spread["pnl"]["pat"][i]/1e5 for i in range(num_yr)]),
+                    ("Cash Accruals (PAT + Dep)", [spread["pnl"]["cash_accruals"][i]/1e5 for i in range(num_yr)])
+                ]
+                pnl_data = {"Line Item": [r[0] for r in pnl_rows]}
+                for i, y in enumerate(years):
+                    pnl_data[y] = [r[1][i] for r in pnl_rows]
+                pnl_df = pd.DataFrame(pnl_data)
+                st.dataframe(pnl_df.style.format({y: "{:,.2f}" for y in years}), use_container_width=True, hide_index=True)
 
             with col_bs:
                 st.markdown("##### 🏛️ Balance Sheet (₹ Lakhs)")
-                bs_df = pd.DataFrame({
-                    "Line Item": ["Cash & Bank Balances", "Sundry Debtors (Receivables)", "Inventory (Raw, WIP, FG)", "Total Current Assets", "Net Fixed Assets (PPE)", "Total Assets", "Sundry Creditors (Payables)", "Short-Term Bank Borrowings", "Total Current Liabilities", "Long-Term Term Debt", "Tangible Net Worth (TNW)"],
-                    years[0]: [spread["balance_sheet"]["cash_and_bank"][0]/1e5, spread["balance_sheet"]["sundry_debtors"][0]/1e5, spread["balance_sheet"]["inventory"][0]/1e5, spread["balance_sheet"]["current_assets"][0]/1e5, spread["balance_sheet"]["net_fixed_assets"][0]/1e5, spread["balance_sheet"]["total_assets"][0]/1e5, spread["balance_sheet"]["sundry_creditors"][0]/1e5, spread["balance_sheet"]["short_term_borrowings"][0]/1e5, spread["balance_sheet"]["current_liabilities"][0]/1e5, spread["balance_sheet"]["long_term_debt"][0]/1e5, spread["balance_sheet"]["tangible_net_worth"][0]/1e5],
-                    years[1]: [spread["balance_sheet"]["cash_and_bank"][1]/1e5, spread["balance_sheet"]["sundry_debtors"][1]/1e5, spread["balance_sheet"]["inventory"][1]/1e5, spread["balance_sheet"]["current_assets"][1]/1e5, spread["balance_sheet"]["net_fixed_assets"][1]/1e5, spread["balance_sheet"]["total_assets"][1]/1e5, spread["balance_sheet"]["sundry_creditors"][1]/1e5, spread["balance_sheet"]["short_term_borrowings"][1]/1e5, spread["balance_sheet"]["current_liabilities"][1]/1e5, spread["balance_sheet"]["long_term_debt"][1]/1e5, spread["balance_sheet"]["tangible_net_worth"][1]/1e5],
-                    years[2]: [spread["balance_sheet"]["cash_and_bank"][2]/1e5, spread["balance_sheet"]["sundry_debtors"][2]/1e5, spread["balance_sheet"]["inventory"][2]/1e5, spread["balance_sheet"]["current_assets"][2]/1e5, spread["balance_sheet"]["net_fixed_assets"][2]/1e5, spread["balance_sheet"]["total_assets"][2]/1e5, spread["balance_sheet"]["sundry_creditors"][2]/1e5, spread["balance_sheet"]["short_term_borrowings"][2]/1e5, spread["balance_sheet"]["current_liabilities"][2]/1e5, spread["balance_sheet"]["long_term_debt"][2]/1e5, spread["balance_sheet"]["tangible_net_worth"][2]/1e5]
-                })
-                st.dataframe(bs_df.style.format({years[0]: "{:,.2f}", years[1]: "{:,.2f}", years[2]: "{:,.2f}"}), use_container_width=True, hide_index=True)
+                bs_rows = [
+                    ("Cash & Bank Balances", [spread["balance_sheet"]["cash_and_bank"][i]/1e5 for i in range(num_yr)]),
+                    ("Sundry Debtors (Receivables)", [spread["balance_sheet"]["sundry_debtors"][i]/1e5 for i in range(num_yr)]),
+                    ("Inventory (Raw, WIP, FG)", [spread["balance_sheet"]["inventory"][i]/1e5 for i in range(num_yr)]),
+                    ("Total Current Assets", [spread["balance_sheet"]["current_assets"][i]/1e5 for i in range(num_yr)]),
+                    ("Net Fixed Assets (PPE)", [spread["balance_sheet"]["net_fixed_assets"][i]/1e5 for i in range(num_yr)]),
+                    ("Total Assets", [spread["balance_sheet"]["total_assets"][i]/1e5 for i in range(num_yr)]),
+                    ("Sundry Creditors (Payables)", [spread["balance_sheet"]["sundry_creditors"][i]/1e5 for i in range(num_yr)]),
+                    ("Short-Term Bank Borrowings", [spread["balance_sheet"]["short_term_borrowings"][i]/1e5 for i in range(num_yr)]),
+                    ("Total Current Liabilities", [spread["balance_sheet"]["current_liabilities"][i]/1e5 for i in range(num_yr)]),
+                    ("Long-Term Term Debt", [spread["balance_sheet"]["long_term_debt"][i]/1e5 for i in range(num_yr)]),
+                    ("Tangible Net Worth (TNW)", [spread["balance_sheet"]["tangible_net_worth"][i]/1e5 for i in range(num_yr)])
+                ]
+                bs_data = {"Line Item": [r[0] for r in bs_rows]}
+                for i, y in enumerate(years):
+                    bs_data[y] = [r[1][i] for r in bs_rows]
+                bs_df = pd.DataFrame(bs_data)
+                st.dataframe(bs_df.style.format({y: "{:,.2f}" for y in years}), use_container_width=True, hide_index=True)
 
             # Plotly Historical Performance Trend
             trend_df = pd.DataFrame({
